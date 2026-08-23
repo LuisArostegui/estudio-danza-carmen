@@ -60,12 +60,20 @@ gh label create "status: ready" --color "0E8A16" --description "The issue has en
 gh label create "status: blocked" --color "D93F0B" --description "Work is blocked by an unresolved dependency or external condition." --force
 ```
 
-Suggested labels for the initial issues:
+Required initial issue labels:
+
+| Issue | Labels |
+| --- | --- |
+| `#1` | `type: technical`, `area: frontend` |
+| `#2` | `type: content`, `area: content`, `area: design` |
+| `#3` | `type: technical` |
+| `#4` | `type: technical` |
+| `#5` | `type: content`, `area: content` |
 
 ```sh
-gh issue edit 1 --add-label "type: technical"
-gh issue edit 2 --add-label "type: content"
+gh issue edit 1 --add-label "type: technical,area: frontend"
+gh issue edit 2 --add-label "type: content,area: content,area: design"
 gh issue edit 3 --add-label "type: technical"
 gh issue edit 4 --add-label "type: technical"
-gh issue edit 5 --add-label "type: content"
+gh issue edit 5 --add-label "type: content,area: content"
 ```

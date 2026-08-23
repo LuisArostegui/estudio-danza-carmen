@@ -8,7 +8,7 @@ This document defines the first-release information architecture. It does not im
 | --- | --- | --- | --- |
 | `/` | Home | Introduce the school, guide visitors to classes, schedules, RAD, and contact. | Content / Design |
 | `/classes/` | Classes index | Explain the class offer and group disciplines in a scannable way. | Content |
-| `/classes/[slug]/` | Class detail | Give each priority class or discipline a focused page when it needs independent copy, schedule links, or conversion paths. | Content |
+| `/classes/[slug]/` | Class detail | Give the explicitly selected MVP class categories a focused page with independent copy, schedule links, and conversion paths. | Content |
 | `/schedules/` | Schedules | Help students and families understand when classes happen. | Content |
 | `/teachers/` | Teachers | Present the teaching team and trust signals. | Content |
 | `/facilities/` | Facilities | Show the studio space and practical context. | Content / Design |
@@ -22,14 +22,27 @@ This document defines the first-release information architecture. It does not im
 
 ## Class Routing Strategy
 
-`/classes/` is the hub for all class families. The MVP should support individual class detail pages for disciplines that need enough content, schedule context, or conversion intent to justify their own URL.
+`/classes/` is the hub for all class families. The MVP includes a small, explicit set of class detail pages for the offers most likely to need independent copy, schedule context, and search visibility.
 
-Known class groupings for content modelling:
+MVP class detail pages:
+
+| Route | Class Category | Notes |
+| --- | --- | --- |
+| `/classes/diverballet/` | Diverballet | Child-focused ballet introduction with age/context copy confirmed during content modelling. |
+| `/classes/pre-ballet/` | Pre Ballet | Early ballet training page for families comparing children's classes. |
+| `/classes/ballet-levels/` | Ballet by level | Main ballet training path for regular students, including beginner and intermediate progression where appropriate. |
+| `/classes/adult-ballet/` | Adult Ballet | Adult-focused ballet page with its own audience, intent, and practical questions. |
+| `/classes/pointe-technique/` | Pointe Technique | Specialist ballet page where prerequisites, level, and safety context need focused copy. |
+| `/classes/classical-repertoire/` | Classical Repertoire | Specialist ballet page for repertoire work and performance-oriented training. |
+| `/classes/private-sessions/` | Private Sessions | Conversion-oriented page for one-to-one or tailored training enquiries. |
+| `/classes/pilates/` | Pilates | Body-work page with enough independent search and enquiry intent to justify a route. |
+| `/classes/barre/` | Barre | Body-work page with enough independent search and enquiry intent to justify a route. |
+
+Grouped initially on `/classes/` without individual MVP pages:
 
 | Group | Includes | Routing Notes |
 | --- | --- | --- |
-| Ballet | Diverballet, Pre Ballet, ballet by level, intermediate level, adults, pointe technique, classical repertoire, private sessions. | Ballet is the primary offer. Priority pages should be decided during content modelling and copy work. |
-| Body Work | Physical conditioning, senior gymnastics, women's health, Pilates, Barre. | Can live under `/classes/` with individual pages only where search or content depth justifies it. |
+| Body Work | Physical conditioning, senior gymnastics, women's health. | Keep visible in the Classes hub until content depth justifies dedicated pages. |
 | Other Disciplines | Sevillanas, urban dance, contemporary, wedding/event dances, ballroom dance. | Keep discoverable without overloading primary navigation. |
 
 Class slugs should be simple, lowercase, descriptive, and stable. Final slugs should be confirmed during content modelling.
