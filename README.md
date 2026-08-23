@@ -20,8 +20,14 @@ main -> feature branch -> pull request -> review -> merge
 
 See [docs/repository-workflow.md](docs/repository-workflow.md) for the repository structure, branch naming, commit conventions, and pull request expectations.
 
+## Project Context
+
+The living product and planning context is in [docs/project-context.md](docs/project-context.md). It records current scope, MVP routes, deferred work, technical direction, and open decisions.
+
 ## Current Boundaries
 
-This repository currently documents how the project is organised. Later issues will add the living project context, issue forms, labels, sitemap, Astro application, CMS integration, design system, forms, SEO, and deployment configuration.
+This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy.
+
+The Astro application, CMS integration, design system, production forms, SEO implementation, analytics, and deployment configuration are not implemented yet.
 
 Backlog and planning live in the GitHub issues for this repository.

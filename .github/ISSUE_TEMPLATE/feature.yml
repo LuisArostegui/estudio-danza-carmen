@@ -1,0 +1,36 @@
+name: Feature
+description: Propose a user-facing capability or product behaviour.
+title: "CD-<number> - "
+labels:
+  - "type: feature"
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: Describe the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Explain the user or business value.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included and what is out of scope?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List the conditions that make this complete.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
