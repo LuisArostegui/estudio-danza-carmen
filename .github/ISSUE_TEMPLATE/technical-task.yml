@@ -1,0 +1,35 @@
+name: Technical task
+description: Define engineering, architecture, tooling, or infrastructure work.
+title: "CD-<number> - "
+labels:
+  - "type: technical"
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What technical outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Technical context
+      description: Link relevant docs, dependencies, constraints, or prior decisions.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What should change, and what should not change?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true

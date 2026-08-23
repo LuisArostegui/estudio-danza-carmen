@@ -1,0 +1,43 @@
+name: Decision
+description: Capture a decision, evaluation, or recommendation.
+title: "CD-<number> - Decide "
+labels:
+  - "type: decision"
+body:
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision required
+      description: What decision needs to be made?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Explain the background, constraints, and why this matters now.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+      description: List the realistic options and trade-offs.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What will this decision cover, and what is out of scope?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria / outcome
+      placeholder: |
+        - [ ] Decision is recorded.
+        - [ ] Rejected alternatives are briefly explained.
+    validations:
+      required: true

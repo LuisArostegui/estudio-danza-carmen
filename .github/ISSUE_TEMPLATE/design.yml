@@ -1,0 +1,35 @@
+name: Design
+description: Plan visual design, interaction states, assets, or design handoff work.
+title: "CD-<number> - "
+labels:
+  - "type: design"
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What design outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Design context
+      description: Link design files, brand guidance, states, assets, or related issues.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Include required pages, breakpoints, states, assets, or handoff needs.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true

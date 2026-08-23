@@ -1,0 +1,35 @@
+name: Content
+description: Plan copy, editorial inventory, structured content, or migration work.
+title: "CD-<number> - "
+labels:
+  - "type: content"
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What content outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Content context
+      description: Link source material, editorial notes, related pages, or related issues.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Include required pages, content types, assets, or copy areas.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
