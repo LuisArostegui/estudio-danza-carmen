@@ -24,6 +24,13 @@ See [docs/repository-workflow.md](docs/repository-workflow.md) for the repositor
 
 The living product and planning context is in [docs/project-context.md](docs/project-context.md). It records current scope, MVP routes, deferred work, technical direction, and open decisions.
 
+Foundation service and rights decisions are documented in:
+
+- [docs/cms-selection.md](docs/cms-selection.md)
+- [docs/hosting-and-deployment.md](docs/hosting-and-deployment.md)
+- [docs/contact-form-strategy.md](docs/contact-form-strategy.md)
+- [docs/asset-inventory.md](docs/asset-inventory.md)
+
 ## Current Boundaries
 
 This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy.
