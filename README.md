@@ -29,6 +29,8 @@ Foundation decisions are documented in:
 - [docs/cms-selection.md](docs/cms-selection.md)
 - [docs/design-source.md](docs/design-source.md)
 - [docs/visual-foundations.md](docs/visual-foundations.md)
+- [docs/design-home.md](docs/design-home.md)
+- [docs/design-site-shell.md](docs/design-site-shell.md)
 - [docs/sanity-content-model.md](docs/sanity-content-model.md)
 - [docs/hosting-and-deployment.md](docs/hosting-and-deployment.md)
 - [docs/contact-form-strategy.md](docs/contact-form-strategy.md)

@@ -117,10 +117,12 @@ Confirmed direction:
 - The new site should rebuild the visual language with Astro, CSS, and owned components.
 - WordPress, WPBakery, Slider Revolution, jQuery, demo markup, and copied theme CSS are not production architecture.
 
-Open:
+Confirmed direction:
 
-- Canonical design source structure is documented in [design-source.md](design-source.md), but the real Penpot file is blocked pending access.
-- Production visual foundations are documented in [visual-foundations.md](visual-foundations.md), but Penpot sync is blocked pending access.
+- Canonical design source structure is documented in [design-source.md](design-source.md), with the real private Penpot file URL, owner, access level, and review status recorded.
+- Production visual foundations are documented in [visual-foundations.md](visual-foundations.md), and the owner confirmed on 2026-08-24 that they are represented in Penpot.
+- Home implementation handoff is documented in [design-home.md](design-home.md).
+- Shared navigation, footer, and site-wide state handoff is documented in [design-site-shell.md](design-site-shell.md).
 
 ## Assets And Licensing
 
@@ -206,9 +208,11 @@ Open:
 
 | Decision | Status | Issue |
 | --- | --- | --- |
-| Define canonical design source | Blocked pending real Penpot access | CD-10 |
-| Define production visual tokens | Repository documented; Penpot sync blocked | CD-11 |
+| Define canonical design source | Defined | CD-10 |
+| Define production visual tokens | Confirmed in repository and Penpot | CD-11 |
 | Define CMS content model | Defined | CD-12 |
+| Complete responsive Home implementation handoff | Defined | CD-13 |
+| Complete shared site-shell implementation handoff | Defined | CD-15 |
 | Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
 | Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
 | Define analytics strategy | Open | CD-38 |
@@ -226,9 +230,11 @@ Open:
 | Use Cloudflare Workers Static Assets as the hosting direction | Confirmed with owner-confirmation dependency | CD-7 |
 | Use a Cloudflare Worker contact endpoint with Turnstile and Resend | Confirmed | CD-8 |
 | Use `docs/asset-inventory.md` as the asset, licence, and consent inventory | Confirmed | CD-9 |
-| Use Penpot as the intended canonical design source, with real file creation blocked until access is available | Blocked | CD-10 |
-| Use the repository visual foundations as the MVP token baseline pending Penpot sync | Confirmed with Penpot dependency | CD-11 |
+| Use Penpot as the canonical private design source owned by Luis | Defined | CD-10 |
+| Use the repository visual foundations as the MVP token baseline reflected in Penpot | Confirmed | CD-11 |
 | Use the structured Sanity content model in `docs/sanity-content-model.md` for future schema implementation | Confirmed | CD-12 |
+| Use `docs/design-home.md` as the Home page implementation handoff | Confirmed | CD-13 |
+| Use `docs/design-site-shell.md` as the shared site-shell implementation handoff | Confirmed | CD-15 |
 | Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
 | Use React only for justified interactive islands | Confirmed direction | CD-19 |
 

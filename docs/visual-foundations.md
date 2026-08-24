@@ -2,7 +2,13 @@
 
 This document records the repository-side visual direction for CD-11. It defines a small MVP token set and separates Arabesque reference observations from approved Carmen decisions.
 
-Because the canonical Penpot file is still blocked by missing real Penpot access, CD-11 should be referenced rather than closed until these decisions are also reflected in Penpot.
+The canonical Penpot file records these approved foundations for CD-11. The project owner confirmed on 2026-08-24 that the palette, typography, spacing, layout, border/radius/shadow, and motion decisions below are represented in Penpot.
+
+Canonical Penpot file:
+
+```text
+https://design.penpot.app/#/workspace?team-id=81f57451-85cc-819d-8008-7273b4e9b9c5&project-id=c269caa0-e456-818c-8008-88624b219662&file-id=c269caa0-e456-818c-8008-886e7082047d
+```
 
 ## Design Direction
 
@@ -131,7 +137,7 @@ Respect `prefers-reduced-motion`. Essential state changes should not depend on a
 - Do not introduce component-specific token names until a repeated component actually needs them.
 - Do not use Arabesque extracted values as production tokens without recording the Carmen decision.
 - Do not add production CSS, Astro files, or dependencies in this batch.
-- Sync these tokens into Penpot when CD-10 gains real access.
+- Keep these tokens aligned with the canonical Penpot file when either source changes.
 
 ## Sources
 
