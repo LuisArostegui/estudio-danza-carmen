@@ -48,4 +48,6 @@ This repository currently documents how the project is organised, the project co
 
 CMS integration, production page families, production forms, SEO implementation, analytics, and deployment configuration are not implemented yet.
 
+The foundation uses system font fallbacks until a final licensed font delivery source is selected.
+
 Backlog and planning live in the GitHub issues for this repository.
