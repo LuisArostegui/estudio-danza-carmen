@@ -114,6 +114,9 @@ Current sync status:
 
 - [visual-foundations.md](visual-foundations.md) is represented in Penpot.
 - Home implementation handoff: [design-home.md](design-home.md).
+- Classes implementation handoff: [design-classes.md](design-classes.md).
+- Structured MVP page-family handoff: [design-structured-pages.md](design-structured-pages.md).
+- Contact implementation handoff: [design-contact.md](design-contact.md).
 - Shared site shell implementation handoff: [design-site-shell.md](design-site-shell.md).
 - Known divergence between Penpot and repository decisions: none recorded as of 2026-08-24.
 
