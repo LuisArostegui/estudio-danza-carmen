@@ -1,0 +1,71 @@
+---
+import {
+  isCurrentPath,
+  legalNavigation,
+  primaryNavigation,
+  secondaryNavigation,
+  type NavigationItem,
+} from "../lib/navigation";
+
+type Props = {
+  currentPath: string;
+};
+
+const { currentPath } = Astro.props;
+
+const groups: Array<{
+  id: string;
+  title: string;
+  items: NavigationItem[];
+}> = [
+  { id: "primary", title: "Principal", items: primaryNavigation },
+  {
+    id: "secondary",
+    title: "También en la escuela",
+    items: secondaryNavigation,
+  },
+  { id: "legal", title: "Legal", items: legalNavigation },
+];
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <section class="site-footer__business" aria-labelledby="footer-business">
+      <h2 id="footer-business">Estudio de Danza Carmen</h2>
+      <address>
+        Calle Casillas de Prats, 10<br />
+        18002 Granada
+      </address>
+      <p>Contacto y horarios de atención pendientes de confirmación.</p>
+    </section>
+
+    <nav class="site-footer__nav" aria-label="Navegación de pie de página">
+      {
+        groups.map((group) => (
+          <section
+            class="site-footer__group"
+            aria-labelledby={`footer-${group.id}`}
+          >
+            <h2 id={`footer-${group.id}`}>{group.title}</h2>
+            <ul>
+              {group.items.map((item) => {
+                const isCurrent = isCurrentPath(currentPath, item);
+
+                return (
+                  <li>
+                    <a
+                      href={item.href}
+                      aria-current={isCurrent ? "page" : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))
+      }
+    </nav>
+  </div>
+</footer>
