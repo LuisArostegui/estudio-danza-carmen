@@ -88,23 +88,26 @@ Confirmed direction:
 - Prefer a static-first deployment model whenever possible.
 - Use React only for interactive islands that justify client-side state or complex interaction.
 - Keep JavaScript proportional to the interaction being implemented.
+- Use Cloudflare Workers Static Assets as the selected hosting direction when deployment work begins, keeping static output as the default and adding only proportionate Worker code where needed.
 
 Open:
 
 - Astro initialisation is tracked by CD-19.
-- Final hosting and deployment strategy are tracked by CD-7.
+- Production deployment and DNS cutover are tracked by CD-35.
 
 ## CMS
 
 Confirmed direction:
 
-- The site needs a CMS or equivalent editing workflow suitable for one non-technical editor.
+- Use Sanity as the selected CMS/editing workflow for one non-technical editor.
 - Expected editable content includes copy, images, classes, teachers, schedules, courses, performances, and related structured content.
+- Keep private evidence, consent documents, credentials, and legal records outside the CMS.
+- Details live in [cms-selection.md](cms-selection.md).
 
 Open:
 
-- CMS provider and integration approach are not selected yet.
-- Decision issue: CD-6.
+- Sanity content model is tracked by CD-12.
+- Sanity integration is tracked by CD-22.
 
 ## Design Reference
 
@@ -124,15 +127,17 @@ Open:
 
 Confirmed boundary:
 
+- The practical asset, licence, and consent inventory lives in [asset-inventory.md](asset-inventory.md).
 - Demo Arabesque images are not automatically licensed for this project.
 - Arabesque logos are not final assets.
 - Theme-bundled plugins must not be redistributed as project assets.
 - Fonts, photos, videos, and other media need known rights before production use.
 - Private certificates, purchase evidence, keys, and credentials must not be committed.
+- Identifiable-person photos, videos, and testimonials require consent status before publication.
 
 Open:
 
-- Asset inventory and licensing review are tracked by CD-9.
+- Real Carmen media files, photographer rights, and consent evidence need owner confirmation before production use.
 
 ## Forms
 
@@ -141,10 +146,17 @@ Confirmed direction:
 - The site needs a contact flow.
 - Expected fields include name, email, optional phone, message, and mandatory privacy acceptance.
 - The final implementation must include server-side validation and anti-spam protection.
+- Use a Cloudflare Worker contact endpoint with Turnstile and Resend as the selected form approach.
+- The form destination email must remain configurable; API keys and anti-spam secrets must be provider secrets, not repository content.
+- Resend transactional sending should use a dedicated sending subdomain such as `send.carmendanza.es` so its DNS records do not interfere with the existing mailbox service.
+- Store no contact submissions in the public repository, CMS, or project database for MVP; the operational copy is the delivered email.
+- Do not send an automatic visitor confirmation email in the first implementation.
+- Details live in [contact-form-strategy.md](contact-form-strategy.md).
 
 Open:
 
-- Form provider, delivery mechanism, and anti-spam approach are tracked by CD-8.
+- Final privacy/legal text must be completed before form implementation.
+- Contact form implementation is tracked by CD-28.
 
 ## SEO
 
@@ -178,23 +190,28 @@ Confirmed direction:
 
 Confirmed direction:
 
-- Static-first Astro deployment is preferred unless later requirements prove a runtime is needed.
+- Use Cloudflare Workers Static Assets as the selected hosting direction for the future Astro site.
+- Use GitHub-connected preview deployments for pull requests/branches.
+- Use `carmendanza.es` as the current public domain to preserve during migration.
+- Public DNS evidence currently shows `carmendanza.es` and `www.carmendanza.es` resolving to `104.45.28.146`, nameservers under `gestiondecuenta.com`, and mail records under `dsmail.es`.
+- Preserve current email-related DNS records unless the owner explicitly migrates email.
+- Before production cutover, crawl/export the current WordPress URLs, map relevant legacy URLs to new canonical routes, and deploy permanent 301 redirects so indexed or linked URLs do not silently become 404s.
+- Details live in [hosting-and-deployment.md](hosting-and-deployment.md).
 
 Open:
 
-- Domain, DNS, preview environments, hosting, rollback, serverless needs, and production deployment are tracked by CD-7.
+- Needs owner confirmation: registrar, renewal date, DNS access, current hosting account, billing/account owner, and email account access.
+- Production deployment and DNS cutover are tracked by CD-35.
 
 ## Open Decisions
 
 | Decision | Status | Issue |
 | --- | --- | --- |
-| Select CMS | Open | CD-6 |
-| Select hosting and DNS strategy | Open | CD-7 |
-| Select form provider and anti-spam approach | Open | CD-8 |
-| Confirm asset rights and licensing | Open | CD-9 |
 | Define canonical design source | Open | CD-10 |
 | Define production visual tokens | Open | CD-11 |
 | Define CMS content model | Open | CD-12 |
+| Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
+| Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
 | Define analytics strategy | Open | CD-38 |
 
 ## Decision Log
@@ -206,6 +223,10 @@ Open:
 | Use concise GitHub issue forms and disable blank issues | Confirmed | CD-3 |
 | Use a small label taxonomy without priority labels initially | Confirmed | CD-4 |
 | Use the MVP sitemap in `docs/sitemap-and-navigation.md` | Confirmed | CD-5 |
+| Use Sanity as the CMS/editing workflow | Confirmed | CD-6 |
+| Use Cloudflare Workers Static Assets as the hosting direction | Confirmed with owner-confirmation dependency | CD-7 |
+| Use a Cloudflare Worker contact endpoint with Turnstile and Resend | Confirmed | CD-8 |
+| Use `docs/asset-inventory.md` as the asset, licence, and consent inventory | Confirmed | CD-9 |
 | Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
 | Use React only for justified interactive islands | Confirmed direction | CD-19 |
 
