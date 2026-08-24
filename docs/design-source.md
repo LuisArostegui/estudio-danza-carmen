@@ -1,16 +1,28 @@
 # Canonical Design Source
 
-This document prepares CD-10 from the repository side. It records the intended Penpot source of truth, the required file structure, ownership, and current blocker.
+This document resolves the repository-side CD-10 record. It records the canonical Penpot source of truth, the required file structure, ownership, access status, and review status.
 
 ## Status
 
-Current status: blocked pending real Penpot access.
+Current status: defined.
 
-No Penpot file URL is recorded because this session does not have verified access to create, inspect, or modify a Penpot file. Do not treat this document as evidence that a canonical Penpot file exists.
+Canonical Penpot file:
+
+```text
+https://design.penpot.app/#/workspace?team-id=81f57451-85cc-819d-8008-7273b4e9b9c5&project-id=c269caa0-e456-818c-8008-88624b219662&file-id=c269caa0-e456-818c-8008-886e7082047d
+```
+
+Access level: private.
+
+Owner: Luis.
+
+Last reviewed: 2026-08-24.
+
+Review note: the project owner confirmed on 2026-08-24 that this file contains the required foundations/tokens, shared patterns, MVP page areas, Arabesque reference area, archive/exploration area, responsive Home design frames, and shared site-shell design frames.
 
 ## Decision
 
-Penpot remains the intended canonical design source for the MVP.
+Penpot is the canonical editable design source for the MVP.
 
 The repository records:
 
@@ -19,18 +31,18 @@ The repository records:
 - which MVP pages must be represented;
 - which owner confirmations are still needed.
 
-The real Penpot file must be created or updated by someone with project Penpot access before CD-10 can close.
+Repository documentation remains the implementation-facing written handoff. If the Penpot file and repository documents diverge, record the divergence in this file or the relevant handoff document before implementation begins.
 
 ## Ownership
 
 | Responsibility | Owner |
 | --- | --- |
-| Create or identify the canonical Penpot file | Project owner or designer with Penpot access |
-| Maintain approved visual direction and page designs | Designer / product owner |
+| Create or identify the canonical Penpot file | Luis |
+| Maintain approved visual direction and page designs | Luis / designer |
 | Keep repository documentation aligned with approved Penpot decisions | Engineering |
-| Confirm whether a Penpot URL can be public, private, or reviewer-only | Project owner |
+| Confirm whether a Penpot URL can be public, private, or reviewer-only | Luis |
 
-## Required Penpot File Structure
+## Penpot File Structure
 
 Use a small page structure. Avoid turning Penpot into a full content repository or asset archive.
 
@@ -41,6 +53,8 @@ Use a small page structure. Avoid turning Penpot into a full content repository 
 | `MVP Pages` | Approved page designs for the first-release sitemap. | One frame group per route family. |
 | `Arabesque References` | Screenshots, notes, and extracted reference observations. | Must be labelled as reference only. |
 | `Archive / Explorations` | Superseded experiments and rejected directions. | Never treat as approved design. |
+
+Owner confirmation from 2026-08-24 records that the canonical file has these areas or equivalent reviewed areas.
 
 ## MVP Page Coverage
 
@@ -83,6 +97,8 @@ In Penpot:
 - do not copy Arabesque logos, demo photos, theme CSS, WPBakery structures, Slider Revolution structures, or bundled plugin assets;
 - record observations as patterns or qualities, not as unreviewed production tokens.
 
+Owner confirmation from 2026-08-24 records that Arabesque material in the canonical file is labelled as reference only.
+
 Examples of acceptable reference notes:
 
 | Arabesque observation | Allowed use |
@@ -94,14 +110,12 @@ Examples of acceptable reference notes:
 
 ## Repository Alignment
 
-When the Penpot file exists, update this document with:
+Current sync status:
 
-- the canonical Penpot URL;
-- access level: public, private, or reviewer-only;
-- owner;
-- last reviewed date;
-- whether [visual-foundations.md](visual-foundations.md) has been synced into Penpot;
-- any known divergence between Penpot and repository decisions.
+- [visual-foundations.md](visual-foundations.md) is represented in Penpot.
+- Home implementation handoff: [design-home.md](design-home.md).
+- Shared site shell implementation handoff: [design-site-shell.md](design-site-shell.md).
+- Known divergence between Penpot and repository decisions: none recorded as of 2026-08-24.
 
 Do not add private access tokens, invite links with secrets, account screenshots, or unrelated project files.
 
@@ -117,4 +131,4 @@ CD-10 can close only when all of the following are true:
 - the repository records the real URL, owner, and review status;
 - no invented Penpot URL or unverified file claim is present.
 
-Current result: this repository prepares the structure, but CD-10 remains blocked until real Penpot access is available.
+Current result: CD-10 is defined from the repository side because the real Penpot file URL, owner, access level, review date, structure, and Arabesque reference boundary are recorded.
