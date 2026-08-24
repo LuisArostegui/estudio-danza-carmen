@@ -13,6 +13,29 @@ Sanity remains the selected CMS. This batch does not add Sanity schemas, GROQ qu
 - Keep private evidence outside Sanity: contracts, signed consent, IDs, certificates, credentials, private licence proof, and legal records are not CMS content.
 - Use Sanity drafts/published. Do not duplicate a generic editorial status unless a content type has a real business state.
 
+## Editor-Facing Overview
+
+Sanity should feel like a set of clearly named school records, not a technical page builder. The editor should choose the kind of content she wants to update, complete the useful fields, preview when that exists, and publish only public-ready information.
+
+| Content area | What the editor edits | Before publishing | Must stay outside Sanity |
+| --- | --- | --- | --- |
+| Site settings | School name, public address, phone, email, opening/contact hours, official social links, navigation, and default SEO text. | Confirm the details are current and public. | Account logins, mailbox credentials, DNS access, invoices, contracts. |
+| Home | Main introduction, featured class links, calls to action, approved hero image, and short trust highlights. | Confirm claims are true and media is approved. | Private proof for claims, unapproved photos, internal planning notes. |
+| Classes | Each class name, description, audience, age or level guidance, benefits, FAQs, gallery, CTA, and whether it has its own public page. | Confirm the class is actually offered, route slug is correct, schedule links make sense, and optional sections have useful content. | Enrolment records, health notes, payment details, private student data. |
+| Teachers | Public profile name, role, biography, portrait, qualifications, order, and related classes. | Confirm the teacher approves the public profile and portrait. | CV documents, certificates, IDs, contracts, private contact details. |
+| Schedules | Weekly schedule title, effective dates, class slots, days, times, room, teacher, group/level notes, and temporary public notes. | Confirm times and dates are current. End time must be after start time. | Attendance, booking, capacity, payment, waiting lists. |
+| Facilities | Public descriptions of rooms/spaces, features, and approved images. | Confirm photos have rights/consent and descriptions are accurate. | Safety records, maintenance documents, private access information. |
+| Courses | Seasonal or limited course information, dates, related classes, media, status, CTA, and SEO. | Confirm dates are valid and the course should be visible. | Registrations, payments, private participant lists. |
+| Performances | Public performance title, date, venue, description, gallery, related classes, and CTA. | Confirm whether it is past or future and whether media has consent. | Backstage/private images, participant records, music/licence proof. |
+| RAD | Public RAD explanation, verified claims, related classes, FAQs, media, and CTA. | Publish only claims that have been confirmed. Keep uncertain claims in draft notes or out of production. | Certificates, private accreditation evidence, unverified claims. |
+| Contact | Contact-page introduction, directions, support copy, form intro, and privacy note. | Align the privacy note with final legal text before the form is implemented. | Contact submissions, visitor messages, personal mailbox access. |
+| Legal pages | Approved legal notice, privacy policy, and cookie policy text. | Use only reviewed legal text for this website. | Legal advice drafts, contracts, private owner records. |
+| Media | Public images/files, alt text, captions, crop/focal point, public credit, licence status, and consent status. | Use only `approved` assets in production; identifiable people need consent status `yes`. | Signed consent forms, IDs, purchase certificates, invoices, private emails. |
+
+Plain publishing rule: if the information is meant to appear on the public website and the school can confirm it, it can usually live in Sanity. If it proves a right, identifies someone privately, grants account access, records a payment, or contains sensitive evidence, it stays outside Sanity and only the public-safe status may be recorded.
+
+Optional content should not create empty page sections. If a class has no FAQs, a teacher has no portrait yet, or a performance has no gallery, the future website should simply omit that block.
+
 ## Reusable Objects
 
 ### SEO
