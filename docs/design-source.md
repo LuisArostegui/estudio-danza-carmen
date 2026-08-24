@@ -118,6 +118,7 @@ Current sync status:
 - Structured MVP page-family handoff: [design-structured-pages.md](design-structured-pages.md).
 - Contact implementation handoff: [design-contact.md](design-contact.md).
 - Shared site shell implementation handoff: [design-site-shell.md](design-site-shell.md).
+- Design implementation readiness gate: [design-implementation-readiness.md](design-implementation-readiness.md).
 - Known divergence between Penpot and repository decisions: none recorded as of 2026-08-24.
 
 Do not add private access tokens, invite links with secrets, account screenshots, or unrelated project files.
