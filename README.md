@@ -24,9 +24,12 @@ See [docs/repository-workflow.md](docs/repository-workflow.md) for the repositor
 
 The living product and planning context is in [docs/project-context.md](docs/project-context.md). It records current scope, MVP routes, deferred work, technical direction, and open decisions.
 
-Foundation service and rights decisions are documented in:
+Foundation decisions are documented in:
 
 - [docs/cms-selection.md](docs/cms-selection.md)
+- [docs/design-source.md](docs/design-source.md)
+- [docs/visual-foundations.md](docs/visual-foundations.md)
+- [docs/sanity-content-model.md](docs/sanity-content-model.md)
 - [docs/hosting-and-deployment.md](docs/hosting-and-deployment.md)
 - [docs/contact-form-strategy.md](docs/contact-form-strategy.md)
 - [docs/asset-inventory.md](docs/asset-inventory.md)
