@@ -148,6 +148,7 @@ Confirmed direction:
 - The final implementation must include server-side validation and anti-spam protection.
 - Use a Cloudflare Worker contact endpoint with Turnstile and Resend as the selected form approach.
 - The form destination email must remain configurable; API keys and anti-spam secrets must be provider secrets, not repository content.
+- Resend transactional sending should use a dedicated sending subdomain such as `send.carmendanza.es` so its DNS records do not interfere with the existing mailbox service.
 - Store no contact submissions in the public repository, CMS, or project database for MVP; the operational copy is the delivered email.
 - Do not send an automatic visitor confirmation email in the first implementation.
 - Details live in [contact-form-strategy.md](contact-form-strategy.md).
@@ -194,6 +195,7 @@ Confirmed direction:
 - Use `carmendanza.es` as the current public domain to preserve during migration.
 - Public DNS evidence currently shows `carmendanza.es` and `www.carmendanza.es` resolving to `104.45.28.146`, nameservers under `gestiondecuenta.com`, and mail records under `dsmail.es`.
 - Preserve current email-related DNS records unless the owner explicitly migrates email.
+- Before production cutover, crawl/export the current WordPress URLs, map relevant legacy URLs to new canonical routes, and deploy permanent 301 redirects so indexed or linked URLs do not silently become 404s.
 - Details live in [hosting-and-deployment.md](hosting-and-deployment.md).
 
 Open:

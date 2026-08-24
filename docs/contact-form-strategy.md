@@ -125,6 +125,19 @@ Future environment configuration:
 
 Secrets must be stored in Cloudflare secrets or equivalent deployment-provider secret storage. They must not be committed.
 
+## Sending Domain Boundary
+
+Resend should use a dedicated transactional sending subdomain, preferably `send.carmendanza.es`, unless the owner approves a different sender identity during implementation.
+
+This boundary keeps website email sending separate from the existing school mailbox service:
+
+- Do not replace current `dsmail.es` MX records for the root domain.
+- Do not replace or weaken the current root-domain SPF record used by the existing mailbox.
+- Add Resend verification, SPF, and DKIM records only for the dedicated sending subdomain.
+- Keep `CONTACT_FROM_EMAIL` aligned with that verified sending subdomain.
+
+CD-28 should configure this when implementing the form. CD-35 should verify that the DNS migration preserves existing mailbox delivery and includes the Resend sending-subdomain records.
+
 ## Privacy Dependency
 
 The final form implementation depends on legal/privacy content that explains at least:
@@ -149,6 +162,8 @@ This document is not legal advice and does not write final legal text.
 - Cloudflare Workers secrets, accessed 2026-08-24: https://developers.cloudflare.com/workers/configuration/secrets/
 - Resend pricing, accessed 2026-08-24: https://resend.com/pricing
 - Resend send email API, accessed 2026-08-24: https://resend.com/docs/api-reference/emails/send-email
+- Resend domain management, accessed 2026-08-24: https://resend.com/docs/dashboard/domains/introduction
+- Resend Cloudflare DNS setup, accessed 2026-08-24: https://resend.com/docs/knowledge-base/cloudflare
 - Netlify Forms setup, accessed 2026-08-24: https://docs.netlify.com/manage/forms/setup/
 - Netlify Forms spam filters, accessed 2026-08-24: https://docs.netlify.com/manage/forms/spam-filters/
 - Formspree account limits, accessed 2026-08-24: https://help.formspree.io/articles/account-management/account-limits
