@@ -120,3 +120,10 @@ Future implementation should source Home content from the Sanity model in [sanit
 | SEO | Home Content SEO plus Site Settings defaults |
 
 Optional CMS fields should not produce empty sections in production.
+
+## Related Implementation Handoffs
+
+- Classes: [design-classes.md](design-classes.md).
+- Structured MVP page families: [design-structured-pages.md](design-structured-pages.md).
+- Contact: [design-contact.md](design-contact.md).
+- Shared site shell: [design-site-shell.md](design-site-shell.md).
