@@ -106,7 +106,7 @@ Confirmed direction:
 
 Open:
 
-- Sanity content model is tracked by CD-12.
+- Sanity content model is defined in [sanity-content-model.md](sanity-content-model.md).
 - Sanity integration is tracked by CD-22.
 
 ## Design Reference
@@ -119,9 +119,8 @@ Confirmed direction:
 
 Open:
 
-- Canonical design source will be linked when available.
-- Penpot/design source decision is tracked by CD-10.
-- Production design tokens are tracked by CD-11.
+- Canonical design source structure is documented in [design-source.md](design-source.md), but the real Penpot file is blocked pending access.
+- Production visual foundations are documented in [visual-foundations.md](visual-foundations.md), but Penpot sync is blocked pending access.
 
 ## Assets And Licensing
 
@@ -207,9 +206,9 @@ Open:
 
 | Decision | Status | Issue |
 | --- | --- | --- |
-| Define canonical design source | Open | CD-10 |
-| Define production visual tokens | Open | CD-11 |
-| Define CMS content model | Open | CD-12 |
+| Define canonical design source | Blocked pending real Penpot access | CD-10 |
+| Define production visual tokens | Repository documented; Penpot sync blocked | CD-11 |
+| Define CMS content model | Defined | CD-12 |
 | Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
 | Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
 | Define analytics strategy | Open | CD-38 |
@@ -227,6 +226,9 @@ Open:
 | Use Cloudflare Workers Static Assets as the hosting direction | Confirmed with owner-confirmation dependency | CD-7 |
 | Use a Cloudflare Worker contact endpoint with Turnstile and Resend | Confirmed | CD-8 |
 | Use `docs/asset-inventory.md` as the asset, licence, and consent inventory | Confirmed | CD-9 |
+| Use Penpot as the intended canonical design source, with real file creation blocked until access is available | Blocked | CD-10 |
+| Use the repository visual foundations as the MVP token baseline pending Penpot sync | Confirmed with Penpot dependency | CD-11 |
+| Use the structured Sanity content model in `docs/sanity-content-model.md` for future schema implementation | Confirmed | CD-12 |
 | Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
 | Use React only for justified interactive islands | Confirmed direction | CD-19 |
 
