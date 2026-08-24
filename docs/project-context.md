@@ -126,6 +126,9 @@ Confirmed direction:
 - Classes index and class-detail template handoff is documented in [design-classes.md](design-classes.md).
 - Remaining structured MVP page-family handoff is documented in [design-structured-pages.md](design-structured-pages.md).
 - Contact page and form-state handoff is documented in [design-contact.md](design-contact.md).
+- MVP design implementation readiness is documented in [design-implementation-readiness.md](design-implementation-readiness.md).
+- SEO metadata and structured data direction is documented in [seo-metadata-matrix.md](seo-metadata-matrix.md).
+- Conversion-focused copy briefs are documented in [conversion-copy-briefs.md](conversion-copy-briefs.md).
 
 ## Assets And Licensing
 
@@ -169,9 +172,13 @@ Confirmed direction:
 - Local SEO matters for the project.
 - Future work should support relevant searches for ballet and dance classes in Granada, adult ballet, children's ballet, RAD, Pilates, and related services.
 
+Confirmed direction:
+
+- SEO metadata and structured data matrix is documented in [seo-metadata-matrix.md](seo-metadata-matrix.md).
+
 Open:
 
-- SEO matrix, metadata implementation, structured data, sitemap generation, and keyword research belong to later issues.
+- Metadata implementation, sitemap generation, and post-MVP keyword research belong to later issues.
 
 ## Analytics
 
@@ -219,6 +226,9 @@ Open:
 | Complete shared site-shell implementation handoff | Defined | CD-15 |
 | Complete structured MVP page-family design handoff | Defined | CD-16 |
 | Complete contact page and form-state design handoff | Defined | CD-17 |
+| Complete lightweight design readiness gate | Defined | CD-18 |
+| Define SEO metadata and structured data matrix | Defined | CD-40 |
+| Define conversion-focused MVP copy briefs | Defined | CD-41 |
 | Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
 | Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
 | Define analytics strategy | Open | CD-38 |
@@ -244,8 +254,11 @@ Open:
 | Use `docs/design-site-shell.md` as the shared site-shell implementation handoff | Confirmed | CD-15 |
 | Use `docs/design-structured-pages.md` as the remaining MVP page-family implementation handoff | Confirmed | CD-16 |
 | Use `docs/design-contact.md` as the Contact page and form-state implementation handoff | Confirmed | CD-17 |
+| Use `docs/design-implementation-readiness.md` as the lightweight gate before Astro foundation work | Confirmed | CD-18 |
 | Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
 | Use React only for justified interactive islands | Confirmed direction | CD-19 |
+| Use `docs/seo-metadata-matrix.md` as the metadata and structured-data contract for future SEO implementation | Confirmed | CD-40 |
+| Use `docs/conversion-copy-briefs.md` as the content brief input for final CMS copy | Confirmed | CD-41 |
 
 ## Related Issues
 
