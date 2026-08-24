@@ -123,6 +123,9 @@ Confirmed direction:
 - Production visual foundations are documented in [visual-foundations.md](visual-foundations.md), and the owner confirmed on 2026-08-24 that they are represented in Penpot.
 - Home implementation handoff is documented in [design-home.md](design-home.md).
 - Shared navigation, footer, and site-wide state handoff is documented in [design-site-shell.md](design-site-shell.md).
+- Classes index and class-detail template handoff is documented in [design-classes.md](design-classes.md).
+- Remaining structured MVP page-family handoff is documented in [design-structured-pages.md](design-structured-pages.md).
+- Contact page and form-state handoff is documented in [design-contact.md](design-contact.md).
 
 ## Assets And Licensing
 
@@ -212,7 +215,10 @@ Open:
 | Define production visual tokens | Confirmed in repository and Penpot | CD-11 |
 | Define CMS content model | Defined | CD-12 |
 | Complete responsive Home implementation handoff | Defined | CD-13 |
+| Complete classes index and class-detail design handoff | Defined | CD-14 |
 | Complete shared site-shell implementation handoff | Defined | CD-15 |
+| Complete structured MVP page-family design handoff | Defined | CD-16 |
+| Complete contact page and form-state design handoff | Defined | CD-17 |
 | Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
 | Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
 | Define analytics strategy | Open | CD-38 |
@@ -234,7 +240,10 @@ Open:
 | Use the repository visual foundations as the MVP token baseline reflected in Penpot | Confirmed | CD-11 |
 | Use the structured Sanity content model in `docs/sanity-content-model.md` for future schema implementation | Confirmed | CD-12 |
 | Use `docs/design-home.md` as the Home page implementation handoff | Confirmed | CD-13 |
+| Use `docs/design-classes.md` as the Classes index and class-detail implementation handoff | Confirmed | CD-14 |
 | Use `docs/design-site-shell.md` as the shared site-shell implementation handoff | Confirmed | CD-15 |
+| Use `docs/design-structured-pages.md` as the remaining MVP page-family implementation handoff | Confirmed | CD-16 |
+| Use `docs/design-contact.md` as the Contact page and form-state implementation handoff | Confirmed | CD-17 |
 | Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
 | Use React only for justified interactive islands | Confirmed direction | CD-19 |
 
