@@ -34,6 +34,8 @@ Desktop intent:
 - present primary destinations as direct links;
 - keep facilities, performances, and courses discoverable through page content and footer rather than overloading the primary navigation.
 
+Default header behaviour: the header is not sticky for MVP. Sticky behaviour should only be introduced later if implementation or usability testing demonstrates a clear benefit.
+
 ## Mobile Navigation
 
 Closed state:
@@ -50,6 +52,14 @@ Expanded state:
 - keep Contact easy to find.
 
 The menu button should communicate expanded/collapsed state in implementation with real button semantics and an accessible name.
+
+Closing model:
+
+- activating the menu button again closes the expanded navigation;
+- following a navigation link closes the menu as the route changes;
+- Escape should close the menu when focus is currently within the expanded navigation;
+- closing the menu returns focus to the menu button when closure was explicitly triggered without navigation;
+- the interaction must not require a focus trap because the menu is an inline disclosure, not a modal.
 
 ## Current Page State
 
