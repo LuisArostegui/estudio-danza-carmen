@@ -4,7 +4,7 @@ Official website project for Estudio de Danza Carmen, a dance school in Granada.
 
 ## Status
 
-This repository is in its foundation phase. The Astro application foundation is initialised with strict TypeScript and global visual tokens. There is no CMS integration, no deployment pipeline, and no production page implementation yet.
+This repository has the Astro application foundation, strict TypeScript, global visual tokens, and the responsive shared shell in place. The current first screen intentionally tracks the Arabesque visual reference closely while remaining rebuilt with project-owned Astro/CSS rather than copied WordPress runtime.
 
 ## Project Goal
 
@@ -44,10 +44,10 @@ Foundation decisions are documented in:
 
 ## Current Boundaries
 
-This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy, and includes the initial Astro application foundation.
+This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy, and includes the initial Astro application foundation plus the Arabesque-faithful responsive shell.
 
 CMS integration, production page families, production forms, SEO implementation, analytics, and deployment configuration are not implemented yet.
 
-The foundation uses system font fallbacks until a final licensed font delivery source is selected.
+The foundation uses system font fallbacks until a final licensed font delivery source is selected. The temporary Arabesque-reference hero asset is documented as pending licence/rights verification before production publication.
 
 Backlog and planning live in the GitHub issues for this repository.

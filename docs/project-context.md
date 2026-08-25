@@ -83,8 +83,8 @@ These are not rejected permanently. They are excluded from the initial MVP unles
 
 Confirmed direction:
 
-- Use Astro as the primary frontend framework when application implementation begins.
-- Use TypeScript.
+- Use Astro as the primary frontend framework.
+- Use strict TypeScript.
 - Prefer a static-first deployment model whenever possible.
 - Use React only for interactive islands that justify client-side state or complex interaction.
 - Keep JavaScript proportional to the interaction being implemented.
@@ -92,8 +92,13 @@ Confirmed direction:
 
 Open:
 
-- Astro initialisation is tracked by CD-19.
 - Production deployment and DNS cutover are tracked by CD-35.
+
+Implemented:
+
+- CD-19 initialised the Astro application foundation, package scripts, and strict TypeScript checks.
+- CD-20 added the global CSS foundation and semantic visual tokens.
+- CD-21 added the responsive shared shell and temporary Arabesque-faithful home hero baseline.
 
 ## CMS
 
@@ -114,7 +119,7 @@ Open:
 Confirmed direction:
 
 - Arabesque is a visual and interaction reference, not a runtime dependency.
-- The new site should rebuild the visual language with Astro, CSS, and owned components.
+- The new site should rebuild the visual language with Astro, CSS, and owned components while tracking the Arabesque reference closely for visual direction.
 - WordPress, WPBakery, Slider Revolution, jQuery, demo markup, and copied theme CSS are not production architecture.
 
 Confirmed direction:
@@ -216,49 +221,54 @@ Open:
 
 ## Open Decisions
 
-| Decision | Status | Issue |
-| --- | --- | --- |
-| Define canonical design source | Defined | CD-10 |
-| Define production visual tokens | Confirmed in repository and Penpot | CD-11 |
-| Define CMS content model | Defined | CD-12 |
-| Complete responsive Home implementation handoff | Defined | CD-13 |
-| Complete classes index and class-detail design handoff | Defined | CD-14 |
-| Complete shared site-shell implementation handoff | Defined | CD-15 |
-| Complete structured MVP page-family design handoff | Defined | CD-16 |
-| Complete contact page and form-state design handoff | Defined | CD-17 |
-| Complete lightweight design readiness gate | Defined | CD-18 |
-| Define SEO metadata and structured data matrix | Defined | CD-40 |
-| Define conversion-focused MVP copy briefs | Defined | CD-41 |
-| Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation | CD-7 |
-| Verify real Carmen media rights and consent evidence | Needs owner confirmation | CD-9 |
-| Define analytics strategy | Open | CD-38 |
+| Decision                                                                     | Status                             | Issue |
+| ---------------------------------------------------------------------------- | ---------------------------------- | ----- |
+| Define canonical design source                                               | Defined                            | CD-10 |
+| Define production visual tokens                                              | Confirmed in repository and Penpot | CD-11 |
+| Define CMS content model                                                     | Defined                            | CD-12 |
+| Complete responsive Home implementation handoff                              | Defined                            | CD-13 |
+| Complete classes index and class-detail design handoff                       | Defined                            | CD-14 |
+| Complete shared site-shell implementation handoff                            | Defined                            | CD-15 |
+| Complete structured MVP page-family design handoff                           | Defined                            | CD-16 |
+| Complete contact page and form-state design handoff                          | Defined                            | CD-17 |
+| Complete lightweight design readiness gate                                   | Defined                            | CD-18 |
+| Initialise Astro application foundation                                      | Implemented                        | CD-19 |
+| Implement global CSS foundations and semantic tokens                         | Implemented                        | CD-20 |
+| Implement responsive shared shell                                            | Implemented                        | CD-21 |
+| Define SEO metadata and structured data matrix                               | Defined                            | CD-40 |
+| Define conversion-focused MVP copy briefs                                    | Defined                            | CD-41 |
+| Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation           | CD-7  |
+| Verify real Carmen media rights and consent evidence                         | Needs owner confirmation           | CD-9  |
+| Define analytics strategy                                                    | Open                               | CD-38 |
 
 ## Decision Log
 
-| Decision | Status | Issue |
-| --- | --- | --- |
-| Use lightweight GitHub Issues and PR workflow | Confirmed | CD-1 |
-| Maintain a living project context in `docs/project-context.md` | Confirmed | CD-2 |
-| Use concise GitHub issue forms and disable blank issues | Confirmed | CD-3 |
-| Use a small label taxonomy without priority labels initially | Confirmed | CD-4 |
-| Use the MVP sitemap in `docs/sitemap-and-navigation.md` | Confirmed | CD-5 |
-| Use Sanity as the CMS/editing workflow | Confirmed | CD-6 |
-| Use Cloudflare Workers Static Assets as the hosting direction | Confirmed with owner-confirmation dependency | CD-7 |
-| Use a Cloudflare Worker contact endpoint with Turnstile and Resend | Confirmed | CD-8 |
-| Use `docs/asset-inventory.md` as the asset, licence, and consent inventory | Confirmed | CD-9 |
-| Use Penpot as the canonical private design source owned by Luis | Defined | CD-10 |
-| Use the repository visual foundations as the MVP token baseline reflected in Penpot | Confirmed | CD-11 |
-| Use the structured Sanity content model in `docs/sanity-content-model.md` for future schema implementation | Confirmed | CD-12 |
-| Use `docs/design-home.md` as the Home page implementation handoff | Confirmed | CD-13 |
-| Use `docs/design-classes.md` as the Classes index and class-detail implementation handoff | Confirmed | CD-14 |
-| Use `docs/design-site-shell.md` as the shared site-shell implementation handoff | Confirmed | CD-15 |
-| Use `docs/design-structured-pages.md` as the remaining MVP page-family implementation handoff | Confirmed | CD-16 |
-| Use `docs/design-contact.md` as the Contact page and form-state implementation handoff | Confirmed | CD-17 |
-| Use `docs/design-implementation-readiness.md` as the lightweight gate before Astro foundation work | Confirmed | CD-18 |
-| Use Astro as the primary frontend framework | Confirmed direction | CD-19 |
-| Use React only for justified interactive islands | Confirmed direction | CD-19 |
-| Use `docs/seo-metadata-matrix.md` as the metadata and structured-data contract for future SEO implementation | Confirmed | CD-40 |
-| Use `docs/conversion-copy-briefs.md` as the content brief input for final CMS copy | Confirmed | CD-41 |
+| Decision                                                                                                     | Status                                       | Issue |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ----- |
+| Use lightweight GitHub Issues and PR workflow                                                                | Confirmed                                    | CD-1  |
+| Maintain a living project context in `docs/project-context.md`                                               | Confirmed                                    | CD-2  |
+| Use concise GitHub issue forms and disable blank issues                                                      | Confirmed                                    | CD-3  |
+| Use a small label taxonomy without priority labels initially                                                 | Confirmed                                    | CD-4  |
+| Use the MVP sitemap in `docs/sitemap-and-navigation.md`                                                      | Confirmed                                    | CD-5  |
+| Use Sanity as the CMS/editing workflow                                                                       | Confirmed                                    | CD-6  |
+| Use Cloudflare Workers Static Assets as the hosting direction                                                | Confirmed with owner-confirmation dependency | CD-7  |
+| Use a Cloudflare Worker contact endpoint with Turnstile and Resend                                           | Confirmed                                    | CD-8  |
+| Use `docs/asset-inventory.md` as the asset, licence, and consent inventory                                   | Confirmed                                    | CD-9  |
+| Use Penpot as the canonical private design source owned by Luis                                              | Defined                                      | CD-10 |
+| Use the repository visual foundations as the MVP token baseline reflected in Penpot                          | Confirmed                                    | CD-11 |
+| Use the structured Sanity content model in `docs/sanity-content-model.md` for future schema implementation   | Confirmed                                    | CD-12 |
+| Use `docs/design-home.md` as the Home page implementation handoff                                            | Confirmed                                    | CD-13 |
+| Use `docs/design-classes.md` as the Classes index and class-detail implementation handoff                    | Confirmed                                    | CD-14 |
+| Use `docs/design-site-shell.md` as the shared site-shell implementation handoff                              | Confirmed                                    | CD-15 |
+| Use `docs/design-structured-pages.md` as the remaining MVP page-family implementation handoff                | Confirmed                                    | CD-16 |
+| Use `docs/design-contact.md` as the Contact page and form-state implementation handoff                       | Confirmed                                    | CD-17 |
+| Use `docs/design-implementation-readiness.md` as the lightweight gate before Astro foundation work           | Confirmed                                    | CD-18 |
+| Use Astro as the primary frontend framework                                                                  | Implemented foundation                       | CD-19 |
+| Use React only for justified interactive islands                                                             | Confirmed direction                          | CD-19 |
+| Use repository semantic tokens and global CSS foundations                                                    | Implemented foundation                       | CD-20 |
+| Use the Arabesque-faithful responsive shell baseline                                                         | Implemented shell                            | CD-21 |
+| Use `docs/seo-metadata-matrix.md` as the metadata and structured-data contract for future SEO implementation | Confirmed                                    | CD-40 |
+| Use `docs/conversion-copy-briefs.md` as the content brief input for final CMS copy                           | Confirmed                                    | CD-41 |
 
 ## Related Issues
 
