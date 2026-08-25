@@ -28,16 +28,28 @@ These DNS records are public technical evidence. They do not prove account owner
 
 The following items cannot be safely inferred from public DNS or the repository:
 
-| Missing item | Where owner should check | Why it matters | Blocks technical recommendation? |
-| --- | --- | --- | --- |
-| Domain registrar | Registrar account, invoices, email renewal notices, or current provider dashboard | Required to retain `carmendanza.es`, change nameservers, and avoid expiry | No |
-| Domain renewal date | Registrar dashboard or invoice | Prevents accidental expiry during migration | No |
-| Account owner | Registrar/DNS/hosting account profile | Determines who can approve DNS and billing changes | No |
-| DNS access | Current DNS provider dashboard for `gestiondecuenta.com`-hosted zone | Required to export current records or change nameservers | No |
-| Current hosting provider and plan | Existing hosting dashboard or invoices | Required to know cancellation consequences and migration timing | No |
-| Email account provider/access | Mail provider dashboard for `dsmail.es` service | Required to preserve MX/SPF and mailbox delivery | No |
+| Missing item                      | Where owner should check                                                          | Why it matters                                                            | Blocks technical recommendation? |
+| --------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------- |
+| Domain registrar                  | Registrar account, invoices, email renewal notices, or current provider dashboard | Required to retain `carmendanza.es`, change nameservers, and avoid expiry | No                               |
+| Domain renewal date               | Registrar dashboard or invoice                                                    | Prevents accidental expiry during migration                               | No                               |
+| Account owner                     | Registrar/DNS/hosting account profile                                             | Determines who can approve DNS and billing changes                        | No                               |
+| DNS access                        | Current DNS provider dashboard for `gestiondecuenta.com`-hosted zone              | Required to export current records or change nameservers                  | No                               |
+| Current hosting provider and plan | Existing hosting dashboard or invoices                                            | Required to know cancellation consequences and migration timing           | No                               |
+| Email account provider/access     | Mail provider dashboard for `dsmail.es` service                                   | Required to preserve MX/SPF and mailbox delivery                          | No                               |
 
 Because domain ownership and access are not confirmed, CD-7 should be referenced rather than closed until the owner verifies these administrative facts.
+
+## CD-7 Status After Astro Foundation
+
+As of 2026-08-25, the technical hosting recommendation is complete:
+
+- Astro static output exists and validates locally through `pnpm validate`.
+- Cloudflare Workers Static Assets remains the selected hosting direction.
+- Pull request and branch previews should be handled through Cloudflare Workers Builds once CD-35 configures the project.
+- Production remains `main` -> Cloudflare production deployment -> `https://carmendanza.es/`.
+- DNS cutover remains blocked on owner-confirmed registrar, DNS, current hosting, email, and billing/account access.
+
+This means implementation work can continue through CD-22 and later MVP routes without waiting for DNS ownership facts. CD-35 must not perform production cutover, domain attachment, or cancellation of existing services until the owner confirmation checklist below is complete.
 
 ## Requirements
 
@@ -53,16 +65,16 @@ Because domain ownership and access are not confirmed, CD-7 should be referenced
 
 ## Options Compared
 
-| Criterion | Cloudflare Workers Static Assets | Netlify | Vercel |
-| --- | --- | --- | --- |
-| Astro static support | Official Cloudflare Astro/Workers docs; static Astro can deploy without a Worker script when fully prerendered. | Mature static hosting and Astro support. | Static Astro deploys with zero configuration. |
-| GitHub integration | Workers Builds supports GitHub integration, builds, versions, and preview URLs for PR/branch builds. | Strong GitHub integration and unlimited deploy previews on current Free plan. | Strong GitHub integration and preview deployments. |
-| Static hosting | Static asset requests are free/unlimited under current Workers pricing notes. | CDN static hosting included, but usage credits meter deploys, bandwidth, requests, forms, and compute. | Static hosting included, but Hobby is for personal/non-commercial use; Pro is the commercial fit. |
-| Custom domain/HTTPS | Custom Domains require an active Cloudflare zone; Cloudflare creates DNS records and certificates. | Custom domains with SSL on Free. | Custom domains and HTTPS supported. |
-| Rollback | Workers versions can be uploaded/promoted; Pages has explicit rollback UI. Production strategy should use versioned deploys. | One-click rollbacks. | Deployment rollback and aliases are mature; Hobby retention changed in 2026. |
-| Serverless/form fit | Native Worker endpoint can validate form data, call Turnstile, and send via Resend. | Netlify Forms is simplest if Netlify is selected. | Vercel Functions can implement the form, but commercial use points to Pro. |
-| Cost | Workers Free can cover static assets and small form traffic; Paid starts at $5/month if needed. | Free may work, but the 2026 credit system creates shared metering across deploys, requests, bandwidth, forms, and compute. | Hobby is free but not the correct commercial posture; Pro starts at $20/month. |
-| Maintenance | One Cloudflare account can handle DNS, hosting, Turnstile, and Worker function. | Very easy for static deploys/forms, but form choice ties hosting to Netlify. | Easy deploys, but less cohesive with the selected Turnstile/Worker form approach. |
+| Criterion            | Cloudflare Workers Static Assets                                                                                             | Netlify                                                                                                                    | Vercel                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Astro static support | Official Cloudflare Astro/Workers docs; static Astro can deploy without a Worker script when fully prerendered.              | Mature static hosting and Astro support.                                                                                   | Static Astro deploys with zero configuration.                                                     |
+| GitHub integration   | Workers Builds supports GitHub integration, builds, versions, and preview URLs for PR/branch builds.                         | Strong GitHub integration and unlimited deploy previews on current Free plan.                                              | Strong GitHub integration and preview deployments.                                                |
+| Static hosting       | Static asset requests are free/unlimited under current Workers pricing notes.                                                | CDN static hosting included, but usage credits meter deploys, bandwidth, requests, forms, and compute.                     | Static hosting included, but Hobby is for personal/non-commercial use; Pro is the commercial fit. |
+| Custom domain/HTTPS  | Custom Domains require an active Cloudflare zone; Cloudflare creates DNS records and certificates.                           | Custom domains with SSL on Free.                                                                                           | Custom domains and HTTPS supported.                                                               |
+| Rollback             | Workers versions can be uploaded/promoted; Pages has explicit rollback UI. Production strategy should use versioned deploys. | One-click rollbacks.                                                                                                       | Deployment rollback and aliases are mature; Hobby retention changed in 2026.                      |
+| Serverless/form fit  | Native Worker endpoint can validate form data, call Turnstile, and send via Resend.                                          | Netlify Forms is simplest if Netlify is selected.                                                                          | Vercel Functions can implement the form, but commercial use points to Pro.                        |
+| Cost                 | Workers Free can cover static assets and small form traffic; Paid starts at $5/month if needed.                              | Free may work, but the 2026 credit system creates shared metering across deploys, requests, bandwidth, forms, and compute. | Hobby is free but not the correct commercial posture; Pro starts at $20/month.                    |
+| Maintenance          | One Cloudflare account can handle DNS, hosting, Turnstile, and Worker function.                                              | Very easy for static deploys/forms, but form choice ties hosting to Netlify.                                               | Easy deploys, but less cohesive with the selected Turnstile/Worker form approach.                 |
 
 ## Selected Hosting
 
@@ -78,11 +90,11 @@ Why:
 
 ## Environments
 
-| Environment | Purpose | Proposed URL pattern | Notes |
-| --- | --- | --- | --- |
-| Local | Developer validation | `http://localhost:4321` | Created later with Astro in CD-19. |
-| Preview | PR/branch review | Cloudflare preview URL from Workers Builds or a branch/version preview URL | Used for design/content review and future Sanity preview configuration. |
-| Production | Public site | `https://carmendanza.es/` with redirect between root and `www` | Cut over only after owner confirms DNS access and production checks pass. |
+| Environment | Purpose              | Proposed URL pattern                                                       | Notes                                                                                     |
+| ----------- | -------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Local       | Developer validation | `http://localhost:4321`                                                    | Astro foundation is present; use `pnpm dev`, `pnpm preview`, and `pnpm validate` locally. |
+| Preview     | PR/branch review     | Cloudflare preview URL from Workers Builds or a branch/version preview URL | Used for design/content review and future Sanity preview configuration.                   |
+| Production  | Public site          | `https://carmendanza.es/` with redirect between root and `www`             | Cut over only after owner confirms DNS access and production checks pass.                 |
 
 No separate staging environment is needed for MVP. PR previews are enough until a later issue proves a standing staging URL is useful.
 
@@ -100,11 +112,11 @@ Before cutover:
 
 Examples of the required mapping shape:
 
-| Legacy URL pattern | Future canonical route | Redirect |
-| --- | --- | --- |
-| `/contacto/` | `/contact/` | 301 |
-| `/clases-de-danza/` | `/classes/` or the correct class detail route | 301 |
-| `/ballet-adultos/` | `/classes/adult-ballet/` | 301 |
+| Legacy URL pattern                            | Future canonical route                                                   | Redirect                      |
+| --------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------- |
+| `/contacto/`                                  | `/contact/`                                                              | 301                           |
+| `/clases-de-danza/`                           | `/classes/` or the correct class detail route                            | 301                           |
+| `/ballet-adultos/`                            | `/classes/adult-ballet/`                                                 | 301                           |
 | Old WordPress dated posts such as `/2024/...` | Relevant performance/course/news destination, or intentional gone status | 301 or explicit gone decision |
 
 The final mapping depends on CD-12 content modelling and later route implementation. CD-35 should not cut over production until this mapping exists and redirects are deployed.

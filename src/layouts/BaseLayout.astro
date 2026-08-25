@@ -1,0 +1,27 @@
+---
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/global.css";
+
+type Props = {
+  title?: string;
+};
+
+const { title = "Estudio de Danza Carmen" } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <SiteHeader currentPath={currentPath} />
+    <main id="main-content" class="site-main">
+      <slot />
+    </main>
+    <SiteFooter currentPath={currentPath} />
+  </body>
+</html>
