@@ -108,11 +108,12 @@ Confirmed direction:
 - Expected editable content includes copy, images, classes, teachers, schedules, courses, performances, and related structured content.
 - Keep private evidence, consent documents, credentials, and legal records outside the CMS.
 - Details live in [cms-selection.md](cms-selection.md).
+- The Astro integration and preview workflow foundation lives in [cms-integration-preview.md](cms-integration-preview.md).
 
 Open:
 
 - Sanity content model is defined in [sanity-content-model.md](sanity-content-model.md).
-- Sanity integration is tracked by CD-22.
+- Real Sanity project credentials, Studio schema implementation, and final content entry remain pending before CD-22 can be fully closed.
 
 ## Design Reference
 
@@ -140,6 +141,7 @@ Confirmed direction:
 Confirmed boundary:
 
 - The practical asset, licence, and consent inventory lives in [asset-inventory.md](asset-inventory.md).
+- The implemented media pipeline rules live in [media-pipeline.md](media-pipeline.md).
 - Demo Arabesque images are not automatically licensed for this project.
 - Arabesque logos are not final assets.
 - Theme-bundled plugins must not be redistributed as project assets.
@@ -235,6 +237,8 @@ Open:
 | Initialise Astro application foundation                                      | Implemented                        | CD-19 |
 | Implement global CSS foundations and semantic tokens                         | Implemented                        | CD-20 |
 | Implement responsive shared shell                                            | Implemented                        | CD-21 |
+| Integrate selected CMS and preview workflow foundation                       | Implemented foundation             | CD-22 |
+| Implement image and media pipeline foundation                                | Implemented foundation             | CD-30 |
 | Define SEO metadata and structured data matrix                               | Defined                            | CD-40 |
 | Define conversion-focused MVP copy briefs                                    | Defined                            | CD-41 |
 | Confirm registrar, renewal date, DNS/hosting/email access, and account owner | Needs owner confirmation           | CD-7  |
@@ -267,6 +271,8 @@ Open:
 | Use React only for justified interactive islands                                                             | Confirmed direction                          | CD-19 |
 | Use repository semantic tokens and global CSS foundations                                                    | Implemented foundation                       | CD-20 |
 | Use the Arabesque-faithful responsive shell baseline                                                         | Implemented shell                            | CD-21 |
+| Use Sanity published/draft perspectives through the Astro CMS integration layer                              | Implemented foundation                       | CD-22 |
+| Use Sanity image transforms plus repository media checks as the media pipeline foundation                    | Implemented foundation                       | CD-30 |
 | Use `docs/seo-metadata-matrix.md` as the metadata and structured-data contract for future SEO implementation | Confirmed                                    | CD-40 |
 | Use `docs/conversion-copy-briefs.md` as the content brief input for final CMS copy                           | Confirmed                                    | CD-41 |
 

@@ -445,8 +445,8 @@ video {
   min-height: calc(100vh - 140px);
   height: 45rem;
   overflow: hidden;
-  background: #eee5df url("/assets/hero-ballet.png") center center / cover
-    no-repeat;
+  background: #eee5df var(--home-hero-image, url("/assets/hero-ballet.png"))
+    center center / cover no-repeat;
 }
 
 .home-hero__veil {
@@ -485,6 +485,7 @@ video {
   letter-spacing: 0.08em;
   line-height: 1.12;
   text-transform: uppercase;
+  white-space: pre-line;
 }
 
 .home-hero__copy {

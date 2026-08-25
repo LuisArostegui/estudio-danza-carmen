@@ -48,6 +48,6 @@ This repository currently documents how the project is organised, the project co
 
 CMS integration, production page families, production forms, SEO implementation, analytics, and deployment configuration are not implemented yet.
 
-The foundation uses system font fallbacks until a final licensed font delivery source is selected. The temporary Arabesque-reference hero asset is documented as pending licence/rights verification before production publication.
+The foundation uses system font fallbacks until a final licensed font delivery source is selected. The temporary Arabesque-reference hero asset is documented as pending licence/rights verification before production publication. Sanity environment variables are documented in `.env.example`, with CMS preview details in `docs/cms-integration-preview.md` and media rules in `docs/media-pipeline.md`.
 
 Backlog and planning live in the GitHub issues for this repository.

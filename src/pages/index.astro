@@ -1,20 +1,36 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getHomeContent } from "../lib/sanity/content";
+import { getSanityImageAttrs } from "../lib/sanity/image";
+
+const home = await getHomeContent();
+const heroImage = home.heroMedia
+  ? getSanityImageAttrs(home.heroMedia, {
+      width: 1600,
+      widths: [720, 1080, 1440, 1920],
+      sizes: "100vw",
+      loading: "eager",
+    })
+  : undefined;
+const heroStyle = heroImage
+  ? `--home-hero-image: url("${heroImage.src}")`
+  : undefined;
 ---
 
 <BaseLayout>
-  <section class="home-hero" aria-labelledby="page-title">
+  <section class="home-hero" aria-labelledby="page-title" style={heroStyle}>
     <div class="home-hero__veil"></div>
     <div class="home-hero__content">
-      <p class="script-label">Dance with soul</p>
-      <h1 id="page-title">El movimiento<br />se convierte en arte</h1>
-      <p class="home-hero__copy">
-        Danza clásica y contemporánea para descubrir una técnica más libre,
-        expresiva y personal.
-      </p>
+      <p class="script-label">{home.scriptLabel}</p>
+      <h1 id="page-title">{home.title}</h1>
+      <p class="home-hero__copy">{home.intro}</p>
       <div class="home-hero__actions">
-        <a class="button button--solid" href="/classes/">Descubrir clases</a>
-        <a class="button button--line" href="/#academia">Conócenos</a>
+        <a class="button button--solid" href={home.primaryCta.href}
+          >{home.primaryCta.label}</a
+        >
+        <a class="button button--line" href={home.secondaryCta.href}
+          >{home.secondaryCta.label}</a
+        >
       </div>
     </div>
     <a
@@ -28,9 +44,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   <section class="home-intro" id="academia" aria-labelledby="academy-title">
     <div class="home-intro__inner">
-      <p class="home-intro__eyebrow">Academia</p>
-      <h2 id="academy-title">Estudio de Danza Carmen</h2>
-      <p>Escuela de danza en Granada con una trayectoria cercana y cuidada.</p>
+      <p class="home-intro__eyebrow">{home.academyEyebrow}</p>
+      <h2 id="academy-title">{home.academyTitle}</h2>
+      <p>{home.academyIntro}</p>
     </div>
   </section>
 </BaseLayout>
