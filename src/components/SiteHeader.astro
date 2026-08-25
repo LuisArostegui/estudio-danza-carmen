@@ -1,0 +1,147 @@
+---
+import { isCurrentPath } from "../lib/navigation";
+
+type Props = {
+  currentPath: string;
+};
+
+const { currentPath } = Astro.props;
+const headerNavigation = [
+  { href: "/", label: "Inicio", match: "exact" },
+  { href: "/#academia", label: "Academia", match: "exact" },
+  { href: "/classes/", label: "Clases", match: "section" },
+  { href: "/schedules/", label: "Horarios", match: "exact" },
+  { href: "/contact/", label: "Contacto", match: "exact" },
+] as const;
+---
+
+<div class="site-topbar">
+  <div class="site-topbar__inner">
+    <p>Bienvenidos a nuestra academia de danza</p>
+    <div class="site-topbar__details">
+      <a href="mailto:hola@estudiodanzacarmen.test">
+        hola@estudiodanzacarmen.test
+      </a>
+      <span>C/ Casillas de Prats 10, Granada</span>
+      <span>Teléfono pendiente</span>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="/" aria-label="Estudio de Danza Carmen">
+      <span class="site-header__brand-mark">Danza Carmen</span>
+    </a>
+
+    <nav class="site-nav site-nav--desktop" aria-label="Navegación principal">
+      <ul class="site-nav__list">
+        {
+          headerNavigation.map((item) => {
+            const isCurrent = isCurrentPath(currentPath, item);
+
+            return (
+              <li>
+                <a
+                  class:list={["site-nav__link", { "is-current": isCurrent }]}
+                  href={item.href}
+                  aria-current={isCurrent ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <a class="site-header__search" href="/classes/" aria-label="Buscar clases">
+    </a>
+
+    <button
+      class="site-header__menu-button"
+      type="button"
+      aria-controls="site-navigation"
+      aria-expanded="false"
+      data-menu-button
+    >
+      <span class="site-header__menu-icon" aria-hidden="true"></span>
+      <span>Menú</span>
+    </button>
+
+    <nav
+      class="site-nav site-nav--mobile"
+      id="site-navigation"
+      aria-label="Navegación principal"
+      data-site-navigation
+    >
+      <ul class="site-nav__list">
+        {
+          headerNavigation.map((item) => {
+            const isCurrent = isCurrentPath(currentPath, item);
+
+            return (
+              <li>
+                <a
+                  class:list={["site-nav__link", { "is-current": isCurrent }]}
+                  href={item.href}
+                  aria-current={isCurrent ? "page" : undefined}
+                  data-menu-link
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector("[data-site-header]");
+  const button = header?.querySelector("[data-menu-button]");
+  const navigation = header?.querySelector("[data-site-navigation]");
+  const links = navigation?.querySelectorAll("[data-menu-link]") ?? [];
+
+  if (
+    button instanceof HTMLButtonElement &&
+    navigation instanceof HTMLElement
+  ) {
+    const closeMenu = (options = { restoreFocus: false }) => {
+      header?.removeAttribute("data-menu-open");
+      button.setAttribute("aria-expanded", "false");
+
+      if (options.restoreFocus) {
+        button.focus();
+      }
+    };
+
+    const openMenu = () => {
+      header?.setAttribute("data-menu-open", "true");
+      button.setAttribute("aria-expanded", "true");
+    };
+
+    button.addEventListener("click", () => {
+      const isExpanded = button.getAttribute("aria-expanded") === "true";
+
+      if (isExpanded) {
+        closeMenu({ restoreFocus: true });
+      } else {
+        openMenu();
+      }
+    });
+
+    navigation.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMenu({ restoreFocus: true });
+      }
+    });
+
+    for (const link of links) {
+      link.addEventListener("click", () => closeMenu());
+    }
+  }
+</script>

@@ -1,22 +1,36 @@
 ---
-import "../styles/global.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Estudio de Danza Carmen</title>
-  </head>
-  <body>
-    <main class="foundation-page" aria-labelledby="page-title">
-      <section class="foundation-page__content">
-        <p class="foundation-page__eyebrow">Granada</p>
-        <h1 id="page-title">Estudio de Danza Carmen</h1>
-        <p>
-          Escuela de danza en Granada con una trayectoria cercana y cuidada.
-        </p>
-      </section>
-    </main>
-  </body>
-</html>
+<BaseLayout>
+  <section class="home-hero" aria-labelledby="page-title">
+    <div class="home-hero__veil"></div>
+    <div class="home-hero__content">
+      <p class="script-label">Dance with soul</p>
+      <h1 id="page-title">El movimiento<br />se convierte en arte</h1>
+      <p class="home-hero__copy">
+        Danza clásica y contemporánea para descubrir una técnica más libre,
+        expresiva y personal.
+      </p>
+      <div class="home-hero__actions">
+        <a class="button button--solid" href="/classes/">Descubrir clases</a>
+        <a class="button button--line" href="/#academia">Conócenos</a>
+      </div>
+    </div>
+    <a
+      class="home-hero__scroll"
+      href="/#academia"
+      aria-label="Bajar a la siguiente sección"
+    >
+      <span aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <section class="home-intro" id="academia" aria-labelledby="academy-title">
+    <div class="home-intro__inner">
+      <p class="home-intro__eyebrow">Academia</p>
+      <h2 id="academy-title">Estudio de Danza Carmen</h2>
+      <p>Escuela de danza en Granada con una trayectoria cercana y cuidada.</p>
+    </div>
+  </section>
+</BaseLayout>

@@ -10,9 +10,10 @@
     "preview": "astro preview",
     "check": "astro check",
     "typecheck": "astro check",
-    "format": "prettier --write .prettierrc README.md \"*.{mjs,json,yaml}\" \"src/**/*.{astro,css,js,json,ts}\"",
-    "format:check": "prettier --check .prettierrc README.md \"*.{mjs,json,yaml}\" \"src/**/*.{astro,css,js,json,ts}\"",
-    "validate": "pnpm typecheck && pnpm format:check && pnpm build"
+    "check:shell": "node scripts/verify-site-shell.mjs",
+    "format": "prettier --write .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
+    "format:check": "prettier --check .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
+    "validate": "pnpm typecheck && pnpm format:check && pnpm build && pnpm check:shell"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

@@ -20,10 +20,10 @@ Use Arabesque as a reference for restraint, editorial rhythm, soft contrast, and
 
 | Arabesque reference value | Carmen decision | Production token impact |
 | --- | --- | --- |
-| Pastel rose tones | Use a deeper rose as the primary brand color so text and buttons can remain readable. | `color.brand.primary` |
+| Pastel rose tones | Use a deeper rose as the primary brand color so text and buttons can remain readable; reuse Arabesque pastel roses only for approved shell presentation accents. | `color.brand.primary`, `color.arabesque.*` |
 | Large negative space | Keep calm layouts with generous vertical rhythm, but avoid sparse pages that hide practical information. | `space.*`, `layout.*` |
 | Montserrat as historical base | Use Montserrat as the primary typeface candidate because its open-source licence is verified; keep system fallbacks. | `font.family.base` |
-| Script typography as decoration | Do not select a script font for MVP production until a specific licensed face is chosen. | No approved script token |
+| Script typography as decoration | Use only a system fallback stack for the temporary script-like shell mark and hero label until a specific licensed face is chosen. | `font.family.decorative` |
 | Rectangular geometry | Prefer rectangular media and panels with modest radii. | `radius.*` |
 | Thin separators and soft shadows | Use subtle borders first; reserve shadows for overlays or elevated controls. | `color.border.subtle`, `shadow.*` |
 | Short discreet animation | Use short motion for state changes only; support reduced motion. | `motion.*` |
@@ -36,12 +36,16 @@ Use Arabesque as a reference for restraint, editorial rhythm, soft contrast, and
 | `color.brand.primary` | `#8A2F48` | Primary brand actions, active states, strong accents. |
 | `color.brand.secondary` | `#E7C98E` | Warm secondary surfaces and small highlights. |
 | `color.brand.accent` | `#2F6F73` | Cool counterpoint for links, focus-adjacent details, or schedule/status accents. |
+| `color.arabesque.primary` | `#FDD8D6` | Shell presentation accent for Arabesque-faithful backgrounds and fine decorative states. |
+| `color.arabesque.secondary` | `#FFD0CE` | Shell presentation accent for fine active rules and secondary rose treatments. |
+| `color.text.heading` | `#000000` | Arabesque-faithful shell mark and high-emphasis headings where the design calls for pure black. |
 | `color.text.primary` | `#251C1F` | Main text. |
 | `color.text.secondary` | `#5D5458` | Supporting text and metadata. |
 | `color.text.inverse` | `#FFFDFC` | Text on primary brand surfaces. |
 | `color.surface.default` | `#FFFDFC` | Default page background. |
 | `color.surface.soft` | `#F7F1EC` | Subtle section background. |
 | `color.surface.brand` | `#8A2F48` | Primary call-to-action surface. |
+| `color.footer.background` | `#171717` | Arabesque-faithful editorial footer background. |
 | `color.border.subtle` | `#DACEC7` | Dividers, form borders, low-emphasis rules. |
 | `color.border.strong` | `#8C7E78` | Focusable boundaries where more contrast is needed. |
 | `color.focus` | `#1D6FDB` | Visible keyboard focus outline. |
@@ -68,7 +72,7 @@ These checks cover common token pairings for the design decision. They are not a
 | Token | Value | Notes |
 | --- | --- | --- |
 | `font.family.base` | `"Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` | Primary MVP typeface candidate. Do not commit font files in this batch. |
-| `font.family.decorative` | `pending` | No approved script/decorative production font yet. |
+| `font.family.decorative` | `"Brush Script MT", "Segoe Script", cursive` | System fallback only for the temporary script-like shell mark and hero label; do not commit unverified font files. |
 | `font.weight.regular` | `400` | Body text. |
 | `font.weight.medium` | `500` | Navigation and compact emphasis. |
 | `font.weight.semibold` | `600` | Section headings and buttons. |
@@ -103,6 +107,8 @@ Use a compact scale that supports simple editorial layouts without over-modellin
 | Token | Value | Use |
 | --- | --- | --- |
 | `layout.contentMax` | `72rem` | Main content width. |
+| `layout.shell` | `68.75rem` | Arabesque-faithful shell and footer grid, equivalent to `1100px`. |
+| `layout.shellWide` | `86.25rem` | Wider header rail used to balance the logo, centred navigation, and search affordance. |
 | `layout.textMax` | `42rem` | Long-form readable text. |
 | `layout.narrowMax` | `56rem` | Forms, legal pages, focused content. |
 | `layout.gutter` | `clamp(1rem, 4vw, 2rem)` | Page side padding. |
@@ -134,9 +140,9 @@ Respect `prefers-reduced-motion`. Essential state changes should not depend on a
 ## Usage Rules
 
 - Use semantic token names in future implementation.
-- Do not introduce component-specific token names until a repeated component actually needs them.
-- Do not use Arabesque extracted values as production tokens without recording the Carmen decision.
-- Do not add production CSS, Astro files, or dependencies in this batch.
+- Do not introduce component-specific token names until a repeated component actually needs them; the CD-21 shell tokens above are the approved exception for the shared header/footer shell.
+- Do not use additional Arabesque extracted values as production tokens without recording the Carmen decision.
+- Do not add dependencies, copied theme assets, or unverified font files without a dedicated implementation issue and recorded source/licence decision.
 - Keep these tokens aligned with the canonical Penpot file when either source changes.
 
 ## Sources

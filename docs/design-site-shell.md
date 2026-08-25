@@ -14,6 +14,22 @@ Last reviewed: 2026-08-24.
 
 Review note: the project owner confirmed on 2026-08-24 that the canonical file contains responsive shared site-shell frames and states.
 
+## Arabesque-Faithful Shell Adjustment
+
+The implementation direction for CD-21 was tightened on 2026-08-25: the shared shell should visually track Arabesque much more closely than a loose Carmen-inspired interpretation.
+
+Approved shell cues:
+
+- pastel topbar above the main header with welcome/contact details;
+- script-like school mark on the left, centered primary navigation, and a search affordance on the right;
+- Montserrat-led uppercase navigation with generous tracking and fine active underlines;
+- shell width close to the Arabesque reference grid, recorded as `layout.shell` at `68.75rem` / `1100px`;
+- full-bleed home hero using a ballet image background, soft veil, script label, uppercase headline, two calls to action, and a bottom scroll cue;
+- pastel rose shell accents using `#FDD8D6` and `#FFD0CE`;
+- dark editorial footer using `#171717`, small uppercase headings, and wide grouped columns.
+
+Implementation boundary: this is a visual reconstruction in Carmen-owned Astro/CSS. Do not copy Arabesque WordPress markup, generated theme CSS, JavaScript/plugin runtime, logos, or unverified font files. The CD-21 hero may temporarily use `public/assets/hero-ballet.png` for visual parity only while its production licence remains pending; replace or formally approve it before live publication. A Scriptina-like decorative font remains out of scope until a specific licensed font source is approved.
+
 ## Desktop Navigation
 
 Primary navigation follows [sitemap-and-navigation.md](sitemap-and-navigation.md):
@@ -29,12 +45,14 @@ Primary navigation follows [sitemap-and-navigation.md](sitemap-and-navigation.md
 
 Desktop intent:
 
-- keep the header compact and stable;
-- make the school identity visible without requiring a final logo asset;
+- keep the header stable and editorial rather than utility-compact;
+- make the school identity prominent on the left without requiring a final logo asset;
+- keep primary navigation centred and close to the Arabesque reference rhythm;
+- reserve the right side for a simple search/classes affordance;
 - present primary destinations as direct links;
 - keep facilities, performances, and courses discoverable through page content and footer rather than overloading the primary navigation.
 
-Default header behaviour: the header is not sticky for MVP. Sticky behaviour should only be introduced later if implementation or usability testing demonstrates a clear benefit.
+Default header behaviour: the header is sticky for the Arabesque-faithful shell. It should stay visually light and avoid covering content state.
 
 ## Mobile Navigation
 
@@ -47,8 +65,8 @@ Closed state:
 Expanded state:
 
 - reveal the same primary destinations as desktop;
-- keep the menu as an inline expanded region below the header;
-- avoid modelling it as a modal, drawer, dialog, or focus-trapped overlay unless a later implementation issue changes the interaction;
+- keep the menu as a fixed full-screen overlay below the header;
+- avoid modelling it as a dialog or focus-trapped modal unless a later implementation issue changes the interaction;
 - keep Contact easy to find.
 
 The menu button should communicate expanded/collapsed state in implementation with real button semantics and an accessible name.
@@ -59,7 +77,7 @@ Closing model:
 - following a navigation link closes the menu as the route changes;
 - Escape should close the menu when focus is currently within the expanded navigation;
 - closing the menu returns focus to the menu button when closure was explicitly triggered without navigation;
-- the interaction must not require a focus trap because the menu is an inline disclosure, not a modal.
+- the interaction must not require a focus trap because the menu is a navigation overlay, not a modal dialog.
 
 ## Current Page State
 
@@ -129,6 +147,6 @@ The future contact form implementation belongs to CD-28 and must follow [contact
 
 ## Implementation Boundary
 
-This handoff does not add Astro layouts, React islands, CSS, icons, assets, dependencies, or JavaScript behaviour.
+The CD-21 implementation adds Astro markup, CSS, a small menu script, and one temporary hero image asset. It does not add React islands, dependencies, copied WordPress runtime, or unverified font files.
 
 Future implementation should validate semantic HTML, keyboard interaction, focus management, screen-reader output, zoom/reflow, reduced-motion behaviour, and link integrity in the built site.

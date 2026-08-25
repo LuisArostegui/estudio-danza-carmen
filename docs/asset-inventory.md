@@ -28,6 +28,7 @@ This document resolves CD-9 for the repository foundation stage. It creates the 
 | Performance photos | Not present in repository | Needs owner confirmation | Photographer rights plus participant consent required | Performances page and home | `needs consent` | Track event, photographer, and consent status before use. |
 | Testimonials | Not present in repository | Needs owner confirmation | Written permission from quoted person required; minors need guardian consent | Trust/social proof | `needs consent` | Store only approved public quote and display name in CMS; private consent evidence stays outside repo. |
 | Arabesque theme layout/screenshots | ThemeForest Arabesque package/demo | Theme author / Envato seller | Purchased theme can be used as design reference only for this project; do not port runtime/plugins | Visual reference | `reference only` | Rebuild with owned Astro/CSS/components; do not copy theme runtime. |
+| `public/assets/hero-ballet.png` | `static-arabesque-demo/assets/hero-ballet.png` | Unknown photographers / licensors | Licence and identifiable-person rights need confirmation before live publication | Temporary CD-21 visual parity hero background | `pending verification` | Replace with Carmen-owned/licensed imagery or record explicit production approval before deploying publicly. |
 | Arabesque demo photographs | Theme demo/import/export/package | Unknown photographers / licensors | Theme purchase does not automatically license demo images for live site | None | `do not publish` | Replace with Carmen-owned or properly licensed images. |
 | Arabesque logos/brand marks | Theme demo/package | Theme author / demo brand | Not Carmen assets | None | `do not publish` | Do not use. |
 | WPBakery plugin files | Theme bundle/current WordPress runtime | Plugin vendor/theme bundle | Not part of new Astro project | None | `do not publish` | Do not redistribute or copy into repo. |
@@ -39,7 +40,7 @@ This document resolves CD-9 for the repository foundation stage. It creates the 
 | Signed consent forms, IDs, guardian permissions | Private owner records | Individuals/site owner | Sensitive personal data | Consent evidence | `do not publish` | Store outside public repository; record only `consent verified: yes/no/pending`. |
 | Credentials, API keys, provider tokens | Service dashboards | Site owner/providers | Secrets | Configuration only | `do not publish` | Store only in provider secret management. |
 
-No public media assets are currently present in this repository.
+One temporary public-path media asset is present for CD-21 visual parity only: `public/assets/hero-ballet.png`. Treat it as pending verification and do not deploy it publicly until licence and identifiable-person rights are confirmed.
 
 ## Rules For Identifiable People
 
