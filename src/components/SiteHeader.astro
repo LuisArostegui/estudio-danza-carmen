@@ -1,18 +1,62 @@
 ---
-import { isCurrentPath, primaryNavigation } from "../lib/navigation";
+import { isCurrentPath } from "../lib/navigation";
 
 type Props = {
   currentPath: string;
 };
 
 const { currentPath } = Astro.props;
+const headerNavigation = [
+  { href: "/", label: "Inicio", match: "exact" },
+  { href: "/#academia", label: "Academia", match: "exact" },
+  { href: "/classes/", label: "Clases", match: "section" },
+  { href: "/schedules/", label: "Horarios", match: "exact" },
+  { href: "/contact/", label: "Contacto", match: "exact" },
+] as const;
 ---
+
+<div class="site-topbar">
+  <div class="site-topbar__inner">
+    <p>Bienvenidos a nuestra academia de danza</p>
+    <div class="site-topbar__details">
+      <a href="mailto:hola@estudiodanzacarmen.test">
+        hola@estudiodanzacarmen.test
+      </a>
+      <span>C/ Casillas de Prats 10, Granada</span>
+      <span>Teléfono pendiente</span>
+    </div>
+  </div>
+</div>
 
 <header class="site-header" data-site-header>
   <div class="site-header__inner">
     <a class="site-header__brand" href="/" aria-label="Estudio de Danza Carmen">
-      <span class="site-header__brand-name">Estudio de Danza Carmen</span>
-      <span class="site-header__brand-place">Granada</span>
+      <span class="site-header__brand-mark">Danza Carmen</span>
+    </a>
+
+    <nav class="site-nav site-nav--desktop" aria-label="Navegación principal">
+      <ul class="site-nav__list">
+        {
+          headerNavigation.map((item) => {
+            const isCurrent = isCurrentPath(currentPath, item);
+
+            return (
+              <li>
+                <a
+                  class:list={["site-nav__link", { "is-current": isCurrent }]}
+                  href={item.href}
+                  aria-current={isCurrent ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <a class="site-header__search" href="/classes/" aria-label="Buscar clases">
     </a>
 
     <button
@@ -27,14 +71,14 @@ const { currentPath } = Astro.props;
     </button>
 
     <nav
-      class="site-nav"
+      class="site-nav site-nav--mobile"
       id="site-navigation"
       aria-label="Navegación principal"
       data-site-navigation
     >
       <ul class="site-nav__list">
         {
-          primaryNavigation.map((item) => {
+          headerNavigation.map((item) => {
             const isCurrent = isCurrentPath(currentPath, item);
 
             return (
