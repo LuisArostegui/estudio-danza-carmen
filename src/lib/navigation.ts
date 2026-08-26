@@ -1,8 +1,14 @@
-export type NavigationItem = {
-  href: string;
-  label: string;
-  match?: "exact" | "section";
-};
+import type { NavigationItem } from "./sanity/types";
+
+export type { NavigationItem };
+
+export const headerNavigation: NavigationItem[] = [
+  { href: "/", label: "Inicio", match: "exact" },
+  { href: "/#academia", label: "Academia", match: "exact" },
+  { href: "/classes/", label: "Clases", match: "section" },
+  { href: "/schedules/", label: "Horarios", match: "exact" },
+  { href: "/contact/", label: "Contacto", match: "exact" },
+];
 
 export const primaryNavigation: NavigationItem[] = [
   { href: "/", label: "Inicio", match: "exact" },
