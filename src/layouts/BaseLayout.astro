@@ -1,27 +1,53 @@
 ---
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import { getSiteSettings } from "../lib/sanity/content";
 import "../styles/global.css";
 
 type Props = {
   title?: string;
 };
 
-const { title = "Estudio de Danza Carmen" } = Astro.props;
+const siteSettings = await getSiteSettings();
+const { title } = Astro.props;
 const currentPath = Astro.url.pathname;
+const pageTitle = title ?? siteSettings.siteName;
 ---
 
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
   </head>
   <body>
-    <SiteHeader currentPath={currentPath} />
+    <SiteHeader currentPath={currentPath} siteSettings={siteSettings} />
     <main id="main-content" class="site-main">
       <slot />
     </main>
-    <SiteFooter currentPath={currentPath} />
+    <SiteFooter currentPath={currentPath} siteSettings={siteSettings} />
+    <script is:inline>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.get("cms") !== "keys") {
+          return;
+        }
+
+        document.documentElement.dataset.cmsDebug = "keys";
+
+        document.querySelectorAll("[data-cms-field]").forEach((element) => {
+          const field = element.getAttribute("data-cms-field");
+
+          if (!field) {
+            return;
+          }
+
+          element.setAttribute("data-cms-original", element.textContent ?? "");
+          element.setAttribute("title", `Sanity field: ${field}`);
+          element.textContent = field;
+        });
+      })();
+    </script>
   </body>
 </html>

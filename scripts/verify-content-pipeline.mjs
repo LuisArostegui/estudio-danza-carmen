@@ -41,6 +41,37 @@ function assertCta(value, context) {
   }
 }
 
+function assertNavigationItems(value, context) {
+  if (!value?.length) {
+    throw new Error(`${context} must include at least one navigation item.`);
+  }
+
+  value.forEach((item, index) => assertCta(item, `${context}[${index}]`));
+}
+
+function assertSiteSettings(settings) {
+  if (!settings) {
+    throw new Error("Sanity siteSettings document is missing.");
+  }
+
+  if (!hasText(settings.siteName)) {
+    throw new Error("siteSettings.siteName is required.");
+  }
+
+  if (!hasText(settings.brandLabel)) {
+    throw new Error("siteSettings.brandLabel is required.");
+  }
+
+  assertNavigationItems(
+    settings.headerNavigation,
+    "siteSettings.headerNavigation",
+  );
+  assertNavigationItems(
+    settings.footerPrimaryNavigation,
+    "siteSettings.footerPrimaryNavigation",
+  );
+}
+
 function assertPublishableMedia(media, context) {
   if (!media) return;
 
@@ -94,37 +125,65 @@ const mediaProjection = `{
   usageNotes
 }`;
 
+const navigationProjection = `[]{
+  label,
+  href,
+  style,
+  match
+}`;
+
+const siteSettingsQuery = `*[_type == "siteSettings"][0]{
+  "siteName": coalesce(siteName, ""),
+  "brandLabel": coalesce(brandLabel, siteName, ""),
+  "headerNavigation": coalesce(headerNavigation, primaryNavigation)${navigationProjection},
+  "footerPrimaryNavigation": coalesce(footerPrimaryNavigation, primaryNavigation)${navigationProjection}
+}`;
+
 const homeContentQuery = `*[_type == "homeContent"][0]{
   "title": coalesce(title, ""),
   "intro": coalesce(intro, ""),
   "primaryCta": coalesce(primaryCta, featuredLinks[0]),
   "secondaryCta": coalesce(secondaryCta, featuredLinks[1]),
-  "heroMedia": heroMedia${mediaProjection}
+  "heroMedia": select(defined(heroMedia.asset) => heroMedia${mediaProjection})
 }`;
 
-if (!projectId) {
+async function main() {
+  if (!projectId) {
+    console.log(
+      "Sanity content validation skipped: PUBLIC_SANITY_PROJECT_ID is not configured for this environment.",
+    );
+    return;
+  }
+
+  if (preview && !token) {
+    throw new Error(
+      "SANITY_PREVIEW_DRAFTS=true requires SANITY_API_READ_TOKEN.",
+    );
+  }
+
+  const client = createClient({
+    projectId,
+    dataset,
+    apiVersion: "2026-03-01",
+    perspective: preview ? "drafts" : "published",
+    useCdn: !preview,
+    token: preview ? token : undefined,
+  });
+
+  const siteSettings = await client.fetch(siteSettingsQuery);
+  assertSiteSettings(siteSettings);
+
+  const content = await client.fetch(homeContentQuery);
+  assertHomeContent(content);
+
   console.log(
-    "Sanity content validation skipped: PUBLIC_SANITY_PROJECT_ID is not configured for this environment.",
+    `Sanity ${preview ? "draft" : "published"} content contract verified.`,
   );
-  process.exit(0);
 }
 
-if (preview && !token) {
-  throw new Error("SANITY_PREVIEW_DRAFTS=true requires SANITY_API_READ_TOKEN.");
+try {
+  await main();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
 }
-
-const client = createClient({
-  projectId,
-  dataset,
-  apiVersion: "2026-03-01",
-  perspective: preview ? "drafts" : "published",
-  useCdn: !preview,
-  token: preview ? token : undefined,
-});
-
-const content = await client.fetch(homeContentQuery);
-assertHomeContent(content);
-
-console.log(
-  `Sanity ${preview ? "draft" : "published"} content contract verified.`,
-);

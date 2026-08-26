@@ -1,7 +1,11 @@
-import type { Cta, HomeContent, MediaItem } from "./types";
+import type { Cta, HomeContent, MediaItem, SiteSettings } from "./types";
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+export interface HomeContentValidationOptions {
+  validateMedia?: boolean;
 }
 
 export function assertCta(
@@ -11,6 +15,52 @@ export function assertCta(
   if (!value || !hasText(value.label) || !hasText(value.href)) {
     throw new Error(`${context} must include a CTA label and href.`);
   }
+}
+
+export function assertNavigationItems(
+  value: Cta[] | undefined,
+  context: string,
+): asserts value is Cta[] {
+  if (!value?.length) {
+    throw new Error(`${context} must include at least one navigation item.`);
+  }
+
+  value.forEach((item, index) => assertCta(item, `${context}[${index}]`));
+}
+
+export function assertSiteSettings(
+  settings: SiteSettings | null,
+): asserts settings is SiteSettings {
+  if (!settings) {
+    throw new Error("Sanity siteSettings document is missing.");
+  }
+
+  if (!hasText(settings.siteName)) {
+    throw new Error("siteSettings.siteName is required.");
+  }
+
+  if (!hasText(settings.brandLabel)) {
+    throw new Error("siteSettings.brandLabel is required.");
+  }
+
+  assertNavigationItems(
+    settings.headerNavigation,
+    "siteSettings.headerNavigation",
+  );
+  assertNavigationItems(
+    settings.footerPrimaryNavigation,
+    "siteSettings.footerPrimaryNavigation",
+  );
+}
+
+export function isPublishableMedia(
+  media: MediaItem | undefined,
+): media is MediaItem {
+  if (!media) return false;
+  if (media.licenceStatus !== "approved") return false;
+  if (media.consentStatus && media.consentStatus !== "yes") return false;
+  if (!media.decorative && !hasText(media.altText)) return false;
+  return Boolean(media.asset?.asset?._ref);
 }
 
 export function assertPublishableMedia(
@@ -42,6 +92,7 @@ export function assertPublishableMedia(
 
 export function assertHomeContent(
   content: HomeContent | null,
+  options: HomeContentValidationOptions = {},
 ): asserts content is HomeContent {
   if (!content) {
     throw new Error("Sanity homeContent document is missing.");
@@ -57,5 +108,8 @@ export function assertHomeContent(
 
   assertCta(content.primaryCta, "homeContent.primaryCta");
   assertCta(content.secondaryCta, "homeContent.secondaryCta");
-  assertPublishableMedia(content.heroMedia, "homeContent.heroMedia");
+
+  if (options.validateMedia ?? true) {
+    assertPublishableMedia(content.heroMedia, "homeContent.heroMedia");
+  }
 }

@@ -1,54 +1,85 @@
 ---
-import {
-  isCurrentPath,
-  legalNavigation,
-  primaryNavigation,
-  secondaryNavigation,
-  type NavigationItem,
-} from "../lib/navigation";
+import { isCurrentPath } from "../lib/navigation";
+import type { NavigationItem, SiteSettings } from "../lib/sanity/types";
 
 type Props = {
   currentPath: string;
+  siteSettings: SiteSettings;
 };
 
-const { currentPath } = Astro.props;
+const { currentPath, siteSettings } = Astro.props;
+const addressLines = siteSettings.address
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
 
 const groups: Array<{
   id: string;
   title: string;
+  titleField: string;
+  itemField: string;
   items: NavigationItem[];
 }> = [
-  { id: "primary", title: "Principal", items: primaryNavigation },
+  {
+    id: "primary",
+    title: siteSettings.footerPrimaryTitle,
+    titleField: "siteSettings.footerPrimaryTitle",
+    itemField: "siteSettings.footerPrimaryNavigation",
+    items: siteSettings.footerPrimaryNavigation,
+  },
   {
     id: "secondary",
-    title: "También en la escuela",
-    items: secondaryNavigation,
+    title: siteSettings.footerSecondaryTitle,
+    titleField: "siteSettings.footerSecondaryTitle",
+    itemField: "siteSettings.footerSecondaryNavigation",
+    items: siteSettings.footerSecondaryNavigation,
   },
-  { id: "legal", title: "Legal", items: legalNavigation },
-];
+  {
+    id: "legal",
+    title: siteSettings.footerLegalTitle,
+    titleField: "siteSettings.footerLegalTitle",
+    itemField: "siteSettings.footerLegalNavigation",
+    items: siteSettings.footerLegalNavigation,
+  },
+].filter((group) => group.items.length > 0);
 ---
 
 <footer class="site-footer">
   <div class="site-footer__inner">
     <section class="site-footer__business" aria-labelledby="footer-business">
-      <h2 id="footer-business">Estudio de Danza Carmen</h2>
-      <address>
-        Calle Casillas de Prats, 10<br />
-        18002 Granada
-      </address>
-      <p>Contacto y horarios de atención pendientes de confirmación.</p>
+      <h2 id="footer-business" data-cms-field="siteSettings.siteName">
+        {siteSettings.siteName}
+      </h2>
+      {
+        addressLines.length > 0 && (
+          <address data-cms-field="siteSettings.address">
+            {addressLines.map((line, index) => (
+              <>
+                {index > 0 && <br />}
+                {line}
+              </>
+            ))}
+          </address>
+        )
+      }
+      <p data-cms-field="siteSettings.footerNote">{siteSettings.footerNote}</p>
     </section>
 
-    <nav class="site-footer__nav" aria-label="Navegación de pie de página">
+    <nav
+      class="site-footer__nav"
+      aria-label={siteSettings.footerNavigationLabel}
+    >
       {
         groups.map((group) => (
           <section
             class="site-footer__group"
             aria-labelledby={`footer-${group.id}`}
           >
-            <h2 id={`footer-${group.id}`}>{group.title}</h2>
+            <h2 id={`footer-${group.id}`} data-cms-field={group.titleField}>
+              {group.title}
+            </h2>
             <ul>
-              {group.items.map((item) => {
+              {group.items.map((item, index) => {
                 const isCurrent = isCurrentPath(currentPath, item);
 
                 return (
@@ -56,6 +87,7 @@ const groups: Array<{
                     <a
                       href={item.href}
                       aria-current={isCurrent ? "page" : undefined}
+                      data-cms-field={`${group.itemField}[${index}].label`}
                     >
                       {item.label}
                     </a>

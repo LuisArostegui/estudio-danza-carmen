@@ -49,3 +49,50 @@ export function getSanityClient(mode: SanityMode = "published") {
     token: preview ? token : undefined,
   });
 }
+
+export async function fetchSanityQuery<T>(
+  query: string,
+  mode: SanityMode = "published",
+): Promise<T> {
+  const projectId = getSanityProjectId();
+
+  if (!projectId) {
+    throw new Error(
+      "Missing PUBLIC_SANITY_PROJECT_ID. Add it to the local environment or deployment secrets.",
+    );
+  }
+
+  const preview = mode === "preview";
+  const token = import.meta.env.SANITY_API_READ_TOKEN;
+
+  if (preview && !token) {
+    throw new Error(
+      "Missing SANITY_API_READ_TOKEN. Draft preview requires a server-side Sanity read token.",
+    );
+  }
+
+  const host = preview ? "api.sanity.io" : "apicdn.sanity.io";
+  const url = new URL(
+    `https://${projectId}.${host}/v${sanityApiVersion}/data/query/${getSanityDataset()}`,
+  );
+  url.searchParams.set("query", query);
+  url.searchParams.set("perspective", preview ? "drafts" : "published");
+
+  const response = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Sanity query failed with ${response.status} ${response.statusText}.`,
+    );
+  }
+
+  const payload = (await response.json()) as { result?: T; error?: unknown };
+
+  if (payload.error) {
+    throw new Error(`Sanity query failed: ${JSON.stringify(payload.error)}`);
+  }
+
+  return payload.result as T;
+}

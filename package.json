@@ -13,9 +13,12 @@
     "check:shell": "node scripts/verify-site-shell.mjs",
     "format": "prettier --write .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
     "format:check": "prettier --check .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
-    "validate": "pnpm typecheck && pnpm format:check && pnpm check:content && pnpm check:media && pnpm build && pnpm check:shell",
+    "validate": "pnpm typecheck && pnpm format:check && pnpm check:studio && pnpm check:content && pnpm check:media && pnpm build && pnpm check:shell",
     "check:content": "node scripts/verify-content-pipeline.mjs",
-    "check:media": "node scripts/verify-media-pipeline.mjs"
+    "check:media": "node scripts/verify-media-pipeline.mjs",
+    "studio:dev": "pnpm --filter estudio-danza-carmen-studio dev",
+    "studio:build": "pnpm --filter estudio-danza-carmen-studio build",
+    "check:studio": "pnpm studio:build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -27,5 +30,8 @@
   "devDependencies": {
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1"
+  },
+  "engines": {
+    "node": ">=22.12 <24"
   }
 }

@@ -1,6 +1,6 @@
 import { createImageUrlBuilder } from "@sanity/image-url";
 
-import { getSanityClient } from "./client";
+import { getSanityDataset, getSanityProjectId } from "./client";
 import type { MediaItem } from "./types";
 import { assertPublishableMedia } from "./validation";
 
@@ -41,7 +41,18 @@ export function getSanityImageAttrs(
   }
 
   const source: NonNullable<MediaItem["asset"]> = media.asset;
-  const builder = createImageUrlBuilder(getSanityClient("published"));
+  const projectId = getSanityProjectId();
+
+  if (!projectId) {
+    throw new Error(
+      "Missing PUBLIC_SANITY_PROJECT_ID before image URL generation.",
+    );
+  }
+
+  const builder = createImageUrlBuilder({
+    projectId,
+    dataset: getSanityDataset(),
+  });
   const widths = uniqueSortedWidths(
     options.widths ?? buildResponsiveWidths(options.width),
   );

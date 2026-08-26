@@ -1,43 +1,67 @@
 ---
 import { isCurrentPath } from "../lib/navigation";
+import type { SiteSettings } from "../lib/sanity/types";
 
 type Props = {
   currentPath: string;
+  siteSettings: SiteSettings;
 };
 
-const { currentPath } = Astro.props;
-const headerNavigation = [
-  { href: "/", label: "Inicio", match: "exact" },
-  { href: "/#academia", label: "Academia", match: "exact" },
-  { href: "/classes/", label: "Clases", match: "section" },
-  { href: "/schedules/", label: "Horarios", match: "exact" },
-  { href: "/contact/", label: "Contacto", match: "exact" },
-] as const;
+const { currentPath, siteSettings } = Astro.props;
+const addressLines = siteSettings.address
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
 ---
 
 <div class="site-topbar">
   <div class="site-topbar__inner">
-    <p>Bienvenidos a nuestra academia de danza</p>
+    <p data-cms-field="siteSettings.topbarMessage">
+      {siteSettings.topbarMessage}
+    </p>
     <div class="site-topbar__details">
-      <a href="mailto:hola@estudiodanzacarmen.test">
-        hola@estudiodanzacarmen.test
-      </a>
-      <span>C/ Casillas de Prats 10, Granada</span>
-      <span>Teléfono pendiente</span>
+      {
+        siteSettings.email && (
+          <a
+            href={`mailto:${siteSettings.email}`}
+            data-cms-field="siteSettings.email"
+          >
+            {siteSettings.email}
+          </a>
+        )
+      }
+      {
+        addressLines.length > 0 && (
+          <span data-cms-field="siteSettings.address">
+            {addressLines.join(", ")}
+          </span>
+        )
+      }
+      <span data-cms-field="siteSettings.phoneLabel">
+        {siteSettings.phoneLabel}
+      </span>
     </div>
   </div>
 </div>
 
 <header class="site-header" data-site-header>
   <div class="site-header__inner">
-    <a class="site-header__brand" href="/" aria-label="Estudio de Danza Carmen">
-      <span class="site-header__brand-mark">Danza Carmen</span>
+    <a
+      class="site-header__brand"
+      href="/"
+      aria-label={siteSettings.siteName}
+      data-cms-field="siteSettings.brandLabel"
+    >
+      <span class="site-header__brand-mark">{siteSettings.brandLabel}</span>
     </a>
 
-    <nav class="site-nav site-nav--desktop" aria-label="Navegación principal">
+    <nav
+      class="site-nav site-nav--desktop"
+      aria-label={siteSettings.mainNavigationLabel}
+    >
       <ul class="site-nav__list">
         {
-          headerNavigation.map((item) => {
+          siteSettings.headerNavigation.map((item, index) => {
             const isCurrent = isCurrentPath(currentPath, item);
 
             return (
@@ -46,6 +70,7 @@ const headerNavigation = [
                   class:list={["site-nav__link", { "is-current": isCurrent }]}
                   href={item.href}
                   aria-current={isCurrent ? "page" : undefined}
+                  data-cms-field={`siteSettings.headerNavigation[${index}].label`}
                 >
                   {item.label}
                 </a>
@@ -56,7 +81,11 @@ const headerNavigation = [
       </ul>
     </nav>
 
-    <a class="site-header__search" href="/classes/" aria-label="Buscar clases">
+    <a
+      class="site-header__search"
+      href="/classes/"
+      aria-label={siteSettings.searchLabel}
+    >
     </a>
 
     <button
@@ -67,18 +96,20 @@ const headerNavigation = [
       data-menu-button
     >
       <span class="site-header__menu-icon" aria-hidden="true"></span>
-      <span>Menú</span>
+      <span data-cms-field="siteSettings.menuLabel"
+        >{siteSettings.menuLabel}</span
+      >
     </button>
 
     <nav
       class="site-nav site-nav--mobile"
       id="site-navigation"
-      aria-label="Navegación principal"
+      aria-label={siteSettings.mobileNavigationLabel}
       data-site-navigation
     >
       <ul class="site-nav__list">
         {
-          headerNavigation.map((item) => {
+          siteSettings.headerNavigation.map((item, index) => {
             const isCurrent = isCurrentPath(currentPath, item);
 
             return (
@@ -87,6 +118,7 @@ const headerNavigation = [
                   class:list={["site-nav__link", { "is-current": isCurrent }]}
                   href={item.href}
                   aria-current={isCurrent ? "page" : undefined}
+                  data-cms-field={`siteSettings.headerNavigation[${index}].label`}
                   data-menu-link
                 >
                   {item.label}

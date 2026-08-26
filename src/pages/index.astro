@@ -18,17 +18,32 @@ const heroStyle = heroImage
 ---
 
 <BaseLayout>
-  <section class="home-hero" aria-labelledby="page-title" style={heroStyle}>
+  <section
+    class="home-hero"
+    aria-labelledby="page-title"
+    style={heroStyle}
+    data-cms-document="homeContent"
+  >
     <div class="home-hero__veil"></div>
     <div class="home-hero__content">
-      <p class="script-label">{home.scriptLabel}</p>
-      <h1 id="page-title">{home.title}</h1>
-      <p class="home-hero__copy">{home.intro}</p>
+      <p class="script-label" data-cms-field="homeContent.scriptLabel">
+        {home.scriptLabel}
+      </p>
+      <h1 id="page-title" data-cms-field="homeContent.title">{home.title}</h1>
+      <p class="home-hero__copy" data-cms-field="homeContent.intro">
+        {home.intro}
+      </p>
       <div class="home-hero__actions">
-        <a class="button button--solid" href={home.primaryCta.href}
+        <a
+          class="button button--solid"
+          href={home.primaryCta.href}
+          data-cms-field="homeContent.primaryCta.label"
           >{home.primaryCta.label}</a
         >
-        <a class="button button--line" href={home.secondaryCta.href}
+        <a
+          class="button button--line"
+          href={home.secondaryCta.href}
+          data-cms-field="homeContent.secondaryCta.label"
           >{home.secondaryCta.label}</a
         >
       </div>
@@ -42,11 +57,23 @@ const heroStyle = heroImage
     </a>
   </section>
 
-  <section class="home-intro" id="academia" aria-labelledby="academy-title">
+  <section
+    class="home-intro"
+    id="academia"
+    aria-labelledby="academy-title"
+    data-cms-document="homeContent"
+  >
     <div class="home-intro__inner">
-      <p class="home-intro__eyebrow">{home.academyEyebrow}</p>
-      <h2 id="academy-title">{home.academyTitle}</h2>
-      <p>{home.academyIntro}</p>
+      <p
+        class="home-intro__eyebrow"
+        data-cms-field="homeContent.academyEyebrow"
+      >
+        {home.academyEyebrow}
+      </p>
+      <h2 id="academy-title" data-cms-field="homeContent.academyTitle">
+        {home.academyTitle}
+      </h2>
+      <p data-cms-field="homeContent.academyIntro">{home.academyIntro}</p>
     </div>
   </section>
 </BaseLayout>

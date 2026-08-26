@@ -2,6 +2,70 @@
 
 This document records the CD-22 implementation boundary for connecting Astro to Sanity.
 
+## Sanity Studio
+
+The repository keeps Sanity Studio as a standalone app in `studio/`. The Astro app remains at the repository root; do not create a separate `web/` app.
+
+Use these root scripts:
+
+```text
+pnpm studio:dev
+pnpm studio:build
+```
+
+The first content document required by the Astro build is the singleton Home document. In Studio, open `Inicio`, fill the required fields, and publish it. The editor-facing field map lives in [cms-editor-field-map.md](cms-editor-field-map.md).
+
+Minimum Home content for the current frontend:
+
+- Hero title: `El movimiento\nse convierte en arte` if you want the current Arabesque-style line break.
+- Decorative script label: `Dance with soul`.
+- Hero intro.
+- Primary CTA: label `Descubrir clases`, href `/classes/`.
+- Secondary CTA: label `Conócenos`, href `/#academia`.
+- Academy eyebrow: `Academia`.
+- Academy title: `Estudio de Danza Carmen`.
+- Academy intro.
+
+Minimum Site Settings content for the current shared shell:
+
+- Site name: `Estudio de Danza Carmen`.
+- Visible brand label: `Danza Carmen`.
+- Top bar message.
+- Public address, email, and visible phone label.
+- Header navigation.
+- Footer primary, secondary, and legal navigation groups.
+- Accessibility labels for the main navigation, footer navigation, search icon, and mobile menu.
+
+Do not add hero media unless the image has `licenceStatus = approved` and the required alt/consent status. The temporary Arabesque reference hero remains a local fallback pending rights verification. During local rendering, pending hero media is ignored so editors can keep working; `pnpm check:content` remains the strict production gate.
+
+## CMS Field Key Preview
+
+Use this query parameter on the website to show which visible Home text comes from which Sanity field:
+
+```text
+?cms=keys
+```
+
+Example:
+
+```text
+http://localhost:4321/?cms=keys
+```
+
+This replaces visible Home text with field keys such as `homeContent.title` and `homeContent.primaryCta.label`. It is a debugging helper only; it does not edit Sanity content and should not be used as production copy.
+
+## Node Runtime
+
+Use Node 22 for local development and CI. Astro 7 requires Node `>=22.12.0`, and Node 24 currently crashes on Windows after a successful `astro build` with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`. The repository pins `.nvmrc` to `22.13.2` and `package.json` to `>=22.12 <24` until the Windows Node 24 exit crash is no longer reproducible.
+
+With nvm-windows:
+
+```text
+nvm install 22.13.2
+nvm use 22.13.2
+pnpm install
+```
+
 ## Runtime Integration
 
 The Astro app now has a small Sanity integration layer under `src/lib/sanity/`:
@@ -76,7 +140,7 @@ Cloudflare Workers Static Assets remains the deployment direction. Once CD-35 co
 
 ## Boundaries
 
-- This batch does not create the Sanity Studio schema files.
+- The Studio is standalone in `studio/`; do not embed it inside Astro or create a separate `web/` app.
 - This batch does not enter final content.
 - This batch does not store private rights evidence, consent forms, credentials, or legal records in Sanity.
 - Visual direction remains Arabesque-faithful; CMS copy/media must not change the shell style by itself.

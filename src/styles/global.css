@@ -765,3 +765,22 @@ video {
     transition-duration: 1ms !important;
   }
 }
+
+html[data-cms-debug="keys"] [data-cms-field] {
+  outline: 1px dashed #1d6fdb;
+  outline-offset: 0.18rem;
+  background: rgb(29 111 219 / 10%);
+  color: #083b75 !important;
+  font-family:
+    ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.35 !important;
+  text-transform: none !important;
+  white-space: normal !important;
+}
+
+html[data-cms-debug="keys"] .home-hero h1[data-cms-field] {
+  max-width: 34rem;
+}

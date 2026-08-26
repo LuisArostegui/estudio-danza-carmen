@@ -1,6 +1,19 @@
+packages:
+  - "."
+  - "studio"
+
 allowBuilds:
   esbuild: true
   sharp: true
+
 minimumReleaseAgeExclude:
   - "@astrojs/markdown-satteri@0.3.8"
   - astro@7.2.6
+  - "@sanity/access-ui@6.11.0"
+  - "@sanity/diff@6.11.0"
+  - "@sanity/mutator@6.11.0"
+  - "@sanity/schema@6.11.0"
+  - "@sanity/types@6.11.0"
+  - "@sanity/util@6.11.0"
+  - "@sanity/vision@6.11.0"
+  - sanity@6.11.0
