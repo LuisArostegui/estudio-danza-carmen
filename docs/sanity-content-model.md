@@ -1,8 +1,8 @@
 # Sanity Content Model
 
-This document defines the CD-12 content model for the future Sanity Studio. It is an implementation-facing model record, not executable schema code.
+This document defines the CD-12 content model used by the Sanity Studio implementation. It remains the implementation-facing content contract, while executable schema code now lives in `studio/schemaTypes/` and the Astro query layer lives in `src/lib/sanity/`.
 
-Sanity remains the selected CMS. This batch does not add Sanity schemas, GROQ queries, Astro integration, preview routes, or Studio configuration.
+Sanity remains the selected CMS. The CD-22 foundation now includes standalone Studio configuration, school-shaped schemas, GROQ projections, published/draft query support, and Astro fallbacks. Full Visual Editing / Presentation Tool click-to-edit is intentionally left for a follow-up once preview deployment is settled.
 
 ## Principles
 
@@ -337,9 +337,10 @@ Do not change the URL architecture as a side effect of content modelling.
 
 ## Implementation Notes For CD-22
 
-- Use Sanity schema helpers such as `defineType` and `defineField` when implementation begins.
-- Shape Studio navigation around the document groups above.
-- Use published-only queries for production builds.
-- Use draft-aware preview only with a token stored outside the repository.
-- Generate TypeScript types only during the implementation issue.
+- Implemented schema code should continue to use Sanity helpers such as `defineType` and `defineField`.
+- Studio navigation should stay shaped around the document groups above.
+- Production builds must use published-only queries.
+- Draft-aware preview must require a token stored outside the repository.
+- TypeScript types should stay aligned with the schema/query layer as more page families are wired.
 - Keep private evidence out of Sanity and GitHub.
+- Full Visual Editing / Presentation Tool configuration is a separate follow-up from this static-first CMS foundation.

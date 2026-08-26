@@ -156,14 +156,14 @@ No production CI/CD configuration is added in this batch.
 Future non-secret configuration may include:
 
 - `PUBLIC_SITE_URL`
-- `SANITY_PROJECT_ID`
-- `SANITY_DATASET`
+- `PUBLIC_SANITY_PROJECT_ID`
+- `PUBLIC_SANITY_DATASET`
 - `CONTACT_TO_EMAIL`
 - `CONTACT_FROM_EMAIL`
 
 Future secrets must be stored as provider secrets, not committed:
 
-- Sanity preview/read token.
+- Sanity preview/read token (`SANITY_API_READ_TOKEN`).
 - Turnstile secret key.
 - Resend API key.
 - Any deploy API token.

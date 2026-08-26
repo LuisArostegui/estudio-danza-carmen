@@ -99,6 +99,7 @@ Implemented:
 - CD-19 initialised the Astro application foundation, package scripts, and strict TypeScript checks.
 - CD-20 added the global CSS foundation and semantic visual tokens.
 - CD-21 added the responsive shared shell and temporary Arabesque-faithful home hero baseline.
+- CD-22 added the Sanity CMS foundation: standalone Studio, school-shaped schemas, Astro query/fallback layer, published/draft perspective support, and editor field-key preview.
 
 ## CMS
 
@@ -110,10 +111,15 @@ Confirmed direction:
 - Details live in [cms-selection.md](cms-selection.md).
 - The Astro integration and preview workflow foundation lives in [cms-integration-preview.md](cms-integration-preview.md).
 
+Implemented foundation:
+
+- Sanity content model is defined in [sanity-content-model.md](sanity-content-model.md) and implemented in the standalone `studio/` app.
+- The deployed Studio URL is `https://estudio-danza-carmen.sanity.studio`.
+- Astro can query published content and supports a protected draft-aware build mode through environment variables.
+
 Open:
 
-- Sanity content model is defined in [sanity-content-model.md](sanity-content-model.md).
-- Real Sanity project credentials, Studio schema implementation, and final content entry remain pending before CD-22 can be fully closed.
+- Final published content, approved production media, deployment secrets, rebuild/revalidation wiring, and full Visual Editing / Presentation Tool click-to-edit remain pending before CD-22 can be treated as fully closed from an editorial operations perspective.
 
 ## Design Reference
 

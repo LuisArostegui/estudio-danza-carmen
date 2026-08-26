@@ -100,7 +100,7 @@ This review does not claim production WCAG conformance. Semantic HTML, screen-re
 | Final legal/privacy/cookie text | Pending | Future legal/content issue before production form and legal pages go live |
 | Real Carmen media rights and consent | Pending owner confirmation | CD-9 follow-up workflow and future media upload |
 | Domain/DNS/hosting/email account ownership | Pending owner confirmation | CD-7/CD-35 |
-| Sanity implementation | Documented, not implemented | CD-22 |
+| Sanity implementation | Foundation implemented; final content and full Visual Editing pending | CD-22 |
 | Contact form implementation | Strategy and design documented, not implemented | CD-28 |
 | SEO metadata implementation | Matrix documented separately | CD-29 |
 | Analytics strategy | Open | CD-38 |

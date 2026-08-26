@@ -28,7 +28,7 @@ Approved shell cues:
 - pastel rose shell accents using `#FDD8D6` and `#FFD0CE`;
 - dark editorial footer using `#171717`, small uppercase headings, and wide grouped columns.
 
-Implementation boundary: this is a visual reconstruction in Carmen-owned Astro/CSS. Do not copy Arabesque WordPress markup, generated theme CSS, JavaScript/plugin runtime, logos, or unverified font files. The CD-21 hero may temporarily use `public/assets/hero-ballet.png` for visual parity only while its production licence remains pending; replace or formally approve it before live publication. A Scriptina-like decorative font remains out of scope until a specific licensed font source is approved.
+Implementation boundary: this is a visual reconstruction in Carmen-owned Astro/CSS. Do not copy Arabesque WordPress markup, generated theme CSS, JavaScript/plugin runtime, logos, or unverified font files. The home hero uses `public/assets/hero-carmen.png` as an AI-generated original fallback that preserves the Arabesque-faithful palette while avoiding demo-photo reuse. A Sanity-approved hero image can replace it without changing the shell layout. A Scriptina-like decorative font remains out of scope until a specific licensed font source is approved.
 
 ## Desktop Navigation
 

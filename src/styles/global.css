@@ -445,7 +445,7 @@ video {
   min-height: calc(100vh - 140px);
   height: 45rem;
   overflow: hidden;
-  background: #eee5df var(--home-hero-image, url("/assets/hero-ballet.png"))
+  background: #eee5df var(--home-hero-image, url("/assets/hero-carmen.png"))
     center center / cover no-repeat;
 }
 

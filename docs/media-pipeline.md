@@ -34,7 +34,7 @@ Front-end components should reserve space through one of these approaches:
 - stable CSS `aspect-ratio` for image containers;
 - fixed section constraints when a background image is used.
 
-The current home hero keeps a stable section height and can switch from the local temporary hero background to a Sanity-provided approved hero image without changing the Arabesque-faithful layout.
+The current home hero keeps a stable section height and can switch from the local AI-generated fallback hero background to a Sanity-provided approved hero image without changing the Arabesque-faithful layout.
 
 ## Alt Text And Decorative Media
 
@@ -54,7 +54,7 @@ licenceStatus = approved
 consentStatus = yes, when identifiable people appear
 ```
 
-The validation layer rejects unapproved Sanity media when it is used by a production-facing page. The temporary Arabesque reference hero remains documented as pending verification in `docs/asset-inventory.md` and must not be treated as approved production media until rights are confirmed.
+The validation layer rejects unapproved Sanity media when it is used by a production-facing page. The local fallback hero is now an AI-generated original asset documented as approved in `docs/asset-inventory.md`; Sanity-uploaded media must still carry its own licence, alt, and consent metadata before production use.
 
 ## Oversized Or Invalid Uploads
 
@@ -63,7 +63,7 @@ The validation layer rejects unapproved Sanity media when it is used by a produc
 - a public asset uses an unsupported file extension;
 - a representative public asset exceeds `2 MiB`.
 
-Sanity-side upload constraints should be added to Studio schema validation when the Studio schemas are implemented. At minimum, image fields should require media metadata, hotspot/crop where useful, and the licence/consent fields described in `docs/sanity-content-model.md`.
+Sanity media objects now capture the image asset, decorative/alt status, caption, licence status, consent status, credit, and public-safe usage notes. Future Studio constraints can add dimension/file-size guidance once representative production photography requirements are known.
 
 ## Video Handling
 
