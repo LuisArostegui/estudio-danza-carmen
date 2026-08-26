@@ -44,10 +44,12 @@ Foundation decisions are documented in:
 
 ## Current Boundaries
 
-This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy, and includes the initial Astro application foundation plus the Arabesque-faithful responsive shell.
+This repository currently documents how the project is organised, the project context, the MVP sitemap, issue forms, and the lightweight label taxonomy, and includes the Astro application foundation, Arabesque-faithful responsive shell, and Sanity CMS foundation.
 
-CMS integration, production page families, production forms, SEO implementation, analytics, and deployment configuration are not implemented yet.
+Sanity Studio is kept as a standalone app in `studio/` and is deployed at `https://estudio-danza-carmen.sanity.studio`. The Astro frontend can query published Sanity content when configured and keeps local fallbacks for development before live content is publishable.
 
-The foundation uses system font fallbacks until a final licensed font delivery source is selected. The temporary Arabesque-reference hero asset is documented as pending licence/rights verification before production publication. Sanity environment variables are documented in `.env.example`, with CMS preview details in `docs/cms-integration-preview.md` and media rules in `docs/media-pipeline.md`.
+Production page families, production forms, SEO implementation, analytics, deployment configuration, and full Sanity Visual Editing / Presentation Tool click-to-edit are not implemented yet.
+
+The foundation uses system font fallbacks until a final licensed font delivery source is selected. The AI-generated hero asset is documented as approved for this project fallback while final Carmen-owned photography remains a future option. Sanity environment variables are documented in `.env.example`, with CMS preview details in `docs/cms-integration-preview.md` and media rules in `docs/media-pipeline.md`.
 
 Backlog and planning live in the GitHub issues for this repository.

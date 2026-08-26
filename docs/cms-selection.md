@@ -46,7 +46,7 @@ Sanity best balances the project constraints:
 - It supports structured content for classes, teachers, schedules, facilities, courses, performances, RAD content, SEO, and reusable site settings.
 - It has an official Astro integration and current Astro-specific preview/visual-editing documentation.
 - It supports drafts, published-only production queries, and preview queries with a token.
-- It can be typed with schema helpers and Sanity TypeGen when CD-12 and CD-22 define and implement the content model.
+- It can be typed with schema helpers and Sanity TypeGen as the CD-12 model and CD-22 implementation evolve.
 - Its free plan is proportionate for a small school website and does not force a paid monthly CMS subscription at foundation stage.
 
 ## Rejected Alternatives
@@ -68,12 +68,12 @@ Expected future workflow:
 5. Publishing content triggers or participates in a future site rebuild.
 6. Production Astro pages query only published content.
 
-The Studio should be customized in CD-12/CD-22 so the editor sees school-specific sections and labels rather than a generic developer schema.
+The Studio is customized from the CD-12/CD-22 foundation so the editor sees school-specific sections and labels rather than a generic developer schema.
 
 ## Technical Implications
 
 - CD-12 should design Sanity document types and reusable objects before implementation.
-- CD-22 should implement the Sanity Studio/integration and decide whether Studio is embedded in the Astro app or kept as a separate workspace.
+- CD-22 keeps Sanity Studio as a standalone app in `studio/` and integrates Astro through the root `src/lib/sanity/` layer.
 - Sanity project ID, dataset, and tokens must be configured as environment variables/secrets, not committed.
 - Production builds should use published content.
 - Preview builds or preview routes should use draft-aware queries with a read token.

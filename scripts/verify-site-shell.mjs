@@ -41,7 +41,7 @@ const expectedCssFragments = [
   ".site-topbar",
   ".site-nav--desktop",
   ".home-hero",
-  'url("/assets/hero-ballet.png")',
+  'url("/assets/hero-carmen.png")',
   "min-height: calc(100vh - 140px)",
 ];
 
