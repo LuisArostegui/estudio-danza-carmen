@@ -44,38 +44,38 @@ Phone and email must come from confirmed Site Settings, not from private account
 
 Expected fields from [contact-form-strategy.md](contact-form-strategy.md):
 
-| Field | Required | Design intent |
-| --- | --- | --- |
-| Name | Yes | Clearly labelled text input. |
-| Email | Yes | Clearly labelled email input with invalid-email state. |
-| Phone | No | Label as optional. |
-| Message | Yes | Multi-line input with useful length guidance if implemented. |
-| Privacy acceptance | Yes | Unchecked checkbox with link to privacy policy. |
+| Field              | Required | Design intent                                                |
+| ------------------ | -------- | ------------------------------------------------------------ |
+| Name               | Yes      | Clearly labelled text input.                                 |
+| Email              | Yes      | Clearly labelled email input with invalid-email state.       |
+| Phone              | No       | Label as optional.                                           |
+| Message            | Yes      | Multi-line input with useful length guidance if implemented. |
+| Privacy acceptance | Yes      | Unchecked checkbox with link to privacy policy.              |
 
 The privacy checkbox must not be preselected.
 
 ## Form States
 
-| State | Intent |
-| --- | --- |
-| Default | Calm form, labels visible, required/optional status clear. |
-| Focus | Visible focus using `color.focus`; no layout shift. |
-| Missing required fields | Field-level errors and summary when useful. |
-| Invalid email | Field-level message near email input. |
-| Privacy not accepted | Message associated with the checkbox. |
-| Submitting | Disable duplicate submission, preserve entered values, communicate progress. |
-| Success | Confirm the enquiry was accepted for handling; do not imply enrolment or reserved place. |
-| Delivery failure | Explain that sending failed and offer phone/email as next step when available. |
-| Anti-spam failure | Generic recoverable message; do not expose Turnstile, provider, scoring, or security details. |
+| State                   | Intent                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| Default                 | Calm form, labels visible, required/optional status clear.                                    |
+| Focus                   | Visible focus using `color.focus`; no layout shift.                                           |
+| Missing required fields | Field-level errors and summary when useful.                                                   |
+| Invalid email           | Field-level message near email input.                                                         |
+| Privacy not accepted    | Message associated with the checkbox.                                                         |
+| Submitting              | Disable duplicate submission, preserve entered values, communicate progress.                  |
+| Success                 | Confirm the enquiry was accepted for handling; do not imply enrolment or reserved place.      |
+| Delivery failure        | Explain that sending failed and offer phone/email as next step when available.                |
+| Anti-spam failure       | Generic recoverable message; do not expose Turnstile, provider, scoring, or security details. |
 
 Example message direction:
 
-| Situation | Copy intent |
-| --- | --- |
-| Success | Your enquiry has been sent to the school for review. |
-| Delivery failure | The form could not be sent right now. Please try again or use the listed contact details. |
-| Anti-spam failure | We could not verify the submission. Please review the form and try again. |
-| Privacy missing | Please accept the privacy policy before sending the form. |
+| Situation         | Copy intent                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| Success           | Your enquiry has been sent to the school for review.                                      |
+| Delivery failure  | The form could not be sent right now. Please try again or use the listed contact details. |
+| Anti-spam failure | We could not verify the submission. Please review the form and try again.                 |
+| Privacy missing   | Please accept the privacy policy before sending the form.                                 |
 
 Final copy should remain human, clear, and legally reviewed where required.
 
@@ -123,17 +123,17 @@ This handoff is not a WCAG audit. Final semantic HTML, focus management, screen-
 
 ## CMS And Strategy Dependencies
 
-| UI area | Source |
-| --- | --- |
-| Address/contact basics | Site Settings |
-| Contact intro | Contact Content |
-| Directions/context | Contact Content |
-| Form intro | Contact Content |
-| Form fields | Contact form strategy |
-| Privacy note | Contact Content, aligned with final legal text |
-| Privacy link | `/legal/privacy-policy/` |
-| Success/failure copy | Contact design handoff and future implementation |
-| Destination email | Deployment environment, not repository content |
+| UI area                | Source                                           |
+| ---------------------- | ------------------------------------------------ |
+| Address/contact basics | Site Settings                                    |
+| Contact intro          | Contact Content                                  |
+| Directions/context     | Contact Content                                  |
+| Form intro             | Contact Content                                  |
+| Form fields            | Contact form strategy                            |
+| Privacy note           | Contact Content, aligned with final legal text   |
+| Privacy link           | `/legal/privacy-policy/`                         |
+| Success/failure copy   | Contact design handoff and future implementation |
+| Destination email      | Deployment environment, not repository content   |
 
 Legal/privacy copy remains pending until reviewed legal text exists. The form implementation belongs to CD-28.
 

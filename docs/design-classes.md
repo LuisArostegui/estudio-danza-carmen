@@ -39,14 +39,14 @@ The index should not list every discipline in the primary navigation. It should 
 
 Class card intent:
 
-| Element | Behaviour |
-| --- | --- |
-| Title | Link to detail when `hasDetailPage` is true. |
-| Audience/age/level | Show only when content exists. |
-| Summary | Short, readable preview from the class record. |
-| Primary CTA | Link to detail for routed classes. |
-| Secondary CTA | Link to schedules or contact when useful. |
-| Media | Optional; never show broken or unapproved placeholders. |
+| Element            | Behaviour                                               |
+| ------------------ | ------------------------------------------------------- |
+| Title              | Link to detail when `hasDetailPage` is true.            |
+| Audience/age/level | Show only when content exists.                          |
+| Summary            | Short, readable preview from the class record.          |
+| Primary CTA        | Link to detail for routed classes.                      |
+| Secondary CTA      | Link to schedules or contact when useful.               |
+| Media              | Optional; never show broken or unapproved placeholders. |
 
 If a category has only one or two classes, keep the group compact rather than forcing a large grid. If a category has no publishable classes, omit it from production.
 
@@ -72,14 +72,14 @@ The template must support all MVP detail slugs from [sitemap-and-navigation.md](
 
 Optional sections disappear rather than leaving empty frames.
 
-| Missing content | Behaviour |
-| --- | --- |
-| No gallery | Use a text-led layout; do not reserve a media slot. |
-| No FAQ | Omit the FAQ section. |
-| No testimonials/evidence | Omit the section; do not invent quotes or claims. |
-| No related schedule slots | Show a concise contact/schedules prompt without fake times. |
-| No main image | Keep the header text-led and balanced. |
-| No age/level | Omit the metadata row item rather than displaying unknown values. |
+| Missing content           | Behaviour                                                         |
+| ------------------------- | ----------------------------------------------------------------- |
+| No gallery                | Use a text-led layout; do not reserve a media slot.               |
+| No FAQ                    | Omit the FAQ section.                                             |
+| No testimonials/evidence  | Omit the section; do not invent quotes or claims.                 |
+| No related schedule slots | Show a concise contact/schedules prompt without fake times.       |
+| No main image             | Keep the header text-led and balanced.                            |
+| No age/level              | Omit the metadata row item rather than displaying unknown values. |
 
 ## Responsive Behaviour
 
@@ -128,23 +128,23 @@ This handoff is not a WCAG audit. Keyboard behaviour, screen-reader output, zoom
 
 ## CMS Dependencies
 
-| UI area | CMS source |
-| --- | --- |
-| Classes index groups | Published Class documents grouped by `category` |
-| Class card title | `Class.name` |
-| Class card slug/link | `Class.slug` when `hasDetailPage` is true |
-| Class card summary | `Class.shortDescription` |
-| Audience label | `Class.audience` |
-| Age/level metadata | `Class.ageRange` and `Class.level` |
-| Detail description | `Class.longDescription` |
-| Benefits | `Class.benefits` |
-| Differentiators | `Class.differentiators` |
-| Related schedule slots | Schedule Slot records linked to Class |
-| Gallery | `Class.gallery` using Media Item rules |
-| FAQ | `Class.faqs` |
-| Testimonials/evidence | `Class.testimonials` with consent verified |
-| CTA | `Class.primaryCta` or route-level fallback to Contact |
-| Related classes | Curated Class references or category siblings |
+| UI area                | CMS source                                            |
+| ---------------------- | ----------------------------------------------------- |
+| Classes index groups   | Published Class documents grouped by `category`       |
+| Class card title       | `Class.name`                                          |
+| Class card slug/link   | `Class.slug` when `hasDetailPage` is true             |
+| Class card summary     | `Class.shortDescription`                              |
+| Audience label         | `Class.audience`                                      |
+| Age/level metadata     | `Class.ageRange` and `Class.level`                    |
+| Detail description     | `Class.longDescription`                               |
+| Benefits               | `Class.benefits`                                      |
+| Differentiators        | `Class.differentiators`                               |
+| Related schedule slots | Schedule Slot records linked to Class                 |
+| Gallery                | `Class.gallery` using Media Item rules                |
+| FAQ                    | `Class.faqs`                                          |
+| Testimonials/evidence  | `Class.testimonials` with consent verified            |
+| CTA                    | `Class.primaryCta` or route-level fallback to Contact |
+| Related classes        | Curated Class references or category siblings         |
 
 ## Implementation Boundary
 

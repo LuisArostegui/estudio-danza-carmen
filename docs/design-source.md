@@ -35,24 +35,24 @@ Repository documentation remains the implementation-facing written handoff. If t
 
 ## Ownership
 
-| Responsibility | Owner |
-| --- | --- |
-| Create or identify the canonical Penpot file | Luis |
-| Maintain approved visual direction and page designs | Luis / designer |
-| Keep repository documentation aligned with approved Penpot decisions | Engineering |
-| Confirm whether a Penpot URL can be public, private, or reviewer-only | Luis |
+| Responsibility                                                        | Owner           |
+| --------------------------------------------------------------------- | --------------- |
+| Create or identify the canonical Penpot file                          | Luis            |
+| Maintain approved visual direction and page designs                   | Luis / designer |
+| Keep repository documentation aligned with approved Penpot decisions  | Engineering     |
+| Confirm whether a Penpot URL can be public, private, or reviewer-only | Luis            |
 
 ## Penpot File Structure
 
 Use a small page structure. Avoid turning Penpot into a full content repository or asset archive.
 
-| Penpot page | Purpose | Notes |
-| --- | --- | --- |
-| `Foundations / Tokens` | Approved color, typography, spacing, layout, border, radius, shadow, and motion decisions. | Mirror [visual-foundations.md](visual-foundations.md). |
-| `Components / Patterns` | Reusable UI and content patterns once design begins. | Keep as patterns, not production components. |
-| `MVP Pages` | Approved page designs for the first-release sitemap. | One frame group per route family. |
-| `Arabesque References` | Screenshots, notes, and extracted reference observations. | Must be labelled as reference only. |
-| `Archive / Explorations` | Superseded experiments and rejected directions. | Never treat as approved design. |
+| Penpot page              | Purpose                                                                                    | Notes                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| `Foundations / Tokens`   | Approved color, typography, spacing, layout, border, radius, shadow, and motion decisions. | Mirror [visual-foundations.md](visual-foundations.md). |
+| `Components / Patterns`  | Reusable UI and content patterns once design begins.                                       | Keep as patterns, not production components.           |
+| `MVP Pages`              | Approved page designs for the first-release sitemap.                                       | One frame group per route family.                      |
+| `Arabesque References`   | Screenshots, notes, and extracted reference observations.                                  | Must be labelled as reference only.                    |
+| `Archive / Explorations` | Superseded experiments and rejected directions.                                            | Never treat as approved design.                        |
 
 Owner confirmation from 2026-08-24 records that the canonical file has these areas or equivalent reviewed areas.
 
@@ -60,29 +60,29 @@ Owner confirmation from 2026-08-24 records that the canonical file has these are
 
 The `MVP Pages` area must make the routes from [sitemap-and-navigation.md](sitemap-and-navigation.md) easy to find:
 
-| Route | Penpot representation |
-| --- | --- |
-| `/` | Home frame set |
-| `/classes/` | Classes index frame set |
-| `/classes/diverballet/` | Class detail frame or class-detail template variant |
-| `/classes/pre-ballet/` | Class detail frame or class-detail template variant |
-| `/classes/ballet-levels/` | Class detail frame or class-detail template variant |
-| `/classes/adult-ballet/` | Class detail frame or class-detail template variant |
-| `/classes/pointe-technique/` | Class detail frame or class-detail template variant |
+| Route                            | Penpot representation                               |
+| -------------------------------- | --------------------------------------------------- |
+| `/`                              | Home frame set                                      |
+| `/classes/`                      | Classes index frame set                             |
+| `/classes/diverballet/`          | Class detail frame or class-detail template variant |
+| `/classes/pre-ballet/`           | Class detail frame or class-detail template variant |
+| `/classes/ballet-levels/`        | Class detail frame or class-detail template variant |
+| `/classes/adult-ballet/`         | Class detail frame or class-detail template variant |
+| `/classes/pointe-technique/`     | Class detail frame or class-detail template variant |
 | `/classes/classical-repertoire/` | Class detail frame or class-detail template variant |
-| `/classes/private-sessions/` | Class detail frame or class-detail template variant |
-| `/classes/pilates/` | Class detail frame or class-detail template variant |
-| `/classes/barre/` | Class detail frame or class-detail template variant |
-| `/schedules/` | Schedules frame set |
-| `/teachers/` | Teachers frame set |
-| `/facilities/` | Facilities frame set |
-| `/courses/` | Courses frame set |
-| `/performances/` | Performances frame set |
-| `/rad/` | RAD frame set |
-| `/contact/` | Contact frame set |
-| `/legal/legal-notice/` | Legal text page pattern |
-| `/legal/privacy-policy/` | Legal text page pattern |
-| `/legal/cookie-policy/` | Legal text page pattern |
+| `/classes/private-sessions/`     | Class detail frame or class-detail template variant |
+| `/classes/pilates/`              | Class detail frame or class-detail template variant |
+| `/classes/barre/`                | Class detail frame or class-detail template variant |
+| `/schedules/`                    | Schedules frame set                                 |
+| `/teachers/`                     | Teachers frame set                                  |
+| `/facilities/`                   | Facilities frame set                                |
+| `/courses/`                      | Courses frame set                                   |
+| `/performances/`                 | Performances frame set                              |
+| `/rad/`                          | RAD frame set                                       |
+| `/contact/`                      | Contact frame set                                   |
+| `/legal/legal-notice/`           | Legal text page pattern                             |
+| `/legal/privacy-policy/`         | Legal text page pattern                             |
+| `/legal/cookie-policy/`          | Legal text page pattern                             |
 
 The individual class-detail routes do not require completely separate bespoke layouts unless content depth justifies them. A clear class-detail template with named route examples is enough for MVP design review.
 
@@ -101,12 +101,12 @@ Owner confirmation from 2026-08-24 records that Arabesque material in the canoni
 
 Examples of acceptable reference notes:
 
-| Arabesque observation | Allowed use |
-| --- | --- |
-| Pastel rose tones | Considered as visual input for Carmen palette decisions. |
-| Editorial whitespace | Considered for page rhythm and content density. |
-| Rectangular image blocks | Considered for image composition. |
-| Small uppercase navigation | Considered for navigation mood, subject to readability. |
+| Arabesque observation      | Allowed use                                              |
+| -------------------------- | -------------------------------------------------------- |
+| Pastel rose tones          | Considered as visual input for Carmen palette decisions. |
+| Editorial whitespace       | Considered for page rhythm and content density.          |
+| Rectangular image blocks   | Considered for image composition.                        |
+| Small uppercase navigation | Considered for navigation mood, subject to readability.  |
 
 ## Repository Alignment
 

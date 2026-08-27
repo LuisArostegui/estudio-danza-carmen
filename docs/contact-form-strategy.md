@@ -18,18 +18,18 @@ The destination email must be configurable. No personal mailbox, API key, token,
 
 ## Options Compared
 
-| Criterion | Cloudflare Worker + Turnstile + Resend | Netlify Forms | Formspree |
-| --- | --- | --- | --- |
-| Astro/static fit | Works with static assets plus a single `/api/contact` Worker path. | Excellent if hosting on Netlify. | Works from any static site using hosted endpoint. |
-| Server-side validation | Full validation in the Worker before email delivery. | Provider handles form submission; custom validation is limited unless paired with functions. | Provider-side validation/rules depend on plan and configuration. |
-| Email delivery | Resend transactional email API sends to the school mailbox. | Built-in email notifications. | Built-in email notifications. |
-| Spam | Turnstile token validated server-side; can add honeypot and rate limiting later. | Akismet filtering; honeypot and reCAPTCHA available. | Machine-learning spam checks; reCAPTCHA, honeypot, domain restriction, and custom rules depending on plan. |
-| CAPTCHA burden | Turnstile can be non-intrusive/managed and is free for most production apps. | Default extra CAPTCHA is reCAPTCHA 2 if enabled. | reCAPTCHA is recommended for strong protection. |
-| Privacy | The project controls submitted payload, forwarding, and whether data is stored. Resend retains message data per plan. | Netlify stores submissions in its UI unless retention/deletion is managed. | Formspree stores submission history; Free stores 30 days. |
-| Logs | Cloudflare Worker logs plus Resend delivery logs; keep PII out of application logs. | Netlify submissions UI and logs. | Formspree dashboard/history. |
-| Confirmation email | Possible via Resend, but not selected for MVP. | Possible through notifications/workflows, but adds complexity. | Supported depending on configuration/plan. |
-| Cost | Cloudflare Turnstile Free; Workers Free likely enough for MVP; Resend Free includes 3,000 emails/month and 100/day. | Netlify Free is credit-metered across deploys, requests, bandwidth, forms, and compute. | Free tier starts at 50 submissions/month with 30-day history. |
-| Hosting compatibility | Best fit with selected Cloudflare hosting. | Strong only if Netlify is selected as hosting. | Hosting-neutral but adds another vendor and less project-controlled validation. |
+| Criterion              | Cloudflare Worker + Turnstile + Resend                                                                                | Netlify Forms                                                                                | Formspree                                                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Astro/static fit       | Works with static assets plus a single `/api/contact` Worker path.                                                    | Excellent if hosting on Netlify.                                                             | Works from any static site using hosted endpoint.                                                          |
+| Server-side validation | Full validation in the Worker before email delivery.                                                                  | Provider handles form submission; custom validation is limited unless paired with functions. | Provider-side validation/rules depend on plan and configuration.                                           |
+| Email delivery         | Resend transactional email API sends to the school mailbox.                                                           | Built-in email notifications.                                                                | Built-in email notifications.                                                                              |
+| Spam                   | Turnstile token validated server-side; can add honeypot and rate limiting later.                                      | Akismet filtering; honeypot and reCAPTCHA available.                                         | Machine-learning spam checks; reCAPTCHA, honeypot, domain restriction, and custom rules depending on plan. |
+| CAPTCHA burden         | Turnstile can be non-intrusive/managed and is free for most production apps.                                          | Default extra CAPTCHA is reCAPTCHA 2 if enabled.                                             | reCAPTCHA is recommended for strong protection.                                                            |
+| Privacy                | The project controls submitted payload, forwarding, and whether data is stored. Resend retains message data per plan. | Netlify stores submissions in its UI unless retention/deletion is managed.                   | Formspree stores submission history; Free stores 30 days.                                                  |
+| Logs                   | Cloudflare Worker logs plus Resend delivery logs; keep PII out of application logs.                                   | Netlify submissions UI and logs.                                                             | Formspree dashboard/history.                                                                               |
+| Confirmation email     | Possible via Resend, but not selected for MVP.                                                                        | Possible through notifications/workflows, but adds complexity.                               | Supported depending on configuration/plan.                                                                 |
+| Cost                   | Cloudflare Turnstile Free; Workers Free likely enough for MVP; Resend Free includes 3,000 emails/month and 100/day.   | Netlify Free is credit-metered across deploys, requests, bandwidth, forms, and compute.      | Free tier starts at 50 submissions/month with 30-day history.                                              |
+| Hosting compatibility  | Best fit with selected Cloudflare hosting.                                                                            | Strong only if Netlify is selected as hosting.                                               | Hosting-neutral but adds another vendor and less project-controlled validation.                            |
 
 ## Selected Approach
 
@@ -115,13 +115,13 @@ User-facing messages should be clear but not reveal spam/security details. The f
 
 Future environment configuration:
 
-| Name | Type | Purpose |
-| --- | --- | --- |
-| `CONTACT_TO_EMAIL` | Non-secret variable | Destination mailbox for the school. |
-| `CONTACT_FROM_EMAIL` | Non-secret variable | Verified sender/domain identity. |
-| `RESEND_API_KEY` | Secret | Sends transactional email. |
-| `TURNSTILE_SECRET_KEY` | Secret | Validates Turnstile tokens. |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Public variable | Renders the Turnstile widget. |
+| Name                        | Type                | Purpose                             |
+| --------------------------- | ------------------- | ----------------------------------- |
+| `CONTACT_TO_EMAIL`          | Non-secret variable | Destination mailbox for the school. |
+| `CONTACT_FROM_EMAIL`        | Non-secret variable | Verified sender/domain identity.    |
+| `RESEND_API_KEY`            | Secret              | Sends transactional email.          |
+| `TURNSTILE_SECRET_KEY`      | Secret              | Validates Turnstile tokens.         |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Public variable     | Renders the Turnstile widget.       |
 
 Secrets must be stored in Cloudflare secrets or equivalent deployment-provider secret storage. They must not be committed.
 

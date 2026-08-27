@@ -1,0 +1,37 @@
+---
+import type { EditorialCard as EditorialCardContent } from "../../lib/sanity/types";
+
+type Props = {
+  card: EditorialCardContent;
+  fieldBase: string;
+  className?: string;
+};
+
+const { card, fieldBase, className } = Astro.props;
+---
+
+<article class:list={["editorial-card", className]}>
+  {
+    card.eyebrow && (
+      <p
+        class="editorial-card__eyebrow"
+        data-cms-field={`${fieldBase}.eyebrow`}
+      >
+        {card.eyebrow}
+      </p>
+    )
+  }
+  <h3 data-cms-field={`${fieldBase}.title`}>{card.title}</h3>
+  <p data-cms-field={`${fieldBase}.text`}>{card.text}</p>
+  {
+    card.href && card.linkLabel && (
+      <a
+        class="editorial-card__link"
+        href={card.href}
+        data-cms-field={`${fieldBase}.linkLabel`}
+      >
+        {card.linkLabel}
+      </a>
+    )
+  }
+</article>

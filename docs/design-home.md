@@ -31,11 +31,11 @@ Do not invent unverified accreditation, awards, years-in-business claims beyond 
 
 Primary actions should support high-intent visitor decisions:
 
-| Action | Destination | Intent |
-| --- | --- | --- |
-| View classes | `/classes/` | Help new visitors understand the offer. |
-| Check schedules | `/schedules/` | Help families and students plan attendance. |
-| Contact the school | `/contact/` | Convert interest into an enquiry. |
+| Action             | Destination   | Intent                                      |
+| ------------------ | ------------- | ------------------------------------------- |
+| View classes       | `/classes/`   | Help new visitors understand the offer.     |
+| Check schedules    | `/schedules/` | Help families and students plan attendance. |
+| Contact the school | `/contact/`   | Convert interest into an enquiry.           |
 
 RAD should remain visible as a trust path, either in the first screen, near the class-introduction area, or as a clear contextual section. It should not overstate unverified RAD claims.
 
@@ -109,15 +109,15 @@ This design handoff is not a WCAG audit. Keyboard behaviour, screen-reader outpu
 
 Future implementation should source Home content from the Sanity model in [sanity-content-model.md](sanity-content-model.md):
 
-| Home area | Content source |
-| --- | --- |
-| Site name, address, contact basics, navigation | Site Settings |
-| First-screen title and intro | Home Content |
-| Featured class pathways | Home Content + Class documents |
-| Schedule prompt | Site Settings + Schedule |
-| RAD prompt | RAD Content + related Classes |
-| Hero or section media | Media Item with approved licence and consent status |
-| SEO | Home Content SEO plus Site Settings defaults |
+| Home area                                      | Content source                                      |
+| ---------------------------------------------- | --------------------------------------------------- |
+| Site name, address, contact basics, navigation | Site Settings                                       |
+| First-screen title and intro                   | Home Content                                        |
+| Featured class pathways                        | Home Content + Class documents                      |
+| Schedule prompt                                | Site Settings + Schedule                            |
+| RAD prompt                                     | RAD Content + related Classes                       |
+| Hero or section media                          | Media Item with approved licence and consent status |
+| SEO                                            | Home Content SEO plus Site Settings defaults        |
 
 Optional CMS fields should not produce empty sections in production.
 
@@ -127,3 +127,9 @@ Optional CMS fields should not produce empty sections in production.
 - Structured MVP page families: [design-structured-pages.md](design-structured-pages.md).
 - Contact: [design-contact.md](design-contact.md).
 - Shared site shell: [design-site-shell.md](design-site-shell.md).
+
+## Implementation Notes
+
+CD-23/CD-24 implement the Home as an Arabesque-faithful editorial page using Carmen-owned Astro components and CSS. The visible Home copy below the hero is exposed through `homeContent` fields with local fallbacks, and `?cms=keys` can be used to confirm the field mapping in the browser.
+
+The class-pathway cards intentionally link to broad MVP routes until CD-25 implements class index/detail pages. Do not add unverified accreditation, awards, years-in-business claims, booking/payment flows, or unapproved media as part of the Home implementation.

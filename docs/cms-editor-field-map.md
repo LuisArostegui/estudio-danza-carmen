@@ -38,6 +38,37 @@ Sanity path: `Structure > Inicio`
 | Clases destacadas               | `homeContent.featuredClasses`    | Future home class links                             | Leave empty for now.                                                                        |
 | SEO                             | `homeContent.seo`                | Search/social metadata                              | Leave empty for now unless a specific metadata task asks for it.                            |
 
+### Home Extended Sections
+
+These fields control the editorial sections below the first academy block. The website uses local fallback copy if a new field is still empty, so editors can fill this progressively without breaking the page.
+
+| Studio field                                   | Sanity key                               | Visible website area                         | Current recommended content                                                      |
+| ---------------------------------------------- | ---------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
+| Etiqueta de clases                             | `homeContent.classPathwaysEyebrow`       | Small label above the class-pathways heading | `Clases`                                                                         |
+| Titulo de clases                               | `homeContent.classPathwaysTitle`         | Heading before class cards                   | `Elige tu camino en la escuela`                                                  |
+| Texto de clases                                | `homeContent.classPathwaysIntro`         | Paragraph before class cards                 | Short explanation of the main class routes.                                      |
+| Caminos de clases > Tarjeta > Etiqueta pequena | `homeContent.classPathways[n].eyebrow`   | Small label in each class card               | Infantil, Niveles, Adultos, Especializado.                                       |
+| Caminos de clases > Tarjeta > Titulo           | `homeContent.classPathways[n].title`     | Class card heading                           | Ballet infantil, Ballet por niveles, Ballet adultos, Trabajo corporal y privado. |
+| Caminos de clases > Tarjeta > Texto            | `homeContent.classPathways[n].text`      | Class card paragraph                         | Short public-safe class summary.                                                 |
+| Caminos de clases > Tarjeta > Texto del enlace | `homeContent.classPathways[n].linkLabel` | Class card text link                         | Keep short: `Ver clases`, `Consultar grupos`, `Pedir informacion`.               |
+| Caminos de clases > Tarjeta > URL o ruta       | `homeContent.classPathways[n].href`      | Class card link destination                  | Use `/classes/` or `/contact/` until detail pages exist.                         |
+| Etiqueta de planificacion                      | `homeContent.planningEyebrow`            | Small label above the planning section       | `Organiza tu semana`                                                             |
+| Titulo de planificacion                        | `homeContent.planningTitle`              | Planning section heading                     | `Horarios y contacto claros para empezar`                                        |
+| Texto de planificacion                         | `homeContent.planningIntro`              | Planning intro paragraph                     | Explain that visitors can check schedules and contact the school.                |
+| Tarjetas de planificacion                      | `homeContent.planningCards[n].*`         | Planning cards                               | Use for Horarios and Contacto.                                                   |
+| Etiqueta de confianza                          | `homeContent.trustEyebrow`               | Small label above the trust section          | `Escuela`                                                                        |
+| Titulo de confianza                            | `homeContent.trustTitle`                 | Trust section heading                        | `Una practica cercana, tecnica y cuidada`                                        |
+| Texto de confianza                             | `homeContent.trustIntro`                 | Trust intro paragraph                        | Keep claims factual; do not invent awards, years, or accreditations.             |
+| Puntos de confianza                            | `homeContent.trustItems[n].*`            | Trust cards                                  | Use for teaching care, RAD, and performances only when wording is confirmed.     |
+| Etiqueta de descubrimiento                     | `homeContent.discoveryEyebrow`           | Small label above secondary links            | `Tambien en Carmen`                                                              |
+| Titulo de descubrimiento                       | `homeContent.discoveryTitle`             | Secondary discovery heading                  | `Mas formas de vivir la danza`                                                   |
+| Tarjetas de descubrimiento                     | `homeContent.discoveryCards[n].*`        | Facilities/courses/performances cards        | Link to `/facilities/`, `/courses/`, and `/performances/`.                       |
+| Bloque final de contacto > Etiqueta            | `homeContent.finalPrompt.eyebrow`        | Final contact label                          | `Hablemos`                                                                       |
+| Bloque final de contacto > Titulo              | `homeContent.finalPrompt.title`          | Final contact heading                        | `Encuentra la clase que encaja contigo`                                          |
+| Bloque final de contacto > Texto               | `homeContent.finalPrompt.intro`          | Final contact paragraph                      | Ask for age, experience, and availability.                                       |
+| Bloque final de contacto > Boton principal     | `homeContent.finalPrompt.primaryCta.*`   | Final primary CTA                            | `Contactar` to `/contact/`.                                                      |
+| Bloque final de contacto > Enlace secundario   | `homeContent.finalPrompt.secondaryCta.*` | Final secondary CTA                          | `Ver horarios` to `/schedules/`.                                                 |
+
 ## Site Settings
 
 Sanity path: `Structure > Ajustes del sitio`

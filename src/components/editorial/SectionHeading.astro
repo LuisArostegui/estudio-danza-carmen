@@ -1,0 +1,35 @@
+---
+type Props = {
+  eyebrow?: string;
+  eyebrowField?: string;
+  title: string;
+  titleField?: string;
+  titleId?: string;
+  intro?: string;
+  introField?: string;
+  align?: "start" | "center";
+};
+
+const {
+  eyebrow,
+  eyebrowField,
+  title,
+  titleField,
+  titleId,
+  intro,
+  introField,
+  align = "start",
+} = Astro.props;
+---
+
+<div class:list={["section-heading", `section-heading--${align}`]}>
+  {
+    eyebrow && (
+      <p class="section-heading__eyebrow" data-cms-field={eyebrowField}>
+        {eyebrow}
+      </p>
+    )
+  }
+  <h2 id={titleId} data-cms-field={titleField}>{title}</h2>
+  {intro && <p data-cms-field={introField}>{intro}</p>}
+</div>

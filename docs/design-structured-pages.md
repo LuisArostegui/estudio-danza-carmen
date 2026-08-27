@@ -43,13 +43,13 @@ Do not design booking, capacity, availability, payments, waitlists, or calendar 
 
 State handling:
 
-| State | Behaviour |
-| --- | --- |
+| State               | Behaviour                                                 |
+| ------------------- | --------------------------------------------------------- |
 | No current schedule | Show a concise unavailable-state message and contact CTA. |
-| Missing room | Omit room metadata. |
-| Missing teacher | Omit teacher metadata. |
-| Temporary note | Show close to the affected day or slot. |
-| Long class names | Allow wrapping without shrinking essential times. |
+| Missing room        | Omit room metadata.                                       |
+| Missing teacher     | Omit teacher metadata.                                    |
+| Temporary note      | Show close to the affected day or slot.                   |
+| Long class names    | Allow wrapping without shrinking essential times.         |
 
 ## Teachers
 
@@ -93,12 +93,12 @@ Pattern:
 
 State handling:
 
-| State | Behaviour |
-| --- | --- |
-| Upcoming | Prominent in the list with date or season where available. |
-| Current | Visible before past items. |
-| Past | Lower emphasis or archive grouping. |
-| No concrete date | Use season/public note if available; do not invent dates. |
+| State             | Behaviour                                                                  |
+| ----------------- | -------------------------------------------------------------------------- |
+| Upcoming          | Prominent in the list with date or season where available.                 |
+| Current           | Visible before past items.                                                 |
+| Past              | Lower emphasis or archive grouping.                                        |
+| No concrete date  | Use season/public note if available; do not invent dates.                  |
 | Empty future list | Explain that courses are announced when confirmed and provide contact CTA. |
 
 No purchase, reservation, payment, or checkout state belongs in this design.
@@ -116,13 +116,13 @@ Pattern:
 
 State handling:
 
-| State | Behaviour |
-| --- | --- |
-| Future performance | Show date/venue and contextual contact CTA. |
-| Past performance | Show as record/gallery when content is approved. |
-| Missing date | Use a public-safe note only if confirmed. |
+| State               | Behaviour                                                    |
+| ------------------- | ------------------------------------------------------------ |
+| Future performance  | Show date/venue and contextual contact CTA.                  |
+| Past performance    | Show as record/gallery when content is approved.             |
+| Missing date        | Use a public-safe note only if confirmed.                    |
 | No performances yet | Use a restrained empty state and link to contact or classes. |
-| No media | Keep the performance text-led. |
+| No media            | Keep the performance text-led.                               |
 
 Do not implement ticketing.
 
@@ -165,16 +165,16 @@ Accessible galleries:
 
 ## CMS Dependencies
 
-| Route family | CMS source |
-| --- | --- |
-| Schedules | Schedule + Schedule Slot + referenced Class/Teacher |
-| Teachers | Teacher documents ordered by `order` |
-| Facilities | Facility documents + Media Item gallery |
-| Courses | Course documents with `state`, dates, related classes, media, and CTA |
-| Performances | Performance documents with date, venue, gallery, related classes, and CTA |
-| RAD | RAD Content + related Classes + FAQs + verified claims |
-| Shared contact CTAs | Site Settings + CTA object or route-level fallback |
-| Media | Media Item with approved licence and consent status |
+| Route family        | CMS source                                                                |
+| ------------------- | ------------------------------------------------------------------------- |
+| Schedules           | Schedule + Schedule Slot + referenced Class/Teacher                       |
+| Teachers            | Teacher documents ordered by `order`                                      |
+| Facilities          | Facility documents + Media Item gallery                                   |
+| Courses             | Course documents with `state`, dates, related classes, media, and CTA     |
+| Performances        | Performance documents with date, venue, gallery, related classes, and CTA |
+| RAD                 | RAD Content + related Classes + FAQs + verified claims                    |
+| Shared contact CTAs | Site Settings + CTA object or route-level fallback                        |
+| Media               | Media Item with approved licence and consent status                       |
 
 ## Implementation Boundary
 

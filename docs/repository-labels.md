@@ -12,31 +12,31 @@ This repository uses a small label taxonomy for filtering work. Labels should cl
 
 ## Type Labels
 
-| Label | Colour | Description |
-| --- | --- | --- |
-| `type: feature` | `1D76DB` | User-facing capability or product behaviour. |
-| `type: technical` | `5319E7` | Engineering, architecture, tooling, or infrastructure task. |
-| `type: content` | `0E8A16` | Copy, content model, editorial inventory, or migration work. |
-| `type: design` | `FBCA04` | Visual design, interaction design, design handoff, or assets. |
-| `type: decision` | `D876E3` | Decision, research, evaluation, or documented recommendation. |
-| `type: bug` | `D73A4A` | Defect, regression, broken behaviour, or incorrect output. |
+| Label             | Colour   | Description                                                   |
+| ----------------- | -------- | ------------------------------------------------------------- |
+| `type: feature`   | `1D76DB` | User-facing capability or product behaviour.                  |
+| `type: technical` | `5319E7` | Engineering, architecture, tooling, or infrastructure task.   |
+| `type: content`   | `0E8A16` | Copy, content model, editorial inventory, or migration work.  |
+| `type: design`    | `FBCA04` | Visual design, interaction design, design handoff, or assets. |
+| `type: decision`  | `D876E3` | Decision, research, evaluation, or documented recommendation. |
+| `type: bug`       | `D73A4A` | Defect, regression, broken behaviour, or incorrect output.    |
 
 ## Area Labels
 
-| Label | Colour | Description |
-| --- | --- | --- |
-| `area: frontend` | `0052CC` | Astro, UI implementation, components, routing, browser behaviour. |
-| `area: cms` | `8E44AD` | CMS selection, content editing workflow, schemas, and integration. |
-| `area: content` | `2E7D32` | Website copy, class data, teacher data, schedules, and editorial review. |
-| `area: design` | `C2A500` | Penpot, visual direction, layout, tokens, and interaction states. |
-| `area: forms` | `008672` | Contact forms, validation, delivery, privacy acceptance, and anti-spam. |
-| `area: hosting` | `0366D6` | Domain, DNS, preview, deployment, rollback, and hosting decisions. |
+| Label            | Colour   | Description                                                              |
+| ---------------- | -------- | ------------------------------------------------------------------------ |
+| `area: frontend` | `0052CC` | Astro, UI implementation, components, routing, browser behaviour.        |
+| `area: cms`      | `8E44AD` | CMS selection, content editing workflow, schemas, and integration.       |
+| `area: content`  | `2E7D32` | Website copy, class data, teacher data, schedules, and editorial review. |
+| `area: design`   | `C2A500` | Penpot, visual direction, layout, tokens, and interaction states.        |
+| `area: forms`    | `008672` | Contact forms, validation, delivery, privacy acceptance, and anti-spam.  |
+| `area: hosting`  | `0366D6` | Domain, DNS, preview, deployment, rollback, and hosting decisions.       |
 
 ## Status Labels
 
-| Label | Colour | Description |
-| --- | --- | --- |
-| `status: ready` | `0E8A16` | The issue has enough context and no known blocker. |
+| Label             | Colour   | Description                                                        |
+| ----------------- | -------- | ------------------------------------------------------------------ |
+| `status: ready`   | `0E8A16` | The issue has enough context and no known blocker.                 |
 | `status: blocked` | `D93F0B` | Work is blocked by an unresolved dependency or external condition. |
 
 ## GitHub CLI Commands
@@ -62,13 +62,13 @@ gh label create "status: blocked" --color "D93F0B" --description "Work is blocke
 
 Required initial issue labels:
 
-| Issue | Labels |
-| --- | --- |
-| `#1` | `type: technical`, `area: frontend` |
-| `#2` | `type: content`, `area: content`, `area: design` |
-| `#3` | `type: technical` |
-| `#4` | `type: technical` |
-| `#5` | `type: content`, `area: content` |
+| Issue | Labels                                           |
+| ----- | ------------------------------------------------ |
+| `#1`  | `type: technical`, `area: frontend`              |
+| `#2`  | `type: content`, `area: content`, `area: design` |
+| `#3`  | `type: technical`                                |
+| `#4`  | `type: technical`                                |
+| `#5`  | `type: content`, `area: content`                 |
 
 ```sh
 gh issue edit 1 --add-label "type: technical,area: frontend"
