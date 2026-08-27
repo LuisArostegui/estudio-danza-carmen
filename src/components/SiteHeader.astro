@@ -95,41 +95,43 @@ const addressLines = siteSettings.address
       aria-expanded="false"
       data-menu-button
     >
-      <span class="site-header__menu-icon" aria-hidden="true"></span>
+      <span class="site-header__menu-icon" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
       <span data-cms-field="siteSettings.menuLabel"
         >{siteSettings.menuLabel}</span
       >
     </button>
-
-    <nav
-      class="site-nav site-nav--mobile"
-      id="site-navigation"
-      aria-label={siteSettings.mobileNavigationLabel}
-      data-site-navigation
-    >
-      <ul class="site-nav__list">
-        {
-          siteSettings.headerNavigation.map((item, index) => {
-            const isCurrent = isCurrentPath(currentPath, item);
-
-            return (
-              <li>
-                <a
-                  class:list={["site-nav__link", { "is-current": isCurrent }]}
-                  href={item.href}
-                  aria-current={isCurrent ? "page" : undefined}
-                  data-cms-field={`siteSettings.headerNavigation[${index}].label`}
-                  data-menu-link
-                >
-                  {item.label}
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
   </div>
+
+  <nav
+    class="site-nav site-nav--mobile"
+    id="site-navigation"
+    aria-label={siteSettings.mobileNavigationLabel}
+    data-site-navigation
+  >
+    <ul class="site-nav__list">
+      {
+        siteSettings.headerNavigation.map((item, index) => {
+          const isCurrent = isCurrentPath(currentPath, item);
+
+          return (
+            <li>
+              <a
+                class:list={["site-nav__link", { "is-current": isCurrent }]}
+                href={item.href}
+                aria-current={isCurrent ? "page" : undefined}
+                data-cms-field={`siteSettings.headerNavigation[${index}].label`}
+                data-menu-link
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
 </header>
 
 <script>
@@ -145,28 +147,30 @@ const addressLines = siteSettings.address
     const closeMenu = (options = { restoreFocus: false }) => {
       header?.removeAttribute("data-menu-open");
       button.setAttribute("aria-expanded", "false");
+      navigation.classList.remove("is-open");
+      document.body.classList.remove("menu-open");
 
       if (options.restoreFocus) {
         button.focus();
       }
     };
 
-    const openMenu = () => {
-      header?.setAttribute("data-menu-open", "true");
-      button.setAttribute("aria-expanded", "true");
-    };
-
     button.addEventListener("click", () => {
-      const isExpanded = button.getAttribute("aria-expanded") === "true";
+      const shouldOpen = button.getAttribute("aria-expanded") !== "true";
 
-      if (isExpanded) {
-        closeMenu({ restoreFocus: true });
+      button.setAttribute("aria-expanded", String(shouldOpen));
+      navigation.classList.toggle("is-open", shouldOpen);
+      document.body.classList.toggle("menu-open", shouldOpen);
+
+      if (shouldOpen) {
+        header?.setAttribute("data-menu-open", "true");
       } else {
-        openMenu();
+        header?.removeAttribute("data-menu-open");
+        button.focus();
       }
     });
 
-    navigation.addEventListener("keydown", (event) => {
+    window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeMenu({ restoreFocus: true });
       }

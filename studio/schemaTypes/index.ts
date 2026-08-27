@@ -11,6 +11,7 @@ import {siteSettings} from './documents/site-settings'
 import {teacher} from './documents/teacher'
 import {cta} from './objects/cta'
 import {faqItem} from './objects/faq-item'
+import {homeCard} from './objects/home-card'
 import {mediaItem} from './objects/media-item'
 import {portableCopy} from './objects/portable-copy'
 import {seo} from './objects/seo'
@@ -18,6 +19,7 @@ import {seo} from './objects/seo'
 export const schemaTypes = [
   cta,
   faqItem,
+  homeCard,
   mediaItem,
   portableCopy,
   seo,

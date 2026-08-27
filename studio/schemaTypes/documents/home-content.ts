@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const homeContent = defineType({
   name: 'homeContent',
@@ -73,11 +73,107 @@ export const homeContent = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'classPathwaysEyebrow',
+      title: 'Etiqueta de clases',
+      type: 'string',
+      initialValue: 'Clases',
+    }),
+    defineField({
+      name: 'classPathwaysTitle',
+      title: 'Titulo de clases',
+      type: 'string',
+    }),
+    defineField({
+      name: 'classPathwaysIntro',
+      title: 'Texto de clases',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'classPathways',
+      title: 'Caminos de clases',
+      description: 'Tarjetas principales que enlazan con la oferta de clases.',
+      type: 'array',
+      of: [defineArrayMember({type: 'homeCard'})],
+    }),
+    defineField({
+      name: 'planningEyebrow',
+      title: 'Etiqueta de planificacion',
+      type: 'string',
+    }),
+    defineField({
+      name: 'planningTitle',
+      title: 'Titulo de planificacion',
+      type: 'string',
+    }),
+    defineField({
+      name: 'planningIntro',
+      title: 'Texto de planificacion',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'planningCards',
+      title: 'Tarjetas de planificacion',
+      type: 'array',
+      of: [defineArrayMember({type: 'homeCard'})],
+    }),
+    defineField({
+      name: 'trustEyebrow',
+      title: 'Etiqueta de confianza',
+      type: 'string',
+    }),
+    defineField({
+      name: 'trustTitle',
+      title: 'Titulo de confianza',
+      type: 'string',
+    }),
+    defineField({
+      name: 'trustIntro',
+      title: 'Texto de confianza',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'trustItems',
+      title: 'Puntos de confianza',
+      type: 'array',
+      of: [defineArrayMember({type: 'homeCard'})],
+    }),
+    defineField({
+      name: 'discoveryEyebrow',
+      title: 'Etiqueta de descubrimiento',
+      type: 'string',
+    }),
+    defineField({
+      name: 'discoveryTitle',
+      title: 'Titulo de descubrimiento',
+      type: 'string',
+    }),
+    defineField({
+      name: 'discoveryCards',
+      title: 'Tarjetas de descubrimiento',
+      type: 'array',
+      of: [defineArrayMember({type: 'homeCard'})],
+    }),
+    defineField({
+      name: 'finalPrompt',
+      title: 'Bloque final de contacto',
+      type: 'object',
+      fields: [
+        defineField({name: 'eyebrow', title: 'Etiqueta', type: 'string'}),
+        defineField({name: 'title', title: 'Titulo', type: 'string'}),
+        defineField({name: 'intro', title: 'Texto', type: 'text', rows: 3}),
+        defineField({name: 'primaryCta', title: 'Boton principal', type: 'cta'}),
+        defineField({name: 'secondaryCta', title: 'Enlace secundario', type: 'cta'}),
+      ],
+    }),
+    defineField({
       name: 'featuredClasses',
       title: 'Clases destacadas',
-      description: 'Se usara mas adelante para enlazar clases destacadas en la home.',
+      description: 'Reservado para enlazar documentos de clase cuando se implemente CD-25.',
       type: 'array',
-      of: [{type: 'reference', to: [{type: 'class'}]}],
+      of: [defineArrayMember({type: 'reference', to: [{type: 'class'}]})],
     }),
     defineField({
       name: 'seo',

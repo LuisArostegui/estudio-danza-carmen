@@ -34,14 +34,14 @@ Implementation boundary: this is a visual reconstruction in Carmen-owned Astro/C
 
 Primary navigation follows [sitemap-and-navigation.md](sitemap-and-navigation.md):
 
-| Label | Destination |
-| --- | --- |
-| Inicio | `/` |
-| Clases | `/classes/` |
-| Horarios | `/schedules/` |
-| Profesorado | `/teachers/` |
-| RAD | `/rad/` |
-| Contacto | `/contact/` |
+| Label       | Destination   |
+| ----------- | ------------- |
+| Inicio      | `/`           |
+| Clases      | `/classes/`   |
+| Horarios    | `/schedules/` |
+| Profesorado | `/teachers/`  |
+| RAD         | `/rad/`       |
+| Contacto    | `/contact/`   |
 
 Desktop intent:
 
@@ -108,13 +108,13 @@ Pressed/active states should be distinguishable where controls are interactive.
 
 Footer groups:
 
-| Group | Content |
-| --- | --- |
-| Primary | Home, Classes, Schedules, Teachers, RAD, Contact |
-| Secondary | Facilities, Performances, Courses |
-| Legal | Legal notice, Privacy policy, Cookie policy if required |
-| Business | Verified address, phone, email, opening/contact hours |
-| Social | Official social links only when confirmed |
+| Group     | Content                                                 |
+| --------- | ------------------------------------------------------- |
+| Primary   | Home, Classes, Schedules, Teachers, RAD, Contact        |
+| Secondary | Facilities, Performances, Courses                       |
+| Legal     | Legal notice, Privacy policy, Cookie policy if required |
+| Business  | Verified address, phone, email, opening/contact hours   |
+| Social    | Official social links only when confirmed               |
 
 Footer content should come from Site Settings and approved route records where possible.
 
@@ -133,15 +133,15 @@ Legal pages must be discoverable from the footer. Do not place legal links in th
 
 Use consistent state language for shared UI:
 
-| State | Pattern |
-| --- | --- |
-| Empty optional content | Omit the section rather than rendering an empty frame. |
-| Missing optional media | Use text-led layout; do not show broken placeholders. |
-| Form validation | Inline field messages, clear summary where useful, preserve recoverable input. |
-| Form success | Clear confirmation that the enquiry was accepted for sending, without implying enrolment or legal status. |
-| Form error | Plain retry/support message that does not expose anti-spam or provider details. |
-| External links | Clear label and standard browser behaviour; avoid surprise new-window dependency unless implementation records it. |
-| Loading | Use only where future interaction requires it; static pages should not introduce artificial loading states. |
+| State                  | Pattern                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Empty optional content | Omit the section rather than rendering an empty frame.                                                             |
+| Missing optional media | Use text-led layout; do not show broken placeholders.                                                              |
+| Form validation        | Inline field messages, clear summary where useful, preserve recoverable input.                                     |
+| Form success           | Clear confirmation that the enquiry was accepted for sending, without implying enrolment or legal status.          |
+| Form error             | Plain retry/support message that does not expose anti-spam or provider details.                                    |
+| External links         | Clear label and standard browser behaviour; avoid surprise new-window dependency unless implementation records it. |
+| Loading                | Use only where future interaction requires it; static pages should not introduce artificial loading states.        |
 
 The future contact form implementation belongs to CD-28 and must follow [contact-form-strategy.md](contact-form-strategy.md).
 

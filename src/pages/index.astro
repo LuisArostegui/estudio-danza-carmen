@@ -1,4 +1,6 @@
 ---
+import EditorialCard from "../components/editorial/EditorialCard.astro";
+import SectionHeading from "../components/editorial/SectionHeading.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeContent } from "../lib/sanity/content";
 import { getSanityImageAttrs } from "../lib/sanity/image";
@@ -51,7 +53,7 @@ const heroStyle = heroImage
     <a
       class="home-hero__scroll"
       href="/#academia"
-      aria-label="Bajar a la siguiente sección"
+      aria-label="Bajar a la siguiente seccion"
     >
       <span aria-hidden="true"></span>
     </a>
@@ -64,16 +66,164 @@ const heroStyle = heroImage
     data-cms-document="homeContent"
   >
     <div class="home-intro__inner">
-      <p
-        class="home-intro__eyebrow"
-        data-cms-field="homeContent.academyEyebrow"
-      >
-        {home.academyEyebrow}
-      </p>
-      <h2 id="academy-title" data-cms-field="homeContent.academyTitle">
-        {home.academyTitle}
-      </h2>
-      <p data-cms-field="homeContent.academyIntro">{home.academyIntro}</p>
+      <SectionHeading
+        eyebrow={home.academyEyebrow}
+        eyebrowField="homeContent.academyEyebrow"
+        title={home.academyTitle}
+        titleField="homeContent.academyTitle"
+        titleId="academy-title"
+        intro={home.academyIntro}
+        introField="homeContent.academyIntro"
+      />
+    </div>
+  </section>
+
+  <section
+    class="home-class-pathways"
+    aria-labelledby="class-pathways-title"
+    data-cms-document="homeContent"
+  >
+    <div class="home-section__inner">
+      <SectionHeading
+        eyebrow={home.classPathwaysEyebrow}
+        eyebrowField="homeContent.classPathwaysEyebrow"
+        title={home.classPathwaysTitle}
+        titleField="homeContent.classPathwaysTitle"
+        titleId="class-pathways-title"
+        intro={home.classPathwaysIntro}
+        introField="homeContent.classPathwaysIntro"
+      />
+      <div class="editorial-grid editorial-grid--four">
+        {
+          home.classPathways.map((card, index) => (
+            <EditorialCard
+              card={card}
+              fieldBase={`homeContent.classPathways[${index}]`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="home-planning"
+    aria-labelledby="planning-title"
+    data-cms-document="homeContent"
+  >
+    <div class="home-section__inner home-section__inner--split">
+      <SectionHeading
+        eyebrow={home.planningEyebrow}
+        eyebrowField="homeContent.planningEyebrow"
+        title={home.planningTitle}
+        titleField="homeContent.planningTitle"
+        titleId="planning-title"
+        intro={home.planningIntro}
+        introField="homeContent.planningIntro"
+      />
+      <div class="editorial-stack">
+        {
+          home.planningCards.map((card, index) => (
+            <EditorialCard
+              card={card}
+              fieldBase={`homeContent.planningCards[${index}]`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="home-trust"
+    aria-labelledby="trust-title"
+    data-cms-document="homeContent"
+  >
+    <div class="home-section__inner">
+      <SectionHeading
+        eyebrow={home.trustEyebrow}
+        eyebrowField="homeContent.trustEyebrow"
+        title={home.trustTitle}
+        titleField="homeContent.trustTitle"
+        titleId="trust-title"
+        intro={home.trustIntro}
+        introField="homeContent.trustIntro"
+        align="center"
+      />
+      <div class="editorial-grid editorial-grid--three">
+        {
+          home.trustItems.map((card, index) => (
+            <EditorialCard
+              card={card}
+              fieldBase={`homeContent.trustItems[${index}]`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="home-discovery"
+    aria-labelledby="discovery-title"
+    data-cms-document="homeContent"
+  >
+    <div class="home-section__inner">
+      <SectionHeading
+        eyebrow={home.discoveryEyebrow}
+        eyebrowField="homeContent.discoveryEyebrow"
+        title={home.discoveryTitle}
+        titleField="homeContent.discoveryTitle"
+        titleId="discovery-title"
+      />
+      <div class="editorial-grid editorial-grid--three editorial-grid--ruled">
+        {
+          home.discoveryCards.map((card, index) => (
+            <EditorialCard
+              card={card}
+              fieldBase={`homeContent.discoveryCards[${index}]`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="home-final"
+    aria-labelledby="final-title"
+    data-cms-document="homeContent"
+  >
+    <div class="home-final__inner">
+      <SectionHeading
+        eyebrow={home.finalPrompt.eyebrow}
+        eyebrowField="homeContent.finalPrompt.eyebrow"
+        title={home.finalPrompt.title}
+        titleField="homeContent.finalPrompt.title"
+        titleId="final-title"
+        intro={home.finalPrompt.intro}
+        introField="homeContent.finalPrompt.intro"
+        align="center"
+      />
+      <div class="home-final__actions">
+        <a
+          class="button button--solid"
+          href={home.finalPrompt.primaryCta.href}
+          data-cms-field="homeContent.finalPrompt.primaryCta.label"
+          >{home.finalPrompt.primaryCta.label}</a
+        >
+        {
+          home.finalPrompt.secondaryCta && (
+            <a
+              class="button button--line"
+              href={home.finalPrompt.secondaryCta.href}
+              data-cms-field="homeContent.finalPrompt.secondaryCta.label"
+            >
+              {home.finalPrompt.secondaryCta.label}
+            </a>
+          )
+        }
+      </div>
     </div>
   </section>
 </BaseLayout>

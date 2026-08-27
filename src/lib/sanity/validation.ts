@@ -1,4 +1,11 @@
-import type { Cta, HomeContent, MediaItem, SiteSettings } from "./types";
+import type {
+  Cta,
+  EditorialCard,
+  HomeContent,
+  HomeFinalPrompt,
+  MediaItem,
+  SiteSettings,
+} from "./types";
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -90,6 +97,39 @@ export function assertPublishableMedia(
   }
 }
 
+function assertEditorialCard(
+  value: EditorialCard | undefined,
+  context: string,
+): asserts value is EditorialCard {
+  if (!value || !hasText(value.title) || !hasText(value.text)) {
+    throw new Error(`${context} must include a title and text.`);
+  }
+}
+
+function assertEditorialCards(
+  value: EditorialCard[] | undefined,
+  context: string,
+): asserts value is EditorialCard[] {
+  if (!value?.length) {
+    throw new Error(`${context} must include at least one item.`);
+  }
+
+  value.forEach((item, index) =>
+    assertEditorialCard(item, `${context}[${index}]`),
+  );
+}
+
+function assertHomeFinalPrompt(
+  value: HomeFinalPrompt | undefined,
+  context: string,
+): asserts value is HomeFinalPrompt {
+  if (!value || !hasText(value.title) || !hasText(value.intro)) {
+    throw new Error(`${context} must include a title and intro.`);
+  }
+
+  assertCta(value.primaryCta, `${context}.primaryCta`);
+}
+
 export function assertHomeContent(
   content: HomeContent | null,
   options: HomeContentValidationOptions = {},
@@ -108,6 +148,11 @@ export function assertHomeContent(
 
   assertCta(content.primaryCta, "homeContent.primaryCta");
   assertCta(content.secondaryCta, "homeContent.secondaryCta");
+  assertEditorialCards(content.classPathways, "homeContent.classPathways");
+  assertEditorialCards(content.planningCards, "homeContent.planningCards");
+  assertEditorialCards(content.trustItems, "homeContent.trustItems");
+  assertEditorialCards(content.discoveryCards, "homeContent.discoveryCards");
+  assertHomeFinalPrompt(content.finalPrompt, "homeContent.finalPrompt");
 
   if (options.validateMedia ?? true) {
     assertPublishableMedia(content.heroMedia, "homeContent.heroMedia");

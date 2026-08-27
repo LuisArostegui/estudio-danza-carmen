@@ -6,51 +6,51 @@ This is not a redesign and not a production audit. It records whether the reposi
 
 ## Source Handoffs Reviewed
 
-| Area | Source |
-| --- | --- |
-| Canonical design source | [design-source.md](design-source.md) |
-| Visual foundations and tokens | [visual-foundations.md](visual-foundations.md) |
-| Home | [design-home.md](design-home.md) |
-| Classes and class detail | [design-classes.md](design-classes.md) |
-| Structured MVP pages | [design-structured-pages.md](design-structured-pages.md) |
-| Contact and form states | [design-contact.md](design-contact.md) |
-| Shared shell, navigation, footer, states | [design-site-shell.md](design-site-shell.md) |
-| CMS model | [sanity-content-model.md](sanity-content-model.md) |
-| Contact form strategy | [contact-form-strategy.md](contact-form-strategy.md) |
-| Assets, licences, consent | [asset-inventory.md](asset-inventory.md) |
+| Area                                     | Source                                                   |
+| ---------------------------------------- | -------------------------------------------------------- |
+| Canonical design source                  | [design-source.md](design-source.md)                     |
+| Visual foundations and tokens            | [visual-foundations.md](visual-foundations.md)           |
+| Home                                     | [design-home.md](design-home.md)                         |
+| Classes and class detail                 | [design-classes.md](design-classes.md)                   |
+| Structured MVP pages                     | [design-structured-pages.md](design-structured-pages.md) |
+| Contact and form states                  | [design-contact.md](design-contact.md)                   |
+| Shared shell, navigation, footer, states | [design-site-shell.md](design-site-shell.md)             |
+| CMS model                                | [sanity-content-model.md](sanity-content-model.md)       |
+| Contact form strategy                    | [contact-form-strategy.md](contact-form-strategy.md)     |
+| Assets, licences, consent                | [asset-inventory.md](asset-inventory.md)                 |
 
 ## MVP Route Coverage
 
-| Route | Design handoff | Content source |
-| --- | --- | --- |
-| `/` | [design-home.md](design-home.md) | Site Settings + Home Content |
-| `/classes/` | [design-classes.md](design-classes.md) | Published Classes grouped by category |
-| `/classes/[slug]/` | [design-classes.md](design-classes.md) | Published Class where `hasDetailPage` is true |
-| `/schedules/` | [design-structured-pages.md](design-structured-pages.md) | Schedule + Schedule Slot |
-| `/teachers/` | [design-structured-pages.md](design-structured-pages.md) | Teacher documents |
-| `/facilities/` | [design-structured-pages.md](design-structured-pages.md) | Facility documents |
-| `/courses/` | [design-structured-pages.md](design-structured-pages.md) | Course documents |
-| `/performances/` | [design-structured-pages.md](design-structured-pages.md) | Performance documents |
-| `/rad/` | [design-structured-pages.md](design-structured-pages.md) | RAD Content + related Classes |
-| `/contact/` | [design-contact.md](design-contact.md) | Contact Content + Site Settings + form strategy |
-| `/legal/legal-notice/` | [sitemap-and-navigation.md](sitemap-and-navigation.md) | Legal Content with slug `legal-notice` |
-| `/legal/privacy-policy/` | [sitemap-and-navigation.md](sitemap-and-navigation.md) | Legal Content with slug `privacy-policy` |
-| `/legal/cookie-policy/` | [sitemap-and-navigation.md](sitemap-and-navigation.md) | Legal Content with slug `cookie-policy` |
+| Route                    | Design handoff                                           | Content source                                  |
+| ------------------------ | -------------------------------------------------------- | ----------------------------------------------- |
+| `/`                      | [design-home.md](design-home.md)                         | Site Settings + Home Content                    |
+| `/classes/`              | [design-classes.md](design-classes.md)                   | Published Classes grouped by category           |
+| `/classes/[slug]/`       | [design-classes.md](design-classes.md)                   | Published Class where `hasDetailPage` is true   |
+| `/schedules/`            | [design-structured-pages.md](design-structured-pages.md) | Schedule + Schedule Slot                        |
+| `/teachers/`             | [design-structured-pages.md](design-structured-pages.md) | Teacher documents                               |
+| `/facilities/`           | [design-structured-pages.md](design-structured-pages.md) | Facility documents                              |
+| `/courses/`              | [design-structured-pages.md](design-structured-pages.md) | Course documents                                |
+| `/performances/`         | [design-structured-pages.md](design-structured-pages.md) | Performance documents                           |
+| `/rad/`                  | [design-structured-pages.md](design-structured-pages.md) | RAD Content + related Classes                   |
+| `/contact/`              | [design-contact.md](design-contact.md)                   | Contact Content + Site Settings + form strategy |
+| `/legal/legal-notice/`   | [sitemap-and-navigation.md](sitemap-and-navigation.md)   | Legal Content with slug `legal-notice`          |
+| `/legal/privacy-policy/` | [sitemap-and-navigation.md](sitemap-and-navigation.md)   | Legal Content with slug `privacy-policy`        |
+| `/legal/cookie-policy/`  | [sitemap-and-navigation.md](sitemap-and-navigation.md)   | Legal Content with slug `cookie-policy`         |
 
 Result: no MVP route family is missing from the repository-side handoff set.
 
 ## Shared State Coverage
 
-| State or pattern | Source |
-| --- | --- |
-| Desktop navigation | [design-site-shell.md](design-site-shell.md) |
-| Mobile navigation closed and expanded states | [design-site-shell.md](design-site-shell.md) |
-| Mobile navigation closing model | [design-site-shell.md](design-site-shell.md) |
-| Current page state | [design-site-shell.md](design-site-shell.md) |
-| Footer content groups | [design-site-shell.md](design-site-shell.md) |
-| Missing optional media | [design-home.md](design-home.md), [design-classes.md](design-classes.md), [design-structured-pages.md](design-structured-pages.md), [design-contact.md](design-contact.md) |
-| Optional sections disappearing cleanly | [sanity-content-model.md](sanity-content-model.md), [design-classes.md](design-classes.md), [design-structured-pages.md](design-structured-pages.md) |
-| Form default, focus, validation, submitting, success, and failure states | [design-contact.md](design-contact.md) |
+| State or pattern                                                         | Source                                                                                                                                                                     |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Desktop navigation                                                       | [design-site-shell.md](design-site-shell.md)                                                                                                                               |
+| Mobile navigation closed and expanded states                             | [design-site-shell.md](design-site-shell.md)                                                                                                                               |
+| Mobile navigation closing model                                          | [design-site-shell.md](design-site-shell.md)                                                                                                                               |
+| Current page state                                                       | [design-site-shell.md](design-site-shell.md)                                                                                                                               |
+| Footer content groups                                                    | [design-site-shell.md](design-site-shell.md)                                                                                                                               |
+| Missing optional media                                                   | [design-home.md](design-home.md), [design-classes.md](design-classes.md), [design-structured-pages.md](design-structured-pages.md), [design-contact.md](design-contact.md) |
+| Optional sections disappearing cleanly                                   | [sanity-content-model.md](sanity-content-model.md), [design-classes.md](design-classes.md), [design-structured-pages.md](design-structured-pages.md)                       |
+| Form default, focus, validation, submitting, success, and failure states | [design-contact.md](design-contact.md)                                                                                                                                     |
 
 Result: required shared states are documented for implementation.
 
@@ -95,15 +95,15 @@ This review does not claim production WCAG conformance. Semantic HTML, screen-re
 
 ## Open Questions And Follow-Up Issues
 
-| Topic | Status | Follow-up |
-| --- | --- | --- |
-| Final legal/privacy/cookie text | Pending | Future legal/content issue before production form and legal pages go live |
-| Real Carmen media rights and consent | Pending owner confirmation | CD-9 follow-up workflow and future media upload |
-| Domain/DNS/hosting/email account ownership | Pending owner confirmation | CD-7/CD-35 |
-| Sanity implementation | Foundation implemented; final content and full Visual Editing pending | CD-22 |
-| Contact form implementation | Strategy and design documented, not implemented | CD-28 |
-| SEO metadata implementation | Matrix documented separately | CD-29 |
-| Analytics strategy | Open | CD-38 |
+| Topic                                      | Status                                                                | Follow-up                                                                 |
+| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Final legal/privacy/cookie text            | Pending                                                               | Future legal/content issue before production form and legal pages go live |
+| Real Carmen media rights and consent       | Pending owner confirmation                                            | CD-9 follow-up workflow and future media upload                           |
+| Domain/DNS/hosting/email account ownership | Pending owner confirmation                                            | CD-7/CD-35                                                                |
+| Sanity implementation                      | Foundation implemented; final content and full Visual Editing pending | CD-22                                                                     |
+| Contact form implementation                | Strategy and design documented, not implemented                       | CD-28                                                                     |
+| SEO metadata implementation                | Matrix documented separately                                          | CD-29                                                                     |
+| Analytics strategy                         | Open                                                                  | CD-38                                                                     |
 
 No blocking inconsistency was found in the MVP design handoff set.
 

@@ -16,6 +16,22 @@ const navigationProjection = `[]{
   match
 }`;
 
+const editorialCardProjection = `[]{
+  eyebrow,
+  title,
+  text,
+  linkLabel,
+  href
+}`;
+
+const finalPromptProjection = `{
+  eyebrow,
+  title,
+  intro,
+  primaryCta,
+  secondaryCta
+}`;
+
 export const siteSettingsQuery = `*[_type == "siteSettings"][0]{
   "siteName": coalesce(siteName, ""),
   "brandLabel": coalesce(brandLabel, siteName, ""),
@@ -48,5 +64,21 @@ export const homeContentQuery = `*[_type == "homeContent"][0]{
   "academyEyebrow": coalesce(academyEyebrow, "Academia"),
   "academyTitle": coalesce(academyTitle, title),
   "academyIntro": coalesce(academyIntro, intro),
+  classPathwaysEyebrow,
+  classPathwaysTitle,
+  classPathwaysIntro,
+  classPathways${editorialCardProjection},
+  planningEyebrow,
+  planningTitle,
+  planningIntro,
+  planningCards${editorialCardProjection},
+  trustEyebrow,
+  trustTitle,
+  trustIntro,
+  trustItems${editorialCardProjection},
+  discoveryEyebrow,
+  discoveryTitle,
+  discoveryCards${editorialCardProjection},
+  finalPrompt${finalPromptProjection},
   "heroMedia": select(defined(heroMedia.asset) => heroMedia${mediaProjection})
 }`;

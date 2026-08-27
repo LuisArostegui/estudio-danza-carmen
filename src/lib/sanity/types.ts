@@ -65,6 +65,22 @@ export interface MediaItem {
   usageNotes?: string;
 }
 
+export interface EditorialCard {
+  eyebrow?: string;
+  title: string;
+  text: string;
+  linkLabel?: string;
+  href?: string;
+}
+
+export interface HomeFinalPrompt {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  primaryCta: Cta;
+  secondaryCta?: Cta;
+}
+
 export interface HomeContent {
   title: string;
   scriptLabel: string;
@@ -74,5 +90,21 @@ export interface HomeContent {
   academyEyebrow: string;
   academyTitle: string;
   academyIntro: string;
+  classPathwaysEyebrow: string;
+  classPathwaysTitle: string;
+  classPathwaysIntro: string;
+  classPathways: EditorialCard[];
+  planningEyebrow: string;
+  planningTitle: string;
+  planningIntro: string;
+  planningCards: EditorialCard[];
+  trustEyebrow: string;
+  trustTitle: string;
+  trustIntro: string;
+  trustItems: EditorialCard[];
+  discoveryEyebrow: string;
+  discoveryTitle: string;
+  discoveryCards: EditorialCard[];
+  finalPrompt: HomeFinalPrompt;
   heroMedia?: MediaItem;
 }
