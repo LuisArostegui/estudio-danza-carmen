@@ -20,6 +20,8 @@ main -> feature branch -> pull request -> review -> merge
 
 See [docs/repository-workflow.md](docs/repository-workflow.md) for the repository structure, branch naming, commit conventions, and pull request expectations.
 
+The local and CI quality gates are documented in [docs/testing.md](docs/testing.md). Run `pnpm validate` before opening or updating a pull request.
+
 ## Project Context
 
 The living product and planning context is in [docs/project-context.md](docs/project-context.md). It records current scope, MVP routes, deferred work, technical direction, and open decisions.

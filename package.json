@@ -11,15 +11,18 @@
     "check": "astro check",
     "typecheck": "astro check",
     "check:shell": "node scripts/verify-site-shell.mjs",
-    "format": "prettier --write .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
-    "format:check": "prettier --check .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\"",
-    "validate": "pnpm typecheck && pnpm format:check && pnpm check:studio && pnpm check:content && pnpm check:media && pnpm build && pnpm check:shell && pnpm check:home",
+    "format": "prettier --write .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check .prettierrc README.md \"*.{mjs,json,yaml}\" \"scripts/**/*.mjs\" \"src/**/*.{astro,css,js,json,ts}\" \"tests/**/*.ts\"",
+    "validate": "pnpm check:tooling && pnpm typecheck && pnpm format:check && pnpm check:studio && pnpm check:content && pnpm check:media && pnpm build && pnpm check:shell && pnpm check:home && pnpm test:site && pnpm test:e2e",
     "check:content": "node scripts/verify-content-pipeline.mjs",
     "check:media": "node scripts/verify-media-pipeline.mjs",
     "studio:dev": "pnpm --filter estudio-danza-carmen-studio dev",
     "studio:build": "pnpm --filter estudio-danza-carmen-studio build",
     "check:studio": "pnpm studio:build",
-    "check:home": "node scripts/verify-home-page.mjs"
+    "check:home": "node scripts/verify-home-page.mjs",
+    "check:tooling": "node scripts/verify-project-tooling.mjs",
+    "test:site": "node scripts/verify-generated-site-links.mjs",
+    "test:e2e": "pnpm build && playwright test"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -29,6 +32,9 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "linkinator": "8.0.3",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1"
   },
