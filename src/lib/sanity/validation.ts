@@ -110,8 +110,12 @@ function assertEditorialCards(
   value: EditorialCard[] | undefined,
   context: string,
 ): asserts value is EditorialCard[] {
-  if (!value?.length) {
-    throw new Error(`${context} must include at least one item.`);
+  if (value === undefined) {
+    return;
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error(`${context} must be an array when provided.`);
   }
 
   value.forEach((item, index) =>
@@ -128,10 +132,14 @@ function assertHomeFinalPrompt(
   }
 
   assertCta(value.primaryCta, `${context}.primaryCta`);
+
+  if (value.secondaryCta !== undefined) {
+    assertCta(value.secondaryCta, `${context}.secondaryCta`);
+  }
 }
 
 export function assertHomeContent(
-  content: HomeContent | null,
+  content: Partial<HomeContent> | null,
   options: HomeContentValidationOptions = {},
 ): asserts content is HomeContent {
   if (!content) {
@@ -152,7 +160,9 @@ export function assertHomeContent(
   assertEditorialCards(content.planningCards, "homeContent.planningCards");
   assertEditorialCards(content.trustItems, "homeContent.trustItems");
   assertEditorialCards(content.discoveryCards, "homeContent.discoveryCards");
-  assertHomeFinalPrompt(content.finalPrompt, "homeContent.finalPrompt");
+  if (content.finalPrompt !== undefined) {
+    assertHomeFinalPrompt(content.finalPrompt, "homeContent.finalPrompt");
+  }
 
   if (options.validateMedia ?? true) {
     assertPublishableMedia(content.heroMedia, "homeContent.heroMedia");

@@ -17,7 +17,8 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:4321",
-    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    trace: "retain-on-failure",
   },
   webServer: {
     command: `node "${viteCliPath}" preview --outDir dist --host 127.0.0.1 --port 4321 --strictPort`,

@@ -93,18 +93,18 @@ export interface HomeContent {
   classPathwaysEyebrow: string;
   classPathwaysTitle: string;
   classPathwaysIntro: string;
-  classPathways: EditorialCard[];
+  classPathways?: EditorialCard[];
   planningEyebrow: string;
   planningTitle: string;
   planningIntro: string;
-  planningCards: EditorialCard[];
+  planningCards?: EditorialCard[];
   trustEyebrow: string;
   trustTitle: string;
   trustIntro: string;
-  trustItems: EditorialCard[];
+  trustItems?: EditorialCard[];
   discoveryEyebrow: string;
   discoveryTitle: string;
-  discoveryCards: EditorialCard[];
-  finalPrompt: HomeFinalPrompt;
+  discoveryCards?: EditorialCard[];
+  finalPrompt?: HomeFinalPrompt;
   heroMedia?: MediaItem;
 }
