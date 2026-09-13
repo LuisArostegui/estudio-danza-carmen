@@ -10,7 +10,14 @@ import {
   isSanityPreviewBuild,
 } from "./client";
 import { homeContentQuery, siteSettingsQuery } from "./queries";
-import type { Cta, HomeContent, SiteSettings } from "./types";
+import type {
+  Cta,
+  EditorialCard,
+  HomeContent,
+  HomeFinalPrompt,
+  MediaItem,
+  SiteSettings,
+} from "./types";
 import {
   assertHomeContent,
   assertSiteSettings,
@@ -180,6 +187,37 @@ function isUsableCta(value: Cta | undefined): value is Cta {
 function textOrFallback(value: string | undefined, fallback: string): string {
   return value?.trim() ? value : fallback;
 }
+
+type HomeContentQueryResult = Omit<
+  Partial<HomeContent>,
+  | "classPathways"
+  | "planningCards"
+  | "trustItems"
+  | "discoveryCards"
+  | "finalPrompt"
+  | "heroMedia"
+> & {
+  classPathways?: EditorialCard[] | null;
+  planningCards?: EditorialCard[] | null;
+  trustItems?: EditorialCard[] | null;
+  discoveryCards?: EditorialCard[] | null;
+  finalPrompt?: HomeFinalPrompt | null;
+  heroMedia?: MediaItem | null;
+};
+
+function normalizeHomeContentQueryResult(
+  content: HomeContentQueryResult,
+): Partial<HomeContent> {
+  return {
+    ...content,
+    classPathways: content.classPathways ?? undefined,
+    planningCards: content.planningCards ?? undefined,
+    trustItems: content.trustItems ?? undefined,
+    discoveryCards: content.discoveryCards ?? undefined,
+    finalPrompt: content.finalPrompt ?? undefined,
+    heroMedia: content.heroMedia ?? undefined,
+  };
+}
 function withSiteSettingsFallback(
   settings: Partial<SiteSettings> | null,
 ): SiteSettings {
@@ -209,113 +247,111 @@ function withSiteSettingsFallback(
   };
 }
 
-function withHomeContentFallback(content: Partial<HomeContent>): HomeContent {
-  const finalPrompt = {
-    ...fallbackHomeContent.finalPrompt,
-    ...content.finalPrompt,
-    eyebrow: textOrFallback(
-      content.finalPrompt?.eyebrow,
-      fallbackHomeContent.finalPrompt.eyebrow,
-    ),
-    title: textOrFallback(
-      content.finalPrompt?.title,
-      fallbackHomeContent.finalPrompt.title,
-    ),
-    intro: textOrFallback(
-      content.finalPrompt?.intro,
-      fallbackHomeContent.finalPrompt.intro,
-    ),
-    primaryCta: isUsableCta(content.finalPrompt?.primaryCta)
-      ? content.finalPrompt.primaryCta
-      : fallbackHomeContent.finalPrompt.primaryCta,
-    secondaryCta: isUsableCta(content.finalPrompt?.secondaryCta)
-      ? content.finalPrompt.secondaryCta
-      : fallbackHomeContent.finalPrompt.secondaryCta,
-  };
+export function normalizeConfiguredHomeContent(
+  content: HomeContentQueryResult,
+): HomeContent {
+  const normalizedContent = normalizeHomeContentQueryResult(content);
+  const fallbackFinalPrompt = fallbackHomeContent.finalPrompt!;
+  const finalPrompt = normalizedContent.finalPrompt
+    ? {
+        ...fallbackFinalPrompt,
+        ...normalizedContent.finalPrompt,
+        eyebrow: textOrFallback(
+          normalizedContent.finalPrompt.eyebrow,
+          fallbackFinalPrompt.eyebrow,
+        ),
+        title: textOrFallback(
+          normalizedContent.finalPrompt.title,
+          fallbackFinalPrompt.title,
+        ),
+        intro: textOrFallback(
+          normalizedContent.finalPrompt.intro,
+          fallbackFinalPrompt.intro,
+        ),
+        primaryCta: isUsableCta(normalizedContent.finalPrompt.primaryCta)
+          ? normalizedContent.finalPrompt.primaryCta
+          : fallbackFinalPrompt.primaryCta,
+        secondaryCta: isUsableCta(normalizedContent.finalPrompt.secondaryCta)
+          ? normalizedContent.finalPrompt.secondaryCta
+          : undefined,
+      }
+    : undefined;
 
   return {
     ...fallbackHomeContent,
-    ...content,
-    title: textOrFallback(content.title, fallbackHomeContent.title),
+    ...normalizedContent,
+    title: textOrFallback(normalizedContent.title, fallbackHomeContent.title),
     scriptLabel: textOrFallback(
-      content.scriptLabel,
+      normalizedContent.scriptLabel,
       fallbackHomeContent.scriptLabel,
     ),
-    intro: textOrFallback(content.intro, fallbackHomeContent.intro),
+    intro: textOrFallback(normalizedContent.intro, fallbackHomeContent.intro),
     academyEyebrow: textOrFallback(
-      content.academyEyebrow,
+      normalizedContent.academyEyebrow,
       fallbackHomeContent.academyEyebrow,
     ),
     academyTitle: textOrFallback(
-      content.academyTitle,
+      normalizedContent.academyTitle,
       fallbackHomeContent.academyTitle,
     ),
     academyIntro: textOrFallback(
-      content.academyIntro,
+      normalizedContent.academyIntro,
       fallbackHomeContent.academyIntro,
     ),
     classPathwaysEyebrow: textOrFallback(
-      content.classPathwaysEyebrow,
+      normalizedContent.classPathwaysEyebrow,
       fallbackHomeContent.classPathwaysEyebrow,
     ),
     classPathwaysTitle: textOrFallback(
-      content.classPathwaysTitle,
+      normalizedContent.classPathwaysTitle,
       fallbackHomeContent.classPathwaysTitle,
     ),
     classPathwaysIntro: textOrFallback(
-      content.classPathwaysIntro,
+      normalizedContent.classPathwaysIntro,
       fallbackHomeContent.classPathwaysIntro,
     ),
     planningEyebrow: textOrFallback(
-      content.planningEyebrow,
+      normalizedContent.planningEyebrow,
       fallbackHomeContent.planningEyebrow,
     ),
     planningTitle: textOrFallback(
-      content.planningTitle,
+      normalizedContent.planningTitle,
       fallbackHomeContent.planningTitle,
     ),
     planningIntro: textOrFallback(
-      content.planningIntro,
+      normalizedContent.planningIntro,
       fallbackHomeContent.planningIntro,
     ),
     trustEyebrow: textOrFallback(
-      content.trustEyebrow,
+      normalizedContent.trustEyebrow,
       fallbackHomeContent.trustEyebrow,
     ),
     trustTitle: textOrFallback(
-      content.trustTitle,
+      normalizedContent.trustTitle,
       fallbackHomeContent.trustTitle,
     ),
     trustIntro: textOrFallback(
-      content.trustIntro,
+      normalizedContent.trustIntro,
       fallbackHomeContent.trustIntro,
     ),
     discoveryEyebrow: textOrFallback(
-      content.discoveryEyebrow,
+      normalizedContent.discoveryEyebrow,
       fallbackHomeContent.discoveryEyebrow,
     ),
     discoveryTitle: textOrFallback(
-      content.discoveryTitle,
+      normalizedContent.discoveryTitle,
       fallbackHomeContent.discoveryTitle,
     ),
-    primaryCta: isUsableCta(content.primaryCta)
-      ? content.primaryCta
+    primaryCta: isUsableCta(normalizedContent.primaryCta)
+      ? normalizedContent.primaryCta
       : fallbackHomeContent.primaryCta,
-    secondaryCta: isUsableCta(content.secondaryCta)
-      ? content.secondaryCta
+    secondaryCta: isUsableCta(normalizedContent.secondaryCta)
+      ? normalizedContent.secondaryCta
       : fallbackHomeContent.secondaryCta,
-    classPathways: content.classPathways?.length
-      ? content.classPathways
-      : fallbackHomeContent.classPathways,
-    planningCards: content.planningCards?.length
-      ? content.planningCards
-      : fallbackHomeContent.planningCards,
-    trustItems: content.trustItems?.length
-      ? content.trustItems
-      : fallbackHomeContent.trustItems,
-    discoveryCards: content.discoveryCards?.length
-      ? content.discoveryCards
-      : fallbackHomeContent.discoveryCards,
+    classPathways: normalizedContent.classPathways,
+    planningCards: normalizedContent.planningCards,
+    trustItems: normalizedContent.trustItems,
+    discoveryCards: normalizedContent.discoveryCards,
     finalPrompt,
   };
 }
@@ -340,16 +376,19 @@ export async function getHomeContent(): Promise<HomeContent> {
     return fallbackHomeContent;
   }
 
-  const content = await fetchSanityQuery<Partial<HomeContent> | null>(
+  const content = await fetchSanityQuery<HomeContentQueryResult | null>(
     homeContentQuery,
     isSanityPreviewBuild() ? "preview" : "published",
   );
 
   if (!content) {
-    assertHomeContent(content, { validateMedia: false });
+    throw new Error("Sanity homeContent document is missing.");
   }
 
-  const mergedContent = withHomeContentFallback(content);
+  const normalizedContent = normalizeHomeContentQueryResult(content);
+  assertHomeContent(normalizedContent, { validateMedia: false });
+
+  const mergedContent = normalizeConfiguredHomeContent(content);
 
   assertHomeContent(mergedContent, { validateMedia: false });
 

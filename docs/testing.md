@@ -30,7 +30,7 @@ The content check does not require committed secrets. Without `PUBLIC_SANITY_PRO
 
 GitHub Actions runs `CI / quality` for pull requests into `main` and pushes to `main`.
 
-The workflow uses `.nvmrc` for Node, pnpm `11.21.0`, a frozen lockfile install, installs Chromium for Playwright, and then runs `pnpm validate`. This keeps CI aligned with the local gate instead of maintaining a second list of commands.
+The workflow uses `.nvmrc` for Node, pnpm `11.21.0`, a frozen lockfile install, installs Chromium for Playwright, and then runs `pnpm validate`. Failed Playwright runs upload `test-results/` and `playwright-report/` artifacts for investigation. A separate `published-content` job runs only on pushes to `main` or manual dispatch; it uses the public `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` repository variables and reports a visible skip when either variable is missing. The default quality job does not depend on live CMS content.
 
 After the first successful workflow run on GitHub, protect `main` by requiring the `CI / quality` check in the repository ruleset or branch-protection settings. That protection is a GitHub repository setting, not a committed file.
 
@@ -48,7 +48,7 @@ Run the browser smoke checks directly with:
 pnpm test:e2e
 ```
 
-`pnpm test:e2e` builds the Astro site and runs Playwright against Vite preview of `dist`, following the same static-output pattern used by the portfolio project.
+`pnpm test:e2e` builds the Astro site and runs Playwright against Vite preview of `dist`, following the same static-output pattern used by the portfolio project. `pnpm test:e2e:built` runs Playwright against an already-built `dist`; `pnpm validate` uses this form so the quality gate does not build the site twice.
 
 The initial Playwright suite covers the current implemented Home route only. It checks the shared shell, Home hero, representative calls to action, mobile menu open/close behaviour, `?cms=keys`, and an automated axe scan. The axe result is a smoke signal only; it is not a WCAG conformance claim.
 

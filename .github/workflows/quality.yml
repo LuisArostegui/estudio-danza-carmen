@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -40,3 +41,61 @@ jobs:
 
       - name: Run quality gate
         run: pnpm validate
+
+      - name: Upload Playwright failure artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: playwright-failure-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  published-content:
+    name: published-content
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PUBLIC_SANITY_PROJECT_ID: ${{ vars.PUBLIC_SANITY_PROJECT_ID }}
+      PUBLIC_SANITY_DATASET: ${{ vars.PUBLIC_SANITY_DATASET }}
+
+    steps:
+      - name: Check published CMS configuration
+        id: cms-config
+        run: |
+          if [[ -z "$PUBLIC_SANITY_PROJECT_ID" || -z "$PUBLIC_SANITY_DATASET" ]]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping live published-content validation because PUBLIC_SANITY_PROJECT_ID and/or PUBLIC_SANITY_DATASET repository variables are missing."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository
+        if: steps.cms-config.outputs.configured == 'true'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up pnpm
+        if: steps.cms-config.outputs.configured == 'true'
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+        with:
+          version: 11.21.0
+          run_install: false
+
+      - name: Set up Node.js
+        if: steps.cms-config.outputs.configured == 'true'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        if: steps.cms-config.outputs.configured == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate published Sanity content
+        if: steps.cms-config.outputs.configured == 'true'
+        run: pnpm check:content

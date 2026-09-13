@@ -62,7 +62,7 @@ This replaces visible Home text with field keys such as `homeContent.title` and 
 
 ## Node Runtime
 
-Use Node 22 for local development and CI. Astro 7 requires Node `>=22.12.0`, and Node 24 currently crashes on Windows after a successful `astro build` with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`. The repository pins `.nvmrc` to `22.13.2` and `package.json` to `>=22.12 <24` until the Windows Node 24 exit crash is no longer reproducible.
+Use Node 22 for local development and CI. Astro 7 requires Node `>=22.12.0`, and Node 24 currently crashes on Windows after a successful `astro build` with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`. The repository pins `.nvmrc` to `22.13.2` and `package.json` to `>=22.12 <24` until the Windows Node 24 exit crash is no longer reproducible. Studio builds disable Sanity CLI auto-updates so local and CI runs use the versions resolved by the workspace lockfile.
 
 With nvm-windows:
 
