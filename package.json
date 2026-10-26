@@ -25,17 +25,17 @@
     "test:e2e": "pnpm build && playwright test"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.10",
-    "@sanity/client": "^8.2.0",
+    "@astrojs/check": "^0.9.12",
+    "@sanity/client": "^8.11.0",
     "@sanity/image-url": "^2.1.1",
-    "astro": "^7.2.6",
+    "astro": "^7.4.2",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@playwright/test": "^1.62.1",
-    "linkinator": "8.0.3",
-    "prettier": "^3.6.2",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "linkinator": "8.1.0",
+    "prettier": "^3.9.10",
     "prettier-plugin-astro": "^0.14.1"
   },
   "engines": {
