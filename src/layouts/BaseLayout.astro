@@ -12,8 +12,11 @@ import "../styles/global.css";
 type Props = {
   title?: string;
   description?: string;
-  /** Pending pages are noindex and excluded from verified-page tests. */
-  pageStatus?: "complete" | "pending";
+  /**
+   * `pending`: placeholder page. `review`: real content awaiting owner review.
+   * Both are noindex and excluded from verified-page tests.
+   */
+  pageStatus?: "complete" | "pending" | "review";
 };
 
 const siteSettings = await getSiteSettings();
@@ -28,7 +31,7 @@ const pageTitle = title ?? siteSettings.siteName;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
-    {pageStatus === "pending" && <meta name="robots" content="noindex" />}
+    {pageStatus !== "complete" && <meta name="robots" content="noindex" />}
     <script is:inline>
       /* Review variants: ?titulo=serif switches H1 / section titles to Cormorant;
          ?paleta=escenario swaps the colour tokens only. A URL value wins and is

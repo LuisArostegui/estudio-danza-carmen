@@ -238,4 +238,56 @@ const schedule = defineCollection({
   }),
 });
 
-export const collections = { home, categories, activities, school, schedule };
+/**
+ * One file per production. Field names mirror the Sanity `performance`
+ * document (studio/schemaTypes/documents/performance.ts): the file name is the
+ * slug, `summary` is the dossier description. Dates and venues stay empty
+ * until the school confirms them; the dossier order is kept meanwhile.
+ */
+const performances = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/performances" }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      /** Dossier order; used while no checked dates exist. */
+      order: z.number(),
+      summary: z.string(),
+      performanceDate: z.string().optional(),
+      venue: z.string().optional(),
+      isUpcoming: z.boolean().default(false),
+      /** Index tile and first gallery photo. Missing = identified gap. */
+      photo: photo(image),
+      gallery: z.array(photo(image)).default([]),
+      pendingFacts: z.array(z.string()).default([]),
+    }),
+});
+
+/** Page copy for /espectaculos/ (dossier 00 · «H1: Espectáculos»). */
+const performancesPage = defineCollection({
+  loader: glob({ pattern: "espectaculos.md", base: "./src/content/pages" }),
+  schema: z.object({
+    title: z.string(),
+    seoTitle: z.string(),
+    description: z.string(),
+    intro: z.string(),
+    story: z.object({ title: z.string(), paragraphs: z.array(z.string()) }),
+    archive: z.object({ title: z.string(), intro: z.string() }),
+    closing: z.object({
+      title: z.string(),
+      paragraphs: z.array(z.string()),
+      question: z.string(),
+      cta: cta,
+    }),
+    pendingFacts: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = {
+  home,
+  categories,
+  activities,
+  school,
+  schedule,
+  performances,
+  performancesPage,
+};

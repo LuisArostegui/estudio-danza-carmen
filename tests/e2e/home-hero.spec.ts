@@ -71,8 +71,16 @@ test.describe("home hero carousel", () => {
     expect(firstFocusable).toBe("hero-pause");
 
     await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+    // Header dropdowns open on focus, so their child links add tab stops
+    // (about 26 at 1440px). Bound the loop by the page's own focusables
+    // instead of a fixed count that depends on menu timing.
+    const maxTabs = await page.evaluate(
+      () =>
+        document.querySelectorAll("a[href], button, input, select, textarea")
+          .length,
+    );
     let reached = false;
-    for (let i = 0; i < 25 && !reached; i++) {
+    for (let i = 0; i < maxTabs && !reached; i++) {
       await page.keyboard.press("Tab");
       reached = await pause.evaluate((el) => el === document.activeElement);
     }
