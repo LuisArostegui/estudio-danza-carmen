@@ -1,0 +1,88 @@
+---
+import SectionTitle from "../SectionTitle.astro";
+type Props = { reasons: any };
+const { reasons } = Astro.props;
+---
+
+<section class="home-reasons" aria-labelledby="reasons-title">
+  <div class="shell">
+    <SectionTitle
+      id="reasons-title"
+      title={reasons.title}
+      intro={reasons.body}
+      align="center"
+      tone="dark"
+      class="home-reasons__head"
+    />
+    <ul class="home-reasons__grid">
+      {
+        reasons.items.map((item: any, i: number) => (
+          <li class="reason">
+            <span class="reason__num" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 class="reason__title">{item.title}</h3>
+            <p class="reason__body">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .home-reasons {
+    background: #000;
+    padding-block: var(--layout-block-y);
+  }
+  .home-reasons__head {
+    max-inline-size: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .home-reasons__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 40rem) {
+    .home-reasons__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 64rem) {
+    .home-reasons__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+  }
+  .reason {
+    padding-block-start: 1rem;
+    border-block-start: 1px solid rgb(253 216 214 / 35%);
+  }
+  .reason__num {
+    display: block;
+    color: var(--color-pink);
+    font-family: var(--font-family-decorative);
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .reason__title {
+    margin: 0.5rem 0 0.35rem;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-display);
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+  .reason__body {
+    margin: 0;
+    color: var(--color-stage-text);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+</style>

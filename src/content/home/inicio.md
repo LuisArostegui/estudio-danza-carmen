@@ -1,0 +1,118 @@
+---
+# Home page text. Elena's wording comes from "02 - MENU.docx".
+# Change any text between quotes and ask Claude to show you the preview.
+title: "Estudio de Danza Carmen · Escuela de ballet en Granada"
+description: "Escuela de ballet clásico en Granada desde 1988. Clases para todas las edades y niveles, formación RAD y espectáculos propios."
+
+hero:
+  # Eyebrow comes from the reference screenshot, not from the Word file. Needs owner confirmation.
+  eyebrow: "Ballet y danza en Granada · Desde 1988"
+  title: "El ballet es nuestra historia. Queremos que forme parte de la tuya."
+  body: "Desde 1988, enseñamos ballet clásico en Granada con una formación profesional, cercana y adaptada a todas las edades y niveles. Un lugar para descubrir la danza, disfrutarla y crecer con ella."
+  primaryCta:
+    label: "Descubre nuestras clases"
+    href: "#nuestras-clases"
+  secondaryCta:
+    label: "Conoce nuestra escuela"
+    href: "/sobre-nosotros/"
+  photo:
+    # Add the authorised stage photo here, e.g. src: "../../assets/fotos/portada-escenario.jpg"
+    alt: ""
+    pending: "Foto de escenario autorizada para la portada (la de la captura de referencia)"
+    focusDesktop: "65% 45%"
+    focusMobile: "70% 40%"
+
+story:
+  accent: "Nuestra historia"
+  title: "Más de 35 años creciendo con la danza"
+  body: "En Estudio de Danza Carmen nos encanta ver nuestras aulas llenas de vida, de personas que disfrutan bailando, de amistades que nacen entre clases y de momentos que recordamos con muchísimo cariño. Desde 1988, seguimos compartiendo nuestra pasión por la danza con la misma ilusión de siempre."
+  cta:
+    label: "Conoce nuestra historia"
+    href: "/sobre-nosotros/"
+
+classes:
+  eyebrow: "Nuestras clases"
+  title: "¿Qué te gustaría bailar?"
+  body: "En Estudio de Danza Carmen encontrarás clases para diferentes edades, niveles y objetivos. Desde quienes empiezan por primera vez hasta quienes quieren seguir creciendo en la danza, tenemos un espacio para ti."
+  cards:
+    - title: "Clases de ballet"
+      body: "Aprende ballet clásico en grupos organizados por edad y nivel, desde iniciación hasta formación avanzada."
+      href: "/clases-de-ballet-granada/"
+      photo:
+        pending: "Foto de grupo de ballet en escena"
+    - title: "Ballet para adultos"
+      body: "Empieza desde cero o retoma tu camino en la danza con clases pensadas para disfrutar, aprender y cuidarte."
+      href: "/clases-de-ballet-granada/ballet-para-adultos/"
+      photo:
+        src: "../../assets/fotos/ballet-para-adultos-ia.png"
+        alt: "Bailarina adulta en arabesque sobre fondo rosado"
+        focusDesktop: "68% 40%"
+        focusMobile: "70% 35%"
+    - title: "Salud corporal"
+      body: "Cuida tu cuerpo con pilates, barre, acondicionamiento físico y otras clases enfocadas al bienestar y el movimiento."
+      href: "/salud-corporal/"
+      photo:
+        pending: "Foto de clase de barra o pilates"
+    - title: "Otras disciplinas"
+      body: "Descubre sevillanas, danza urbana, contemporáneo, bailes de salón y propuestas para seguir disfrutando bailando."
+      href: "/otras-disciplinas/"
+      photo:
+        pending: "Foto de sevillanas u otra disciplina"
+
+reasons:
+  title: "Una enseñanza profesional que cuida de cada alumno"
+  body: "Cada persona llega a nuestra escuela con una experiencia y unos objetivos diferentes. Por eso, nos gusta conocer a nuestro alumnado y acompañarlo durante su aprendizaje, respetando sus tiempos y ayudándole a desarrollar sus capacidades."
+  items:
+    - title: "Desde 1988 en Granada"
+      body: "Más de tres décadas dedicadas a la enseñanza de la danza clásica."
+    - title: "Formación oficial RAD"
+      body: "Preparación para los exámenes oficiales de la Royal Academy of Dance, con certificaciones reconocidas internacionalmente."
+    - title: "Más de 15 grupos por edades y niveles"
+      body: "Una formación organizada para que cada alumno encuentre su lugar y pueda avanzar de manera progresiva."
+    - title: "La experiencia de subir a un escenario"
+      body: "Espectáculos propios donde nuestro alumnado tiene la oportunidad de vivir la danza más allá de las aulas."
+
+rad:
+  accent: "Formación RAD"
+  title: "Una formación reconocida internacionalmente"
+  lead: "En Estudio de Danza Carmen somos escuela preparadora oficial de la Royal Academy of Dance (RAD), una de las instituciones de enseñanza del ballet clásico más reconocidas del mundo."
+  paragraphs:
+    - "Ofrecemos a nuestro alumnado la posibilidad de preparar y realizar exámenes oficiales, obteniendo certificaciones que acreditan sus conocimientos y evolución en la danza."
+    - "Nos sentimos muy orgullosas de acompañar a nuestras alumnas y alumnos durante este proceso y de ver cómo su esfuerzo y dedicación se reflejan en cada nuevo logro."
+  cta:
+    label: "Descubre nuestra formación RAD"
+    href: "/examenes-rad/"
+  photo:
+    pending: "Foto de aula con alumnado en la barra (con consentimiento)"
+
+shows:
+  title: "De nuestras aulas al escenario"
+  lead: "Hay experiencias que forman parte de la vida de una bailarina para siempre. Y subir a un escenario es, sin duda, una de ellas."
+  body: "En nuestra escuela creamos espectáculos de ballet propios, donde el alumnado tiene la oportunidad de participar en producciones artísticas y descubrir todo lo que supone formar parte de una representación."
+  cta:
+    label: "Descubre nuestros espectáculos"
+    href: "/espectaculos/"
+  # Titles from the dossier. Each needs its own authorised photo.
+  items:
+    - name: "Mary Poppins"
+      photo: { pending: "Foto de Mary Poppins" }
+    - name: "Orquesta Clásica de Granada"
+      photo: { pending: "Foto con la Orquesta Clásica de Granada" }
+    - name: "Pulgarcita"
+      photo: { pending: "Foto de Pulgarcita" }
+    - name: "La Bella y la Bestia"
+      photo: { pending: "Foto de La Bella y la Bestia" }
+    - name: "La Bella Durmiente"
+      photo: { pending: "Foto de La Bella Durmiente" }
+    - name: "Alicia en el País de las Maravillas"
+      photo: { pending: "Foto de Alicia en el País de las Maravillas" }
+    - name: "La leyenda de las Princesas Cisne"
+      photo: { pending: "Foto de La leyenda de las Princesas Cisne" }
+
+contact:
+  accent: "Contacto"
+  title: "¿Te gustaría bailar con nosotros?"
+  paragraphs:
+    - "Tanto si buscas una primera clase para tu peque como si quieres empezar a bailar, retomar tu formación o probar alguna de nuestras disciplinas, estaremos encantadas de conocerte."
+    - "Cuéntanos qué estás buscando y te ayudaremos a encontrar la clase que mejor se adapte a ti."
+---

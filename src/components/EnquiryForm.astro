@@ -1,0 +1,697 @@
+---
+import SectionTitle from "./SectionTitle.astro";
+import {
+  familyLabel,
+  familyOrder,
+  getSchool,
+  type Activity,
+} from "../lib/catalog";
+
+type School = Awaited<ReturnType<typeof getSchool>>;
+
+type Props = {
+  /** Options for the activity selector, already sorted by family and order. */
+  activities: Activity[];
+  /** Activity id preselected on the server (works without JavaScript). */
+  selected?: string;
+  title?: string;
+  intro?: string[];
+  idPrefix?: string;
+  school: School;
+};
+
+const {
+  activities,
+  selected,
+  title,
+  intro = [],
+  idPrefix = "consulta",
+  school,
+} = Astro.props;
+
+const testMode = !school.formEndpoint.trim();
+
+const groups = familyOrder
+  .map((family) => ({
+    family,
+    label: familyLabel[family],
+    items: activities.filter((activity) => activity.data.family === family),
+  }))
+  .filter((group) => group.items.length > 0);
+
+const id = (name: string) => `${idPrefix}-${name}`;
+---
+
+<div class="enquiry">
+  {title && <SectionTitle title={title} class="enquiry__title" />}
+
+  <form
+    class="enquiry__form"
+    method="post"
+    novalidate
+    data-enquiry-form
+    data-endpoint={school.formEndpoint}
+    data-testid="enquiry-form"
+  >
+    <div
+      class="enquiry__summary"
+      tabindex="-1"
+      data-enquiry-summary
+      data-testid="enquiry-errors"
+      role="alert"
+      hidden
+    >
+      <p class="enquiry__summary-title">Revisa los datos marcados:</p>
+      <ul data-enquiry-summary-list></ul>
+    </div>
+
+    <div class="enquiry__row">
+      <div class="field" data-field="nombre">
+        <label class="field__label" for={id("nombre")}>
+          Nombre<span class="field__req" aria-hidden="true">*</span>
+        </label>
+        <input
+          id={id("nombre")}
+          name="nombre"
+          type="text"
+          autocomplete="name"
+          required
+        />
+        <p
+          class="field__error"
+          id={`${id("nombre")}-error`}
+          data-error-for="nombre"
+          hidden
+        >
+          <span class="field__icon" aria-hidden="true">!</span>
+          <span data-error-text></span>
+        </p>
+      </div>
+
+      <div class="field" data-field="correo">
+        <label class="field__label" for={id("correo")}>
+          Correo electrónico<span class="field__req" aria-hidden="true">*</span>
+        </label>
+        <input
+          id={id("correo")}
+          name="correo"
+          type="email"
+          autocomplete="email"
+          spellcheck="false"
+          required
+        />
+        <p
+          class="field__error"
+          id={`${id("correo")}-error`}
+          data-error-for="correo"
+          hidden
+        >
+          <span class="field__icon" aria-hidden="true">!</span>
+          <span data-error-text></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="field" data-field="mensaje">
+      <label class="field__label" for={id("mensaje")}>
+        Cuéntanos qué estás buscando<span class="field__req" aria-hidden="true"
+          >*</span
+        >
+      </label>
+      <textarea
+        id={id("mensaje")}
+        name="mensaje"
+        rows="5"
+        minlength="10"
+        required></textarea>
+      <p
+        class="field__error"
+        id={`${id("mensaje")}-error`}
+        data-error-for="mensaje"
+        hidden
+      >
+        <span class="field__icon" aria-hidden="true">!</span>
+        <span data-error-text></span>
+      </p>
+    </div>
+
+    <div class="enquiry__row">
+      <div class="field" data-field="telefono">
+        <label class="field__label" for={id("telefono")}>
+          Teléfono (opcional)
+        </label>
+        <input
+          id={id("telefono")}
+          name="telefono"
+          type="tel"
+          autocomplete="tel"
+          inputmode="tel"
+        />
+        <p
+          class="field__error"
+          id={`${id("telefono")}-error`}
+          data-error-for="telefono"
+          hidden
+        >
+          <span class="field__icon" aria-hidden="true">!</span>
+          <span data-error-text></span>
+        </p>
+      </div>
+
+      <div class="field" data-field="actividad">
+        <label class="field__label" for={id("actividad")}>
+          Clase o disciplina de interés<span
+            class="field__req"
+            aria-hidden="true">*</span
+          >
+        </label>
+        <select id={id("actividad")} name="actividad" required>
+          <option value="">Selecciona una clase</option>
+          {
+            groups.map((group) => (
+              <optgroup label={group.label}>
+                {group.items.map((activity) => (
+                  <option
+                    value={activity.id}
+                    selected={activity.id === selected}
+                  >
+                    {activity.data.title}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          }
+        </select>
+        <p
+          class="field__error"
+          id={`${id("actividad")}-error`}
+          data-error-for="actividad"
+          hidden
+        >
+          <span class="field__icon" aria-hidden="true">!</span>
+          <span data-error-text></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="field field--check" data-field="privacidad">
+      <input id={id("privacidad")} name="privacidad" type="checkbox" required />
+      <label class="field__label" for={id("privacidad")}>
+        He leído y acepto la <a href="/legal/privacy-policy/"
+          >política de privacidad</a
+        >.<span class="field__req" aria-hidden="true">*</span>
+      </label>
+      <p
+        class="field__error field__error--check"
+        id={`${id("privacidad")}-error`}
+        data-error-for="privacidad"
+        hidden
+      >
+        <span class="field__icon" aria-hidden="true">!</span>
+        <span data-error-text></span>
+      </p>
+    </div>
+
+    <p class="enquiry__required-note">
+      Los campos marcados con * son obligatorios.
+    </p>
+
+    {
+      testMode && (
+        <p class="preview-note enquiry__preview" data-testid="enquiry-preview">
+          Vista previa: el formulario está en modo de prueba y no envía datos.
+        </p>
+      )
+    }
+
+    <button
+      class="button button--primary enquiry__submit"
+      type="submit"
+      data-enquiry-submit
+    >
+      Enviar consulta
+    </button>
+
+    <div
+      class="enquiry__status"
+      data-enquiry-status
+      data-testid="enquiry-status"
+      role="status"
+      hidden
+    >
+      <p data-status-text></p>
+      <p class="enquiry__status-links" data-status-links>
+        <a href={school.whatsappHref} target="_blank" rel="noopener"
+          >{school.whatsappLabel}</a
+        >
+        <span aria-hidden="true"> · </span>
+        <a href={school.phoneHref}>{school.phoneLabel}</a>
+      </p>
+    </div>
+  </form>
+
+  {
+    intro.length > 0 && (
+      <div class="enquiry__intro">
+        {intro.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  .enquiry {
+    width: min(100%, var(--layout-narrow-max));
+    margin-inline: auto;
+  }
+
+  .enquiry__title {
+    margin-bottom: 1.5rem;
+  }
+
+  .enquiry__form {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    background: var(--color-surface-default);
+    border: 1px solid var(--color-border-subtle);
+  }
+
+  .enquiry__row {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 40rem) {
+    .enquiry__row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+
+  .field__label {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .field__req {
+    margin-left: 0.15em;
+    color: var(--color-brand-primary);
+  }
+
+  .field input:not([type="checkbox"]),
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    background: #fff;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 0;
+  }
+
+  .field textarea {
+    min-height: 8rem;
+    resize: vertical;
+  }
+
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible,
+  .field input[type="checkbox"]:focus-visible,
+  .enquiry__form a:focus-visible,
+  .enquiry__summary:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .field [aria-invalid="true"] {
+    border-color: var(--color-brand-primary);
+    box-shadow: inset 0 0 0 1px var(--color-brand-primary);
+  }
+
+  .field--check {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+  }
+
+  .field--check input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.2rem;
+    accent-color: var(--color-brand-primary);
+  }
+
+  .field--check .field__label {
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-small);
+    cursor: pointer;
+  }
+
+  .field--check .field__error {
+    grid-column: 2;
+  }
+
+  .field__label a {
+    color: var(--color-brand-primary);
+  }
+
+  .field__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: var(--font-size-small);
+    color: var(--color-brand-primary);
+  }
+
+  .field__icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.1em;
+    border-radius: 50%;
+    background: var(--color-brand-primary);
+    color: var(--color-text-inverse);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+
+  .enquiry__required-note {
+    margin: 0;
+    font-size: var(--font-size-small);
+    color: var(--color-body);
+  }
+
+  .enquiry__preview {
+    margin: 0;
+  }
+
+  .enquiry__submit {
+    justify-self: start;
+  }
+
+  .enquiry__summary {
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--color-brand-primary);
+    background: var(--color-surface-pale);
+  }
+
+  .enquiry__summary-title {
+    margin: 0 0 0.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-brand-primary);
+  }
+
+  .enquiry__summary ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .enquiry__summary a {
+    color: var(--color-brand-primary);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .enquiry__status {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-pale);
+  }
+
+  .enquiry__status p {
+    margin: 0;
+  }
+
+  .enquiry__status-links a {
+    color: var(--color-brand-primary);
+  }
+
+  .enquiry__intro {
+    margin-top: 2rem;
+  }
+
+  .enquiry__intro p + p {
+    margin-top: 1rem;
+  }
+
+  .enquiry__intro p {
+    max-width: var(--layout-text-max);
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+  }
+</style>
+
+<script>
+  type FieldName =
+    "nombre" | "correo" | "telefono" | "actividad" | "mensaje" | "privacidad";
+
+  type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+  const FIELD_ORDER: FieldName[] = [
+    "nombre",
+    "correo",
+    "mensaje",
+    "telefono",
+    "actividad",
+    "privacidad",
+  ];
+
+  const MESSAGES = {
+    nombre: "Escribe tu nombre.",
+    correoVacio: "Escribe tu correo electrónico.",
+    correoFormato: "Revisa el correo: falta la @ o el dominio.",
+    telefono: "El teléfono debe tener al menos 9 cifras.",
+    actividad: "Elige la actividad que te interesa.",
+    mensaje: "Cuéntanos un poco más (mínimo 10 caracteres).",
+    privacidad: "Necesitamos que aceptes la política de privacidad.",
+  };
+
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const STATUS_TEXT = {
+    test: "Modo de prueba: tu consulta es válida, pero todavía no se envía a ningún buzón. Mientras tanto, escríbenos por WhatsApp o llámanos.",
+    success:
+      "Gracias, hemos recibido tu consulta. Te responderemos lo antes posible.",
+    error:
+      "No hemos podido enviar la consulta. Inténtalo de nuevo o escríbenos por WhatsApp.",
+  } as const;
+
+  const rules: Record<FieldName, (control: Control) => string> = {
+    nombre: (control) => (control.value.trim() ? "" : MESSAGES.nombre),
+    correo: (control) => {
+      const value = control.value.trim();
+      if (!value) return MESSAGES.correoVacio;
+      return EMAIL_PATTERN.test(value) ? "" : MESSAGES.correoFormato;
+    },
+    telefono: (control) => {
+      const value = control.value.trim();
+      if (!value) return "";
+      return value.replace(/\D/g, "").length >= 9 ? "" : MESSAGES.telefono;
+    },
+    actividad: (control) => (control.value ? "" : MESSAGES.actividad),
+    mensaje: (control) =>
+      control.value.trim().length >= 10 ? "" : MESSAGES.mensaje,
+    privacidad: (control) =>
+      (control as HTMLInputElement).checked ? "" : MESSAGES.privacidad,
+  };
+
+  function initEnquiry(form: HTMLFormElement) {
+    const summary = form.querySelector<HTMLElement>("[data-enquiry-summary]");
+    const summaryList = form.querySelector<HTMLUListElement>(
+      "[data-enquiry-summary-list]",
+    );
+    const status = form.querySelector<HTMLElement>("[data-enquiry-status]");
+    const statusText = form.querySelector<HTMLElement>("[data-status-text]");
+    const statusLinks = form.querySelector<HTMLElement>("[data-status-links]");
+    const submit = form.querySelector<HTMLButtonElement>(
+      "[data-enquiry-submit]",
+    );
+    const submitLabel = submit?.textContent ?? "Enviar consulta";
+
+    const control = (name: FieldName) =>
+      form.querySelector<Control>(`[name="${name}"]`);
+    const errorFor = (name: FieldName) =>
+      form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+
+    function setFieldError(name: FieldName, message: string) {
+      const field = control(name);
+      const error = errorFor(name);
+      const wrapper = form.querySelector<HTMLElement>(`[data-field="${name}"]`);
+      if (!field || !error) return;
+
+      const text = error.querySelector<HTMLElement>("[data-error-text]");
+
+      if (message) {
+        field.setAttribute("aria-invalid", "true");
+        field.setAttribute("aria-describedby", error.id);
+        if (text) text.textContent = message;
+        error.hidden = false;
+        wrapper?.classList.add("is-invalid");
+      } else {
+        field.removeAttribute("aria-invalid");
+        field.removeAttribute("aria-describedby");
+        if (text) text.textContent = "";
+        error.hidden = true;
+        wrapper?.classList.remove("is-invalid");
+      }
+    }
+
+    function validateField(name: FieldName): string {
+      const field = control(name);
+      if (!field) return "";
+      const message = rules[name](field);
+      setFieldError(name, message);
+      return message;
+    }
+
+    function invalidFields(): { name: FieldName; message: string }[] {
+      return FIELD_ORDER.map((name) => ({
+        name,
+        message: validateField(name),
+      })).filter((item) => item.message);
+    }
+
+    function hasInvalidFields() {
+      return form.querySelector('[aria-invalid="true"]') !== null;
+    }
+
+    function showSummary(items: { name: FieldName; message: string }[]) {
+      if (!summary || !summaryList) return;
+      summaryList.replaceChildren(
+        ...items.map(({ name, message }) => {
+          const item = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = `#${control(name)?.id ?? ""}`;
+          link.textContent = message;
+          link.dataset.errorLink = name;
+          item.append(link);
+          return item;
+        }),
+      );
+      summary.hidden = false;
+      summary.focus();
+    }
+
+    function hideSummary() {
+      if (!summary || !summaryList) return;
+      summary.hidden = true;
+      summaryList.replaceChildren();
+    }
+
+    function setStatus(mode: keyof typeof STATUS_TEXT) {
+      if (!status || !statusText) return;
+      status.dataset.mode = mode;
+      statusText.textContent = STATUS_TEXT[mode];
+      if (statusLinks) statusLinks.hidden = mode === "success";
+      status.hidden = false;
+    }
+
+    function setSending(sending: boolean) {
+      if (!submit) return;
+      submit.disabled = sending;
+      submit.textContent = sending ? "Enviando…" : submitLabel;
+    }
+
+    // Preselect the activity from ?actividad=<id> (set by activity pages).
+    const preselected = new URLSearchParams(window.location.search).get(
+      "actividad",
+    );
+    const select = control("actividad") as HTMLSelectElement | null;
+    if (
+      preselected &&
+      select &&
+      Array.from(select.options).some((option) => option.value === preselected)
+    ) {
+      select.value = preselected;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      // Never let the browser navigate: a GET fallback would put personal data in the URL.
+      event.preventDefault();
+
+      const invalid = invalidFields();
+      if (invalid.length > 0) {
+        showSummary(invalid);
+        return;
+      }
+
+      hideSummary();
+      if (status) status.hidden = true;
+
+      const endpoint = form.dataset.endpoint?.trim() ?? "";
+      if (!endpoint) {
+        // Test mode: validate only, send nothing.
+        setStatus("test");
+        return;
+      }
+
+      setSending(true);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        form.reset();
+        setStatus("success");
+      } catch {
+        setStatus("error");
+      } finally {
+        setSending(false);
+      }
+    });
+
+    // Re-validate a field once it has been marked invalid.
+    const revalidate = (event: Event) => {
+      const target = event.target as HTMLElement | null;
+      const name = target?.getAttribute("name") as FieldName | null;
+      if (!name || !(name in rules)) return;
+      if (target?.getAttribute("aria-invalid") !== "true") return;
+      validateField(name);
+      if (!hasInvalidFields()) hideSummary();
+    };
+    form.addEventListener("change", revalidate);
+    form.addEventListener("focusout", revalidate);
+
+    // Error summary links move focus to the field instead of jumping.
+    summary?.addEventListener("click", (event) => {
+      const link = (event.target as HTMLElement).closest<HTMLAnchorElement>(
+        "a[data-error-link]",
+      );
+      if (!link) return;
+      event.preventDefault();
+      const name = link.dataset.errorLink as FieldName;
+      control(name)?.focus();
+    });
+  }
+
+  document
+    .querySelectorAll<HTMLFormElement>("[data-enquiry-form]")
+    .forEach(initEnquiry);
+</script>

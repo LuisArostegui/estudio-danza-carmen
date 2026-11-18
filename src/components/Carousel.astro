@@ -1,0 +1,292 @@
+---
+import Photo from "./Photo.astro";
+import type { ImageMetadata } from "astro";
+
+/**
+ * Accessible manual carousel. No autoplay. Keyboard (Left/Right when focus is
+ * inside), pointer swipe, and buttons plus dots. Inactive slides are `inert`.
+ */
+type Slide = {
+  src?: ImageMetadata;
+  alt?: string;
+  pending?: string;
+  focusDesktop?: string;
+  focusMobile?: string;
+};
+
+type Props = {
+  slides: Array<Slide | undefined>;
+  label: string;
+};
+
+const { label } = Astro.props;
+const slides: Slide[] = Astro.props.slides.map((slide) => slide ?? {});
+const total = slides.length;
+---
+
+<section
+  class="carousel"
+  aria-roledescription="carrusel"
+  aria-label={label}
+  data-carousel
+  data-testid="carousel"
+>
+  <div class="carousel__viewport" data-carousel-viewport>
+    <div class="carousel__track" data-carousel-track>
+      {
+        slides.map((slide, index) => (
+          <div
+            class="carousel__slide"
+            role="group"
+            aria-roledescription="diapositiva"
+            aria-label={`${index + 1} de ${total}`}
+            data-carousel-slide
+          >
+            <Photo photo={slide} sizes="100vw" />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  {
+    total > 1 && (
+      <div class="carousel__controls">
+        <button
+          type="button"
+          class="carousel__button"
+          aria-label="Foto anterior"
+          data-testid="carousel-prev"
+          data-carousel-prev
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M11 6l-6 6 6 6M18 6l-6 6 6 6" />
+          </svg>
+        </button>
+
+        <ul class="carousel__dots">
+          {slides.map((_, index) => (
+            <li>
+              <button
+                type="button"
+                class="carousel__dot"
+                aria-label={`Ir a la foto ${index + 1}`}
+                data-testid="carousel-dot"
+                data-carousel-dot
+              />
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="button"
+          class="carousel__button"
+          aria-label="Foto siguiente"
+          data-testid="carousel-next"
+          data-carousel-next
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M13 6l6 6-6 6M6 6l6 6-6 6" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+
+  <p class="visually-hidden" aria-live="polite" data-carousel-live></p>
+</section>
+
+<style>
+  .carousel {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .carousel__viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+    background: var(--color-surface-pale);
+  }
+
+  .carousel__track {
+    display: flex;
+    transition: transform 400ms ease;
+    will-change: transform;
+  }
+
+  .carousel__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  @media (min-width: 48rem) {
+    .carousel__slide {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .carousel__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .carousel__button {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--color-ink);
+    background: #fff;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .carousel__button:hover {
+    background: var(--color-pink);
+  }
+
+  .carousel__button svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .carousel__dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carousel__dot {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .carousel__dot::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--color-ink);
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .carousel__dot[aria-current="true"]::before {
+    background: var(--color-ink);
+  }
+
+  .carousel__button:focus-visible,
+  .carousel__dot:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel__track {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const SWIPE_THRESHOLD = 40;
+
+  function initCarousel(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>("[data-carousel-track]");
+    const viewport = root.querySelector<HTMLElement>(
+      "[data-carousel-viewport]",
+    );
+    const slides = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-carousel-slide]"),
+    );
+    const prev = root.querySelector<HTMLButtonElement>("[data-carousel-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-carousel-next]");
+    const dots = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-carousel-dot]"),
+    );
+    const live = root.querySelector<HTMLElement>("[data-carousel-live]");
+
+    if (!track || slides.length === 0) return;
+
+    let index = 0;
+    let startX: number | null = null;
+
+    const render = () => {
+      track.style.transform = `translateX(${-index * 100}%)`;
+      slides.forEach((slide, i) => {
+        slide.toggleAttribute("inert", i !== index);
+      });
+      dots.forEach((dot, i) => {
+        if (i === index) {
+          dot.setAttribute("aria-current", "true");
+        } else {
+          dot.removeAttribute("aria-current");
+        }
+      });
+      if (live) live.textContent = `Foto ${index + 1} de ${slides.length}`;
+    };
+
+    const step = (delta: number) => {
+      index = (index + delta + slides.length) % slides.length;
+      render();
+    };
+
+    prev?.addEventListener("click", () => step(-1));
+    next?.addEventListener("click", () => step(1));
+    dots.forEach((dot, i) =>
+      dot.addEventListener("click", () => {
+        index = i;
+        render();
+      }),
+    );
+
+    root.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        step(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        step(1);
+      }
+    });
+
+    viewport?.addEventListener("pointerdown", (event) => {
+      startX = event.clientX;
+    });
+    viewport?.addEventListener("pointerup", (event) => {
+      if (startX === null) return;
+      const dx = event.clientX - startX;
+      startX = null;
+      if (Math.abs(dx) >= SWIPE_THRESHOLD) step(dx < 0 ? 1 : -1);
+    });
+    viewport?.addEventListener("pointercancel", () => {
+      startX = null;
+    });
+
+    render();
+  }
+
+  document
+    .querySelectorAll<HTMLElement>("[data-carousel]")
+    .forEach(initCarousel);
+</script>

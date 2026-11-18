@@ -1,103 +1,55 @@
 ---
-import { isCurrentPath } from "../lib/navigation";
-import type { NavigationItem, SiteSettings } from "../lib/sanity/types";
+import { getSchool } from "../lib/catalog";
+import type { SiteSettings } from "../lib/sanity/types";
 
 type Props = {
   currentPath: string;
-  siteSettings: SiteSettings;
+  siteSettings?: SiteSettings;
 };
 
-const { currentPath, siteSettings } = Astro.props;
-const addressLines = siteSettings.address
-  .split(/\r?\n/)
-  .map((line) => line.trim())
-  .filter(Boolean);
-
-const groups: Array<{
-  id: string;
-  title: string;
-  titleField: string;
-  itemField: string;
-  items: NavigationItem[];
-}> = [
-  {
-    id: "primary",
-    title: siteSettings.footerPrimaryTitle,
-    titleField: "siteSettings.footerPrimaryTitle",
-    itemField: "siteSettings.footerPrimaryNavigation",
-    items: siteSettings.footerPrimaryNavigation,
-  },
-  {
-    id: "secondary",
-    title: siteSettings.footerSecondaryTitle,
-    titleField: "siteSettings.footerSecondaryTitle",
-    itemField: "siteSettings.footerSecondaryNavigation",
-    items: siteSettings.footerSecondaryNavigation,
-  },
-  {
-    id: "legal",
-    title: siteSettings.footerLegalTitle,
-    titleField: "siteSettings.footerLegalTitle",
-    itemField: "siteSettings.footerLegalNavigation",
-    items: siteSettings.footerLegalNavigation,
-  },
-].filter((group) => group.items.length > 0);
+const school = await getSchool();
+const legal = [
+  { label: "Aviso legal", href: "/legal/legal-notice/" },
+  { label: "Política de privacidad", href: "/legal/privacy-policy/" },
+  { label: "Política de cookies", href: "/legal/cookie-policy/" },
+];
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__inner">
-    <section class="site-footer__business">
-      <h2 id="footer-business" data-cms-field="siteSettings.siteName">
-        {siteSettings.siteName}
-      </h2>
-      {
-        addressLines.length > 0 && (
-          <address data-cms-field="siteSettings.address">
-            {addressLines.map((line, index) => (
-              <>
-                {index > 0 && <br />}
-                {line}
-              </>
-            ))}
-          </address>
-        )
-      }
-      <p data-cms-field="siteSettings.footerNote">{siteSettings.footerNote}</p>
-    </section>
+  <div class="site-footer__inner shell">
+    <div class="site-footer__business">
+      <p class="site-footer__name">{school.name}</p>
+      <address>{school.addressLine}</address>
+    </div>
 
-    <nav
-      class="site-footer__nav"
-      aria-label={siteSettings.footerNavigationLabel}
-    >
-      {
-        groups.map((group) => (
-          <section
-            class="site-footer__group"
-            aria-labelledby={`footer-${group.id}`}
-          >
-            <h2 id={`footer-${group.id}`} data-cms-field={group.titleField}>
-              {group.title}
-            </h2>
-            <ul>
-              {group.items.map((item, index) => {
-                const isCurrent = isCurrentPath(currentPath, item);
+    <ul class="site-footer__links" aria-label="Contacto y horarios">
+      <li>
+        <a href={school.whatsappHref} target="_blank" rel="noopener noreferrer">
+          {school.whatsappLabel}
+        </a>
+      </li>
+      <li><a href={school.phoneHref}>{school.phoneLabel}</a></li>
+      <li>
+        <a
+          href={school.directionsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Cómo llegar
+        </a>
+      </li>
+      <li><a href="/horarios/">Consulta nuestros horarios</a></li>
+      <li><a href="/contacto/">Contacto</a></li>
+    </ul>
 
-                return (
-                  <li>
-                    <a
-                      href={item.href}
-                      aria-current={isCurrent ? "page" : undefined}
-                      data-cms-field={`${group.itemField}[${index}].label`}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+    <ul class="site-footer__legal" aria-label="Información legal">
+      {
+        legal.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
         ))
       }
-    </nav>
+    </ul>
   </div>
 </footer>

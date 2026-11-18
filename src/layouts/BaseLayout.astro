@@ -2,14 +2,19 @@
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { getSiteSettings } from "../lib/sanity/content";
+import "@fontsource-variable/montserrat";
+import "@fontsource/pinyon-script";
 import "../styles/global.css";
 
 type Props = {
   title?: string;
+  description?: string;
+  /** Pending pages are noindex and excluded from verified-page tests. */
+  pageStatus?: "complete" | "pending";
 };
 
 const siteSettings = await getSiteSettings();
-const { title } = Astro.props;
+const { title, description, pageStatus = "complete" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const pageTitle = title ?? siteSettings.siteName;
 ---
@@ -19,8 +24,10 @@ const pageTitle = title ?? siteSettings.siteName;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {pageStatus === "pending" && <meta name="robots" content="noindex" />}
   </head>
-  <body>
+  <body data-page-status={pageStatus}>
     <SiteHeader currentPath={currentPath} siteSettings={siteSettings} />
     <main id="main-content" class="site-main">
       <slot />

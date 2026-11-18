@@ -1,0 +1,38 @@
+---
+import SectionTitle from "../SectionTitle.astro";
+type Props = { story: any };
+const { story } = Astro.props;
+---
+
+<section class="home-story" aria-labelledby="story-title">
+  <div class="shell home-story__inner">
+    <SectionTitle
+      id="story-title"
+      title={story.title}
+      accent={story.accent}
+      align="center"
+      tone="dark"
+    />
+    <p class="home-story__body">{story.body}</p>
+    <a class="button button--light" href={story.cta.href}>{story.cta.label}</a>
+  </div>
+</section>
+
+<style>
+  .home-story {
+    background: #000;
+    padding-block: var(--layout-block-y);
+    text-align: center;
+  }
+  .home-story__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-inline-size: 48rem;
+  }
+  .home-story__body {
+    margin: 0 0 1.5rem;
+    color: var(--color-stage-text);
+    font-size: var(--font-size-reading);
+  }
+</style>

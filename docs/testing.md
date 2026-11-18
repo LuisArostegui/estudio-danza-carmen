@@ -20,9 +20,9 @@ The command currently runs:
 - media policy checks;
 - production Astro build;
 - shared site-shell smoke checks; and
-- Home page smoke checks;
+- Home page smoke checks (Elena's copy read from the content file);
 - Linkinator internal-link smoke checks over `dist`; and
-- Playwright browser smoke checks for Home, mobile navigation, CMS-key debug mode, and an axe automated accessibility signal.
+- Playwright browser checks at 390 and 1440 px for the preview flow (see below).
 
 The content check does not require committed secrets. Without `PUBLIC_SANITY_PROJECT_ID`, it skips live Sanity validation for that environment. Local development can use `.env` to validate real published content.
 
@@ -50,9 +50,19 @@ pnpm test:e2e
 
 `pnpm test:e2e` builds the Astro site and runs Playwright against Vite preview of `dist`, following the same static-output pattern used by the portfolio project.
 
-The initial Playwright suite covers the current implemented Home route only. It checks the shared shell, Home hero, representative calls to action, mobile menu open/close behaviour, `?cms=keys`, and an automated axe scan. The axe result is a smoke signal only; it is not a WCAG conformance claim.
+Playwright runs two projects only: `mobile-390` (390x844, touch) and `desktop-1440` (1440x900). The suite lives in `tests/e2e/`:
 
-Linkinator currently skips planned internal route families that are linked in the shell but not implemented yet, including Classes, Schedules, Teachers, Facilities, Performances, Courses, RAD, Contact, and Legal routes. CD-42 should remove those skips route by route as the pages are implemented.
+- `home.spec.ts`: landmarks, Elena's literal hero copy (read from `src/content/home/inicio.md`), the six header entries, footer contact links, mobile menu, `?cms=keys` flag, axe.
+- `preview-flow.spec.ts`: the Inicio -> Clases de ballet -> Ballet para adultos -> contacto journey, header dropdown (desktop hover/focus/Escape, mobile chevron and 44px targets), focus outlines, internal links returning 200, no horizontal overflow, image rendering, show gallery hover/focus/touch/reduced motion, carousel, enquiry form validation and test mode (no network POST), axe on each verified page, and the pending-page guard.
+- Screenshots (above the fold and full page, both widths) are written to `test-results/preview-shots/`, which is gitignored.
+
+The axe result is an automated signal only; it is not a WCAG conformance claim.
+
+## Verified vs Pending Pages
+
+Only four routes are verified: `/`, `/clases-de-ballet-granada/`, `/clases-de-ballet-granada/ballet-para-adultos/` and `/contacto/` (`VERIFIED_ROUTES` in `scripts/verify-generated-site-links.mjs`, `VERIFIED_PAGES` in `tests/e2e/helpers.ts`).
+
+Every other generated page (18 pending activity fichas, `/salud-corporal/`, `/otras-disciplinas/`, `/sobre-nosotros/`, `/espectaculos/`, `/examenes-rad/`, `/cursos/`, `/horarios/`, the legal stubs) renders `<body data-page-status="pending">` with `noindex`. `pnpm test:site` crawls everything with Linkinator (no route is skipped), then prints a `COMPLETE` and a `PENDING (not verified)` list and fails if a verified route is pending or missing, or if a pending page lacks `noindex`. Pending pages are only checked for being reachable and non-indexable, never counted as verified content. The enquiry form is in test mode (empty `formEndpoint`): valid submissions send nothing.
 
 ## Dependency Updates
 
@@ -67,6 +77,6 @@ Every dependency PR still needs normal review:
 
 ## Boundaries
 
-These checks do not currently provide full browser journey coverage, visual regression testing, WCAG conformance, production deployment validation, or real form-delivery validation.
+These checks do not provide coverage of pending pages, visual regression testing, WCAG conformance, production deployment validation, or real form-delivery validation.
 
 CD-42 owns expansion of route, link, and browser smoke checks as additional pages become real. CD-32, CD-33, CD-34, and CD-37 remain responsible for responsive QA, accessibility audit, performance/SEO verification, and production launch validation.

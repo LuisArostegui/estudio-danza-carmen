@@ -1,0 +1,54 @@
+---
+/**
+ * Carmen section title, modelled on Arabesque's title pattern (rebuilt, not
+ * copied): optional script word tucked behind the heading, an uppercase
+ * Montserrat heading and a 140px hairline rule that draws in on scroll.
+ * Styles live in global.css under "Section title".
+ */
+type Props = {
+  title: string;
+  as?: "h1" | "h2";
+  id?: string;
+  accent?: string;
+  eyebrow?: string;
+  intro?: string;
+  align?: "start" | "center";
+  tone?: "light" | "dark";
+  class?: string;
+  [key: `data-${string}`]: unknown;
+};
+
+const {
+  title,
+  as: Heading = "h2",
+  id,
+  accent,
+  eyebrow,
+  intro,
+  align = "start",
+  tone = "light",
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "section-title-block",
+    `section-title-block--${align}`,
+    `section-title-block--${tone}`,
+    className,
+  ]}
+  data-section-title
+  {...rest}
+>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  {
+    accent && (
+      <p class="script-accent" aria-hidden="true" data-accent={accent} />
+    )
+  }
+  <Heading id={id} class="section-title">{title}</Heading>
+  <span class="section-rule" aria-hidden="true"></span>
+  {intro && <p class="section-title-block__intro">{intro}</p>}
+</div>

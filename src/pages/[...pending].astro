@@ -1,0 +1,93 @@
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import SectionTitle from "../components/SectionTitle.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { pendingPages, type PendingPage } from "../lib/catalog";
+
+export function getStaticPaths() {
+  return pendingPages.map((page) => ({
+    params: { pending: page.path.replace(/^\/|\/$/g, "") },
+    props: { page },
+  }));
+}
+
+type Props = { page: PendingPage };
+
+const { page } = Astro.props;
+const slug = page.path.replace(/^\/|\/$/g, "");
+---
+
+<BaseLayout
+  title={`${page.title} · Estudio de Danza Carmen`}
+  pageStatus="pending"
+>
+  <section
+    class="pending-page"
+    aria-labelledby="pending-title"
+    data-pending-page={slug}
+  >
+    <div class="shell">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: page.title }]}
+      />
+
+      <SectionTitle as="h1" id="pending-title" title={page.title} />
+
+      <div class="preview-note pending-page__note">
+        <p class="pending-page__badge">Página en preparación</p>
+        <p>Qué falta para publicarla:</p>
+        <ul>
+          {page.needs.map((need) => <li>{need}</li>)}
+        </ul>
+      </div>
+
+      <p class="pending-page__copy">
+        Mientras tanto, puedes escribirnos y te informamos.
+      </p>
+
+      <div class="pending-page__actions">
+        <a class="button button--primary" href="/contacto/">Haz tu consulta</a>
+        <a class="text-link" href="/">Volver al inicio</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pending-page {
+    padding-block: var(--layout-block-y);
+  }
+
+  .pending-page__note {
+    display: grid;
+    gap: 0.5rem;
+    max-width: var(--layout-text-max);
+    margin-block: 1.5rem;
+  }
+
+  .pending-page__note p,
+  .pending-page__note ul {
+    margin: 0;
+  }
+
+  .pending-page__note ul {
+    padding-left: 1.25rem;
+  }
+
+  .pending-page__badge {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .pending-page__copy {
+    max-width: var(--layout-text-max);
+    color: var(--color-body);
+  }
+
+  .pending-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+</style>

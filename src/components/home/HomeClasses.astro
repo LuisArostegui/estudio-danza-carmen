@@ -1,0 +1,157 @@
+---
+import Photo from "../Photo.astro";
+import SectionTitle from "../SectionTitle.astro";
+type Props = { classes: any };
+const { classes } = Astro.props;
+---
+
+<section
+  id="nuestras-clases"
+  class="home-classes"
+  aria-labelledby="classes-title"
+>
+  <div class="home-classes__head">
+    <SectionTitle
+      id="classes-title"
+      title={classes.title}
+      eyebrow={classes.eyebrow}
+      intro={classes.body}
+      align="center"
+      class="shell home-classes__head-inner"
+    />
+  </div>
+  <ul class="home-classes__grid">
+    {
+      classes.cards.map((card: any, i: number) => (
+        <li>
+          <a class="class-card" href={card.href}>
+            <span class="class-card__photo">
+              <Photo
+                decorative
+                photo={card.photo}
+                tone="dark"
+                sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 50vw, 100vw"
+              />
+            </span>
+            <span class="class-card__shade" aria-hidden="true" />
+            <span class="class-card__text">
+              <span class="class-card__num" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}.
+              </span>
+              <h3 class="class-card__title">{card.title}</h3>
+              <span class="class-card__body">{card.body}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .home-classes__head {
+    background: var(--color-surface-pale);
+    padding-block: var(--layout-block-y) 2rem;
+  }
+  .home-classes__head-inner {
+    max-inline-size: 48rem;
+    text-align: center;
+  }
+  .home-classes__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #fff;
+  }
+  @media (min-width: 40rem) {
+    .home-classes__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 64rem) {
+    .home-classes__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .class-card {
+    position: relative;
+    display: block;
+    block-size: 15rem;
+    overflow: hidden;
+    background: var(--color-stage);
+    color: #fff;
+    text-decoration: none;
+  }
+  @media (min-width: 40rem) {
+    .class-card {
+      block-size: 22rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .class-card {
+      block-size: 28rem;
+    }
+  }
+  .class-card__photo {
+    position: absolute;
+    inset: 0;
+  }
+  .class-card__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0%) 25%,
+      rgb(0 0 0 / 88%) 100%
+    );
+  }
+  .class-card__text {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: block;
+    padding: 1.1rem;
+  }
+  .class-card__num {
+    display: block;
+    color: var(--color-pink);
+    font-size: 0.8rem;
+    letter-spacing: var(--letter-spacing-label);
+  }
+  .class-card__title {
+    margin: 0.15rem 0 0.3rem;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-display);
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+  .class-card__body {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: rgb(255 255 255 / 92%);
+  }
+  .class-card:focus-visible {
+    outline: 3px solid var(--color-pink);
+    outline-offset: -3px;
+  }
+  .class-card__photo :global(img) {
+    transition: transform 400ms ease-out;
+  }
+  .class-card:hover .class-card__photo :global(img) {
+    transform: scale(1.04);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .class-card__photo :global(img) {
+      transition: none;
+    }
+    .class-card:hover .class-card__photo :global(img) {
+      transform: none;
+    }
+  }
+</style>

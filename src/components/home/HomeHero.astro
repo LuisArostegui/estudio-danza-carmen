@@ -1,0 +1,110 @@
+---
+import Photo from "../Photo.astro";
+type Props = { hero: any };
+const { hero } = Astro.props;
+---
+
+<section class="home-hero" aria-labelledby="home-title">
+  <div class="home-hero__media" aria-hidden="true">
+    <Photo photo={hero.photo} priority tone="dark" sizes="100vw" />
+  </div>
+  <div class="home-hero__scrim" aria-hidden="true"></div>
+  <div class="shell home-hero__inner">
+    <div class="home-hero__copy">
+      {hero.eyebrow && <p class="eyebrow home-hero__eyebrow">{hero.eyebrow}</p>}
+      <h1 id="home-title" class="home-hero__title">{hero.title}</h1>
+      <span class="section-rule home-hero__rule"></span>
+      <p class="home-hero__body">{hero.body}</p>
+      <div class="home-hero__actions">
+        <a class="button button--primary" href={hero.primaryCta.href}
+          >{hero.primaryCta.label}</a
+        >
+        <a class="button button--light" href={hero.secondaryCta.href}
+          >{hero.secondaryCta.label}</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--color-stage);
+    color: #fff;
+  }
+  .home-hero__media,
+  .home-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .home-hero__media :global(.photo--pending) {
+    place-items: start end;
+    padding: 0.75rem;
+  }
+  @media (max-width: 47.99rem) {
+    .home-hero__media :global(.photo__gap-label) {
+      display: none;
+    }
+  }
+  .home-hero__scrim {
+    z-index: -1;
+    background: linear-gradient(
+      90deg,
+      rgb(7 6 11 / 94%) 0%,
+      rgb(7 6 11 / 82%) 55%,
+      rgb(7 6 11 / 55%) 100%
+    );
+  }
+  .home-hero__inner {
+    padding-block: 2.5rem 2.75rem;
+  }
+  .home-hero__copy {
+    max-inline-size: 38rem;
+  }
+  .home-hero__eyebrow {
+    color: var(--color-pink);
+  }
+  .home-hero__title {
+    margin: 0.75rem 0 0;
+    color: #fff;
+    font-size: var(--font-size-display);
+    font-weight: 400;
+    letter-spacing: var(--letter-spacing-display);
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .home-hero__rule {
+    margin-block: 1.1rem;
+    background: var(--color-pink);
+  }
+  .home-hero__body {
+    margin: 0;
+    color: #fff;
+    font-size: var(--font-size-reading);
+    line-height: 1.6;
+  }
+  .home-hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-block-start: 1.5rem;
+  }
+  @media (min-width: 40rem) {
+    .home-hero__actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+  @media (min-width: 64rem) {
+    .home-hero__inner {
+      padding-block: 3.5rem;
+      min-block-size: 34rem;
+      display: flex;
+      align-items: center;
+    }
+  }
+</style>

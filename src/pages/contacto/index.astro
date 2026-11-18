@@ -1,0 +1,145 @@
+---
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import { getEntry } from "astro:content";
+import EnquiryForm from "../../components/EnquiryForm.astro";
+import { getActivities, getSchool } from "../../lib/catalog";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const home = await getEntry("home", "inicio");
+if (!home) throw new Error("Missing src/content/home/inicio.md");
+const contact = home.data.contact;
+
+const school = await getSchool();
+const activities = await getActivities();
+const description = contact.paragraphs[0];
+---
+
+<BaseLayout
+  title="Consulta · Estudio de Danza Carmen"
+  description={description}
+>
+  <section class="contact-page" aria-labelledby="contact-title">
+    <div class="shell">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: "Consulta" }]}
+      />
+
+      <header class="contact-page__header">
+        <SectionTitle
+          as="h1"
+          id="contact-title"
+          title={contact.title}
+          accent={contact.accent}
+          align="center"
+        />
+      </header>
+
+      <section
+        id="consulta"
+        class="contact-page__form"
+        aria-label="Formulario de consulta"
+      >
+        <EnquiryForm
+          activities={activities}
+          intro={contact.paragraphs}
+          school={school}
+        />
+      </section>
+
+      <section
+        class="contact-page__details"
+        aria-labelledby="contact-details-title"
+      >
+        <SectionTitle
+          id="contact-details-title"
+          title="Estudio de Danza Carmen"
+          align="center"
+        />
+        <div class="contact-page__card">
+          <p class="contact-page__name">{school.name}</p>
+          <p>{school.addressLine}</p>
+          <ul class="contact-page__links">
+            <li>
+              <a href={school.whatsappHref} target="_blank" rel="noopener"
+                >{school.whatsappLabel}</a
+              >
+            </li>
+            <li>
+              <a href={school.phoneHref}>{school.phoneLabel}</a>
+            </li>
+            {
+              school.directionsHref && (
+                <li>
+                  <a
+                    href={school.directionsHref}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Cómo llegar
+                  </a>
+                </li>
+              )
+            }
+            <li>
+              <a class="text-link" href="/horarios/"
+                >Consulta nuestros horarios</a
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-page {
+    padding-block: var(--layout-block-y);
+  }
+
+  .contact-page__header {
+    display: grid;
+    gap: 0.5rem;
+    margin-block: 1.5rem 2.5rem;
+    text-align: center;
+  }
+
+  .contact-page__details {
+    margin-top: var(--layout-block-y);
+  }
+
+  .contact-page__card {
+    display: grid;
+    gap: 0.5rem;
+    max-width: var(--layout-narrow-max);
+    margin-inline: auto;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    background: var(--color-surface-pale);
+    border: 1px solid var(--color-border-subtle);
+  }
+
+  .contact-page__card p {
+    margin: 0;
+  }
+
+  .contact-page__name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+  }
+
+  .contact-page__links {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact-page__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--color-brand-primary);
+  }
+</style>
