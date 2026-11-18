@@ -39,7 +39,7 @@ async function scrollThrough(page: Page) {
   });
 }
 
-test("home reasons show the three ballet illustrations in reference order", async ({
+test("home reasons show four distinct ballet illustrations in order", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -51,7 +51,7 @@ test("home reasons show the three ballet illustrations in reference order", asyn
     "assemble",
     "penche",
     "echappe",
-    "assemble",
+    "retire",
   ].entries()) {
     const icon = icons.nth(index);
     await icon.scrollIntoViewIfNeeded();

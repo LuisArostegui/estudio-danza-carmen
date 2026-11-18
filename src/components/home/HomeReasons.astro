@@ -2,14 +2,15 @@
 import assembleIcon from "../../assets/icons/ballet-assemble.svg?url";
 import pencheIcon from "../../assets/icons/ballet-penche.svg?url";
 import echappeIcon from "../../assets/icons/ballet-echappe.svg?url";
+import retireIcon from "../../assets/icons/ballet-retire.svg?no-inline";
 import SectionTitle from "../SectionTitle.astro";
 import type { CollectionEntry } from "astro:content";
 
 type Props = { reasons: CollectionEntry<"home">["data"]["reasons"] };
 const { reasons } = Astro.props;
 
-// Original illustrations from https://arabesque.qodeinteractive.com/ballet-home/.
-const icons = [assembleIcon, pencheIcon, echappeIcon];
+// The first three illustrations come from https://arabesque.qodeinteractive.com/ballet-home/.
+const icons = [assembleIcon, pencheIcon, echappeIcon, retireIcon];
 ---
 
 <section class="home-reasons" aria-labelledby="reasons-title">
