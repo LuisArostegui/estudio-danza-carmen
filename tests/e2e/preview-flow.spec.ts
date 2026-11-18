@@ -1,6 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { ADULTOS_PATH, VERIFIED_PAGES, isMobileMenu } from "./helpers";
+import {
+  ADULTOS_PATH,
+  VERIFIED_PAGES,
+  isMobileMenu,
+  waitForRevealsSettled,
+} from "./helpers";
 
 const SHOTS_DIR = "test-results/preview-shots";
 const ADULTOS_TITLE = "Ballet para adultos";
@@ -325,6 +330,7 @@ test.describe("verified pages", () => {
 
     test(`axe finds no violations on ${path}`, async ({ page }) => {
       await page.goto(path);
+      await waitForRevealsSettled(page);
       const results = await new AxeBuilder({ page }).analyze();
       expect(
         results.violations.map((violation) => ({

@@ -4,23 +4,24 @@ import { expect, test, type Page } from "@playwright/test";
 const SHOTS_DIR = "test-results/preview-shots";
 
 const hero = (page: Page) => page.getByTestId("hero-carousel");
-const dots = (page: Page) => page.getByTestId("hero-dot");
+const slides = (page: Page) => hero(page).locator("[data-slide]");
 const activeIndex = (page: Page) =>
-  dots(page).evaluateAll((els) =>
-    els.findIndex((el) => el.getAttribute("aria-current") === "true"),
+  slides(page).evaluateAll((els) =>
+    els.findIndex((el) => el.getAttribute("aria-hidden") !== "true"),
   );
 const visibleSlides = (page: Page) =>
   hero(page).locator("[data-slide]:not([aria-hidden='true'])");
 
 test.describe("home hero carousel", () => {
-  test("controls change slides, keep exactly one visible and never change the H1", async ({
+  test("prev/next change the visible slide, keep exactly one visible and never change the H1", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
 
-    await expect(dots(page)).toHaveCount(4);
-    await expect(hero(page).locator("[data-slide]")).toHaveCount(4);
+    await expect(slides(page)).toHaveCount(4);
+    // The dots row is gone: only arrows remain as visible controls.
+    await expect(page.getByTestId("hero-dot")).toHaveCount(0);
     const h1 = page.locator("h1");
     const title = await h1.innerText();
     expect(await activeIndex(page)).toBe(0);
@@ -33,19 +34,51 @@ test.describe("home hero carousel", () => {
 
     await page.getByTestId("hero-prev").click();
     expect(await activeIndex(page)).toBe(0);
-
-    await dots(page).nth(2).click();
-    await expect(dots(page).nth(2)).toHaveAttribute("aria-current", "true");
-    expect(await activeIndex(page)).toBe(2);
-    await expect(visibleSlides(page)).toHaveCount(1);
+    // Wraps backwards from the first slide.
+    await page.getByTestId("hero-prev").click();
+    expect(await activeIndex(page)).toBe(3);
+    await page.getByTestId("hero-next").click();
+    expect(await activeIndex(page)).toBe(0);
 
     await page.getByTestId("hero-next").focus();
     await page.keyboard.press("ArrowRight");
-    expect(await activeIndex(page)).toBe(3);
+    expect(await activeIndex(page)).toBe(1);
     await page.keyboard.press("ArrowLeft");
-    expect(await activeIndex(page)).toBe(2);
+    expect(await activeIndex(page)).toBe(0);
     await expect(visibleSlides(page)).toHaveCount(1);
     expect(await h1.innerText()).toBe(title);
+  });
+
+  test("the pause button is an always-visible 44px icon, first in tab order and reachable by keyboard", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const pause = page.getByTestId("hero-pause");
+
+    await expect(pause).toBeVisible();
+    const box = await pause.boundingBox();
+    expect(box!.width).toBeGreaterThanOrEqual(44);
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    await expect(pause).toHaveAccessibleName(/fotos/);
+
+    // First hero control in tab order.
+    const firstFocusable = await hero(page).evaluate(
+      (root) =>
+        [...root.querySelectorAll<HTMLElement>("button, a[href]")][0]?.dataset
+          .testid,
+    );
+    expect(firstFocusable).toBe("hero-pause");
+
+    await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+    let reached = false;
+    for (let i = 0; i < 25 && !reached; i++) {
+      await page.keyboard.press("Tab");
+      reached = await pause.evaluate((el) => el === document.activeElement);
+    }
+    expect(reached, "Tab reaches hero-pause").toBe(true);
+    await expect(pause).toBeFocused();
+    await expect(pause).toBeVisible();
   });
 
   test("only the first slide image is eager", async ({ page }) => {
@@ -60,7 +93,9 @@ test.describe("home hero carousel", () => {
     for (const l of loading.slice(1)) expect(l).toBe("lazy");
   });
 
-  test("autoplays every 6s and stops after Pausar fotos", async ({ page }) => {
+  test("autoplays every 6s and stops after pausing with the keyboard", async ({
+    page,
+  }) => {
     await page.clock.install();
     await page.goto("/");
     expect(await activeIndex(page)).toBe(0);
@@ -70,12 +105,18 @@ test.describe("home hero carousel", () => {
 
     const pause = page.getByTestId("hero-pause");
     await expect(pause).toHaveAccessibleName("Pausar fotos");
-    await pause.click();
+    await pause.focus();
+    await page.keyboard.press("Enter");
     await expect(pause).toHaveAccessibleName("Reanudar fotos");
-    // Move the pointer away so hover does not mask the paused state.
+    // Leave the hero so focus-within does not mask the paused state.
+    await pause.evaluate((el) => el.blur());
     await page.mouse.move(0, 0);
     await page.clock.runFor(13000);
     expect(await activeIndex(page)).toBe(1);
+
+    await pause.focus();
+    await page.keyboard.press("Enter");
+    await expect(pause).toHaveAccessibleName("Pausar fotos");
   });
 
   test("pauses while hovered", async ({ page, isMobile }) => {
@@ -128,7 +169,7 @@ test.describe("home hero carousel", () => {
     );
   });
 
-  test("mobile fold: CTAs above 844px, clear of controls, targets >= 44px", async ({
+  test("mobile fold: CTAs above 844px, clear of the arrows, arrows and pause >= 44px", async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== "mobile-390", "mobile only");
@@ -138,28 +179,39 @@ test.describe("home hero carousel", () => {
 
     const ctas = page.locator(".home-hero__actions a");
     await expect(ctas).toHaveCount(2);
-    const controls = await page.locator(".home-hero__controls").boundingBox();
-    expect(controls).not.toBeNull();
+    const arrows = [
+      await page.getByTestId("hero-prev").boundingBox(),
+      await page.getByTestId("hero-next").boundingBox(),
+      await page.getByTestId("hero-pause").boundingBox(),
+    ];
 
     for (let i = 0; i < 2; i++) {
       const box = await ctas.nth(i).boundingBox();
       expect(box, `CTA ${i}`).not.toBeNull();
       expect(box!.y + box!.height, `CTA ${i} bottom`).toBeLessThanOrEqual(844);
-      const overlaps =
-        box!.x < controls!.x + controls!.width &&
-        box!.x + box!.width > controls!.x &&
-        box!.y < controls!.y + controls!.height &&
-        box!.y + box!.height > controls!.y;
-      expect(overlaps, `CTA ${i} overlaps controls`).toBe(false);
+      for (const arrow of arrows) {
+        const overlaps =
+          box!.x < arrow!.x + arrow!.width &&
+          box!.x + box!.width > arrow!.x &&
+          box!.y < arrow!.y + arrow!.height &&
+          box!.y + box!.height > arrow!.y;
+        expect(overlaps, `CTA ${i} overlaps an arrow or the pause button`).toBe(
+          false,
+        );
+      }
     }
 
     const buttons = hero(page).locator(".home-hero__controls button");
-    const n = await buttons.count();
-    expect(n).toBe(7);
-    for (let i = 0; i < n; i++) {
-      const box = await buttons.nth(i).boundingBox();
-      expect(box!.width, `control ${i} width`).toBeGreaterThanOrEqual(44);
-      expect(box!.height, `control ${i} height`).toBeGreaterThanOrEqual(44);
+    await expect(buttons).toHaveCount(2);
+    const targets = [
+      page.getByTestId("hero-prev"),
+      page.getByTestId("hero-next"),
+      page.getByTestId("hero-pause"),
+    ];
+    for (let i = 0; i < targets.length; i++) {
+      const box = await targets[i].boundingBox();
+      expect(box!.width, `arrow ${i} width`).toBeGreaterThanOrEqual(44);
+      expect(box!.height, `arrow ${i} height`).toBeGreaterThanOrEqual(44);
     }
   });
 
@@ -225,6 +277,8 @@ test.describe("headline variant ?titulo=serif", () => {
   });
 
   test("axe finds no violations on /?titulo=serif", async ({ page }) => {
+    // Reveal fades are mid-transition on first paint and skew contrast.
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/?titulo=serif");
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);

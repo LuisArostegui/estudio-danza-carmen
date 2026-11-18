@@ -1,5 +1,6 @@
 ---
 import EnquiryForm from "../EnquiryForm.astro";
+import ContactBlock from "../ContactBlock.astro";
 import SectionTitle from "../SectionTitle.astro";
 import { getActivities, getSchool } from "../../lib/catalog";
 type Props = { contact: any };
@@ -10,69 +11,32 @@ const school = await getSchool();
 
 <section id="contacto" class="home-contact" aria-labelledby="contact-title">
   <div class="shell home-contact__inner">
-    <SectionTitle
-      id="contact-title"
-      title={contact.title}
-      accent={contact.accent}
-    />
-    <EnquiryForm
-      activities={activities}
-      intro={contact.paragraphs}
-      school={school}
-      idPrefix="inicio"
-    />
-    <address class="home-contact__details">
-      <strong>{school.name}</strong>
-      <span>{school.addressLine}</span>
-      <span class="home-contact__links">
-        <a href={school.whatsappHref} target="_blank" rel="noopener noreferrer"
-          >{school.whatsappLabel}</a
-        >
-        <a href={school.phoneHref}>{school.phoneLabel}</a>
-        {
-          school.directionsHref && (
-            <a
-              href={school.directionsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Cómo llegar
-            </a>
-          )
-        }
-        <a href="/horarios/">Consulta nuestros horarios</a>
-      </span>
-    </address>
+    <div data-reveal>
+      <SectionTitle
+        id="contact-title"
+        title={contact.title}
+        accent={contact.accent}
+        align="center"
+      />
+    </div>
+    <div data-reveal data-reveal-delay="100">
+      <EnquiryForm
+        activities={activities}
+        intro={contact.paragraphs}
+        school={school}
+        idPrefix="inicio"
+      />
+    </div>
+    <ContactBlock />
   </div>
 </section>
 
 <style>
   .home-contact {
-    background: #fff;
-    padding-block: 0 var(--layout-block-y);
+    background: var(--color-surface-default);
+    padding-block: var(--layout-block-y);
   }
   .home-contact__inner {
-    max-inline-size: 48rem;
-  }
-  .home-contact__details {
-    display: grid;
-    gap: 0.35rem;
-    margin-block-start: 2rem;
-    padding-block-start: 1.5rem;
-    border-block-start: 1px solid #eee;
-    font-style: normal;
-    text-align: center;
-  }
-  .home-contact__links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem 1.5rem;
-  }
-  .home-contact__links a {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: 44px;
-    color: var(--color-ink);
+    max-inline-size: 60rem;
   }
 </style>

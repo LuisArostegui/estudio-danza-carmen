@@ -34,7 +34,7 @@ const {
   widths = [480, 768, 1080, 1440, 1920],
   class: className,
   priority = false,
-  tone = "dark",
+  tone = "light",
   decorative = false,
 } = Astro.props;
 
@@ -105,14 +105,19 @@ const gapLabel = photo.pending ?? "Foto autorizada";
   }
 
   .photo--light {
-    background: repeating-linear-gradient(
-      135deg,
-      var(--color-surface-pale),
-      var(--color-surface-pale) 12px,
-      #f3eceb 12px,
-      #f3eceb 24px
-    );
-    color: var(--color-body);
+    background-color: var(--color-tint);
+    background-image:
+      repeating-linear-gradient(
+        135deg,
+        transparent 0 14px,
+        var(--color-tint-line) 14px 15px
+      ),
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--color-pink) 50%, #fff),
+        var(--color-tint)
+      );
+    color: var(--color-pink-ink);
   }
 
   .photo__gap-label {

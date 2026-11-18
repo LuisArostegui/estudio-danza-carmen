@@ -105,10 +105,10 @@ rad:
     label: "Descubre nuestra formación RAD"
     href: "/examenes-rad/"
   photo:
-    src: "../../assets/fotos/zapatillas-barra.jpg"
-    alt: "Pies de alumnas con zapatillas de ballet junto a la barra"
-    focusDesktop: "50% 60%"
-    focusMobile: "50% 60%"
+    src: "../../assets/fotos/aula-barra.jpg"
+    alt: "Alumnas en la barra del aula luminosa de la escuela, con la profesora a la derecha"
+    focusDesktop: "30% 50%"
+    focusMobile: "30% 50%"
 
 shows:
   title: "De nuestras aulas al escenario"
@@ -140,4 +140,56 @@ contact:
   paragraphs:
     - "Tanto si buscas una primera clase para tu peque como si quieres empezar a bailar, retomar tu formación o probar alguna de nuestras disciplinas, estaremos encantadas de conocerte."
     - "Cuéntanos qué estás buscando y te ayudaremos a encontrar la clase que mejor se adapte a ti."
+
+# Testimonials: there are no real reviews yet. Every slide stays pending until
+# an authorised review from the community is provided (Needs owner confirmation).
+testimonials:
+  accent: "Testimonios"
+  items:
+    - quote: "Espacio reservado para una reseña real de nuestra comunidad."
+      pending: true
+    - quote: "Espacio reservado para una reseña real de nuestra comunidad."
+      pending: true
+    - quote: "Espacio reservado para una reseña real de nuestra comunidad."
+      pending: true
+    - quote: "Espacio reservado para una reseña real de nuestra comunidad."
+      pending: true
+    - quote: "Espacio reservado para una reseña real de nuestra comunidad."
+      pending: true
+  photo:
+    src: "../../assets/fotos/escenario-tutus-rosas.jpg"
+    alt: ""
+    focusDesktop: "50% 0%"
+    focusMobile: "50% 0%"
+
+# Gift: Elena's literal wording from the WordPress site.
+gift:
+  eyebrow: "Un regalo para disfrutar"
+  title: "¿Y si este año regalas una experiencia para recordar?"
+  subtitle: "Sorprende a alguien especial con un regalo diferente."
+  body: "En Estudio de Danza Carmen contamos con bonos regalo para disfrutar de nuestras actividades, como los intensivos de sevillanas, una propuesta perfecta para aprender algo nuevo, compartir buenos momentos y llegar a las ferias sabiendo bailar."
+  cta:
+    label: "Descubre nuestros bonos regalo"
+    href: "/regala-danza/"
+
+# Instagram strip: six decorative tiles. Two are still gaps until authorised photos exist.
+instagram:
+  # Needs owner confirmation: account handle taken from the WordPress site.
+  handle: "@danza_carmen"
+  href: "https://www.instagram.com/danza_carmen/"
+  photos:
+    - src: "../../assets/fotos/escenario-vestidos-rojos.jpg"
+      focusDesktop: "50% 50%"
+      focusMobile: "50% 50%"
+    - src: "../../assets/fotos/escenario-tutus-rosas.jpg"
+      focusDesktop: "50% 45%"
+      focusMobile: "50% 45%"
+    - src: "../../assets/fotos/aula-barra.jpg"
+      focusDesktop: "55% 50%"
+      focusMobile: "60% 50%"
+    - src: "../../assets/fotos/zapatillas-barra.jpg"
+      focusDesktop: "50% 60%"
+      focusMobile: "50% 60%"
+    - pending: "Foto para Instagram"
+    - pending: "Foto para Instagram"
 ---

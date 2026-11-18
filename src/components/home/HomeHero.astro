@@ -14,11 +14,33 @@ const chevron = (flip: boolean) =>
   data-testid="hero-carousel"
   data-tone={slides[0]?.tone ?? "dark"}
 >
+  {
+    many && (
+      <button
+        type="button"
+        class="home-hero__pause"
+        data-pause
+        data-testid="hero-pause"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path class="pause-icon" d="M9 5v14M15 5v14" />
+          <path class="play-icon" d="M8 5l11 7-11 7z" />
+        </svg>
+        <span class="visually-hidden" data-pause-label>
+          Pausar fotos
+        </span>
+      </button>
+    )
+  }
   <div class="home-hero__media" aria-hidden="true">
     {
       slides.map((slide, i) => (
         <div
-          class:list={["home-hero__slide", i === 0 && "is-active"]}
+          class:list={[
+            "home-hero__slide",
+            "photo-frame",
+            i === 0 && "is-active",
+          ]}
           data-slide
           data-tone={slide.tone ?? "dark"}
           aria-hidden={i === 0 ? "false" : "true"}
@@ -65,20 +87,6 @@ const chevron = (flip: boolean) =>
             <path d={chevron(false)} />
           </svg>
         </button>
-        <div class="hc__dots">
-          {slides.map((_, i) => (
-            <button
-              type="button"
-              class="hc hc--dot"
-              data-dot
-              data-testid="hero-dot"
-              aria-label={`Ir a la foto ${i + 1}`}
-              aria-current={i === 0 ? "true" : undefined}
-            >
-              <span />
-            </button>
-          ))}
-        </div>
         <button
           type="button"
           class="hc hc--arrow hc--next"
@@ -88,30 +96,6 @@ const chevron = (flip: boolean) =>
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d={chevron(true)} />
-          </svg>
-        </button>
-        <button
-          type="button"
-          class="hc hc--pause"
-          data-pause
-          data-testid="hero-pause"
-          aria-label="Pausar fotos"
-        >
-          <svg
-            class="i-pause"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M8 5v14M16 5v14" />
-          </svg>
-          <svg
-            class="i-play"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M8 5l11 7-11 7z" />
           </svg>
         </button>
       </div>
@@ -125,8 +109,9 @@ const chevron = (flip: boolean) =>
     .forEach((root) => {
       const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
       if (slides.length < 2) return;
-      const dots = [...root.querySelectorAll<HTMLElement>("[data-dot]")];
       const pauseBtn = root.querySelector<HTMLButtonElement>("[data-pause]")!;
+      const pauseLabel =
+        pauseBtn.querySelector<HTMLElement>("[data-pause-label]")!;
       const controls = root.querySelector<HTMLElement>(".home-hero__controls")!;
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
       let index = 0;
@@ -140,10 +125,6 @@ const chevron = (flip: boolean) =>
         slides.forEach((el, i) => {
           el.classList.toggle("is-active", i === index);
           el.setAttribute("aria-hidden", i === index ? "false" : "true");
-        });
-        dots.forEach((d, i) => {
-          if (i === index) d.setAttribute("aria-current", "true");
-          else d.removeAttribute("aria-current");
         });
         root.dataset.tone = slides[index].dataset.tone ?? "dark";
       };
@@ -160,14 +141,11 @@ const chevron = (flip: boolean) =>
       const setPaused = (v: boolean) => {
         userPaused = v;
         root.classList.toggle("is-paused", v);
-        pauseBtn.setAttribute(
-          "aria-label",
-          v ? "Reanudar fotos" : "Pausar fotos",
-        );
+        pauseLabel.textContent = v ? "Reanudar fotos" : "Pausar fotos";
         sync();
       };
       root.classList.toggle("is-paused", userPaused);
-      if (userPaused) pauseBtn.setAttribute("aria-label", "Reanudar fotos");
+      if (userPaused) pauseLabel.textContent = "Reanudar fotos";
 
       root.querySelector("[data-prev]")!.addEventListener("click", () => {
         show(index - 1);
@@ -177,12 +155,6 @@ const chevron = (flip: boolean) =>
         show(index + 1);
         sync();
       });
-      dots.forEach((d, i) =>
-        d.addEventListener("click", () => {
-          show(i);
-          sync();
-        }),
-      );
       pauseBtn.addEventListener("click", () => setPaused(!userPaused));
       controls.addEventListener("keydown", (e) => {
         if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
@@ -263,16 +235,16 @@ const chevron = (flip: boolean) =>
     .home-hero__scrim {
       background: linear-gradient(
         180deg,
-        rgb(7 6 11 / 5%) 0,
-        rgb(7 6 11 / 30%) 7rem,
+        rgb(var(--stage-rgb) / 0%) 0,
+        rgb(var(--stage-rgb) / 20%) 7rem,
         var(--color-stage) 13.5rem
       );
     }
     .home-hero__scrim--light {
       background: linear-gradient(
         180deg,
-        rgb(7 6 11 / 25%) 0,
-        rgb(7 6 11 / 55%) 7rem,
+        rgb(var(--stage-rgb) / 15%) 0,
+        rgb(var(--stage-rgb) / 45%) 7rem,
         var(--color-stage) 13.5rem
       );
     }
@@ -280,10 +252,10 @@ const chevron = (flip: boolean) =>
       padding-block: 13.75rem 2.5rem;
     }
     .home-hero__controls {
-      position: absolute;
-      inset-block-start: 10rem;
-      inset-inline: 0;
-      justify-content: center;
+      block-size: 13.5rem;
+    }
+    .hc--arrow {
+      inset-block-start: calc(6.75rem - 1.375rem);
     }
   }
   @media (min-width: 48rem) {
@@ -291,23 +263,23 @@ const chevron = (flip: boolean) =>
       background:
         linear-gradient(
           90deg,
-          rgb(7 6 11 / 92%) 0%,
-          rgb(7 6 11 / 72%) 38%,
-          rgb(7 6 11 / 18%) 68%,
-          rgb(7 6 11 / 0%) 100%
+          rgb(var(--stage-rgb) / 84%) 0%,
+          rgb(var(--stage-rgb) / 58%) 38%,
+          rgb(var(--stage-rgb) / 10%) 68%,
+          rgb(var(--stage-rgb) / 0%) 100%
         ),
-        linear-gradient(0deg, rgb(7 6 11 / 55%) 0%, transparent 30%);
+        linear-gradient(0deg, rgb(var(--stage-rgb) / 35%) 0%, transparent 28%);
     }
     .home-hero__scrim--light {
       background:
         linear-gradient(
           90deg,
-          rgb(7 6 11 / 94%) 0%,
-          rgb(7 6 11 / 84%) 45%,
-          rgb(7 6 11 / 45%) 72%,
-          rgb(7 6 11 / 25%) 100%
+          rgb(var(--stage-rgb) / 88%) 0%,
+          rgb(var(--stage-rgb) / 74%) 45%,
+          rgb(var(--stage-rgb) / 36%) 72%,
+          rgb(var(--stage-rgb) / 18%) 100%
         ),
-        linear-gradient(0deg, rgb(7 6 11 / 60%) 0%, transparent 30%);
+        linear-gradient(0deg, rgb(var(--stage-rgb) / 40%) 0%, transparent 28%);
     }
     .home-hero__inner {
       padding-block: 3rem;
@@ -381,13 +353,15 @@ const chevron = (flip: boolean) =>
     }
   }
 
-  /* Carousel controls */
+  /* Carousel controls: only the side chevrons show. */
   .home-hero__controls {
+    position: absolute;
     z-index: 2;
-    display: flex;
-    align-items: center;
+    inset: 0 0 auto;
+    pointer-events: none;
   }
   .hc {
+    position: absolute;
     display: grid;
     place-items: center;
     min-inline-size: 2.75rem;
@@ -397,11 +371,13 @@ const chevron = (flip: boolean) =>
     background: transparent;
     color: #fff;
     cursor: pointer;
+    pointer-events: auto;
   }
-  .hc:focus-visible {
-    outline: 2px solid var(--color-pink);
-    outline-offset: 2px;
-    border-radius: 2px;
+  .hc--prev {
+    inset-inline-start: 0.25rem;
+  }
+  .hc--next {
+    inset-inline-end: 0.25rem;
   }
   .hc svg {
     inline-size: 1.5rem;
@@ -413,38 +389,63 @@ const chevron = (flip: boolean) =>
     stroke-linejoin: round;
     filter: drop-shadow(0 0 4px rgb(0 0 0 / 55%));
   }
-  .hc--dot span {
-    display: block;
+  /* Always-visible, discreet pause control (WCAG 2.2.2): bottom-right of the
+     photo area, same thin-line look as the edge arrows. */
+  .home-hero__pause {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    inset-inline-end: 0.25rem;
+    inset-block-start: calc(13.5rem - 2.75rem - 0.25rem);
+  }
+  .home-hero__pause svg {
     inline-size: 1.5rem;
-    block-size: 2px;
-    background: rgb(255 255 255 / 55%);
-    box-shadow: 0 0 4px rgb(0 0 0 / 45%);
+    block-size: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgb(0 0 0 / 55%));
   }
-  .hc--dot[aria-current="true"] span {
-    background: var(--color-pink);
-    block-size: 3px;
-  }
-  .hc__dots {
-    display: flex;
-  }
-  .hc--pause .i-play,
-  .is-paused .hc--pause .i-pause {
+  .home-hero__pause .play-icon,
+  .home-hero.is-paused .home-hero__pause .pause-icon {
     display: none;
   }
-  .is-paused .hc--pause .i-play {
-    display: block;
-    fill: currentColor;
+  .home-hero.is-paused .home-hero__pause .play-icon {
+    display: inline;
+  }
+  .home-hero__pause:focus-visible,
+  .hc:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 0;
+    box-shadow: 0 0 0 4px #000;
+    border-radius: 2px;
+  }
+  @media (hover: hover) {
+    .home-hero__pause:hover {
+      color: var(--color-pink);
+    }
   }
   @media (min-width: 48rem) {
+    .home-hero__pause {
+      inset-inline-end: 1rem;
+      inset-block-start: auto;
+      inset-block-end: 1rem;
+    }
     .home-hero__controls {
-      position: absolute;
-      inset-block-end: 0.75rem;
-      inset-inline: 0;
-      justify-content: center;
+      inset: 0;
     }
     .hc--arrow {
-      position: absolute;
-      inset-block-start: calc(50% - 1.5rem - 0.75rem);
+      inset-block-start: calc(50% - 1.5rem);
       min-inline-size: 3rem;
       min-block-size: 3rem;
     }

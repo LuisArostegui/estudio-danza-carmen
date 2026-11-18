@@ -7,6 +7,10 @@ whatsappHref: "https://wa.me/34653424880"
 phoneLabel: "Teléfono: 958 961 504"
 phoneHref: "tel:+34958961504"
 directionsHref: "https://www.google.com/maps/search/?api=1&query=Calle+Casillas+de+Prats+10+18002+Granada"
+# Needs owner confirmation: map pin position (OpenStreetMap/Nominatim, house number 10).
+# Mirrored in src/components/ContactBlock.astro because the school schema strips unknown keys.
+mapLat: 37.1738088
+mapLon: -3.604957
 # Empty endpoint = the form runs in test mode and sends nothing.
 formEndpoint: ""
 # Needs owner confirmation (shown only in the private preview):

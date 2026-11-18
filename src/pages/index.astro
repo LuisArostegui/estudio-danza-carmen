@@ -7,6 +7,9 @@ import HomeClasses from "../components/home/HomeClasses.astro";
 import HomeReasons from "../components/home/HomeReasons.astro";
 import HomeRad from "../components/home/HomeRad.astro";
 import ShowGallery from "../components/home/ShowGallery.astro";
+import HomeTestimonials from "../components/home/HomeTestimonials.astro";
+import HomeGift from "../components/home/HomeGift.astro";
+import InstagramStrip from "../components/home/InstagramStrip.astro";
 import HomeContact from "../components/home/HomeContact.astro";
 
 const home = await getEntry("home", "inicio");
@@ -21,9 +24,8 @@ const d = home.data;
   <HomeReasons reasons={d.reasons} />
   <HomeRad rad={d.rad} />
   <ShowGallery shows={d.shows} />
-  {
-    /* Testimonials (no real reviews yet), Regala danza and Instagram are not
-      rendered in this preview: their content or destinations do not exist. */
-  }
+  <HomeTestimonials testimonials={d.testimonials} />
+  <HomeGift gift={d.gift} />
+  <InstagramStrip instagram={d.instagram} />
   <HomeContact contact={d.contact} />
 </BaseLayout>

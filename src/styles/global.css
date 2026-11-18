@@ -24,13 +24,25 @@
 
   /* Carmen preview palette (Arabesque reference + Elena's screenshot). */
   --color-ink: #000;
-  --color-body: #6c6c6c;
+  --color-body: #5f5a5c;
   --color-pink: #fdd8d6;
   --color-pink-strong: #ffd0ce;
   --color-pink-ink: #8a5a63;
-  --color-surface-pale: #fbf9f9;
+  /* "Arabesque luminosa" (default): ivory page, black only for the reasons
+     block and the hero stage, warm charcoal for the story block. Each token
+     is re-declared under html[data-paleta="escenario"] further down. */
+  --color-page: #fbf8f6;
+  --color-surface-pale: #fbf8f6;
+  --color-tint: #f6ece9;
+  --color-tint-line: #efe3e0;
+  --color-rule: #000;
+  --color-rule-dark: var(--color-pink);
   --color-stage: #07060b;
+  --stage-rgb: 7 6 11;
+  --color-block-dark: #000;
+  --color-story-bg: #2a2527;
   --color-stage-text: rgb(255 255 255 / 86%);
+  --color-dark-muted: rgb(255 255 255 / 72%);
   --color-overlay: rgb(0 0 0 / 40%);
 
   --font-family-base:
@@ -93,7 +105,29 @@
   --motion-ease-standard: ease-out;
   --motion-ease-image: cubic-bezier(0.27, 0.76, 0.72, 0.9);
   --motion-image-zoom: 1.03;
-  --color-script-accent: #d9cbc7;
+  --color-script-accent: #e6dcd9;
+  --color-script-accent-dark: rgb(255 255 255 / 22%);
+}
+
+/* "Escenario": stage blue and studio-wall lilac, switched with ?paleta=escenario. */
+html[data-paleta="escenario"] {
+  --color-page: #faf8fc;
+  --color-surface-pale: #faf8fc;
+  --color-tint: #ece6f4;
+  --color-tint-line: #e1d8ee;
+  --color-pink-ink: #5b4a86;
+  --color-pink: #e4dcf1;
+  --color-pink-strong: #d9cdec;
+  --color-surface-default: #fdfcfe;
+  --color-surface-soft: #f1ecf7;
+  --color-border-subtle: #d6cce6;
+  --color-rule: #b9a9d6;
+  --color-rule-dark: #cfc3e3;
+  --color-stage: #15123a;
+  --stage-rgb: 21 18 58;
+  --color-block-dark: #15123a;
+  --color-story-bg: #211d52;
+  --color-script-accent: #ddd3ec;
 }
 
 *,
@@ -111,7 +145,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: var(--color-surface-default);
+  background: var(--color-page);
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
   font-size: var(--font-size-body);
@@ -325,7 +359,7 @@ body.menu-open {
   height: 1px;
   margin-block: var(--space-4);
   border: 0;
-  background: var(--color-ink);
+  background: var(--color-rule);
 }
 
 /* Section title (src/components/SectionTitle.astro) */
@@ -368,7 +402,7 @@ body.menu-open {
 }
 
 .section-title-block--dark .script-accent {
-  color: rgb(253 216 214 / 38%);
+  color: var(--color-script-accent-dark);
 }
 
 .section-title-block--dark .section-title {
@@ -376,11 +410,11 @@ body.menu-open {
 }
 
 .section-title-block--dark .section-rule {
-  background: var(--color-pink);
+  background: var(--color-rule-dark);
 }
 
 .section-title-block--dark .section-title-block__intro {
-  color: var(--color-stage-text);
+  color: var(--color-dark-muted);
 }
 
 @keyframes section-rule-draw {
@@ -959,5 +993,44 @@ html[data-cms-debug="keys"] [data-cms-field] {
 @media (min-width: 70rem) {
   .editorial-grid--four {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Astro <Picture> wraps the img: let the wrapper fill its framed parent.
+   Opt-in via .photo-frame so natural-height images (activity pages, carousel) are not stretched. */
+.photo-frame picture:has(> .photo) {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* Scroll reveal: [data-reveal] fades in and rises once. Hidden state only with html.js-reveal. */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+
+.js-reveal [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Never leave content invisible in print or if the observer never fires. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

@@ -146,9 +146,9 @@ export const pendingPages: PendingPage[] = [
     ],
   },
   {
-    path: "/horarios/",
-    title: "Horarios",
-    needs: ["Cuadrante vigente por actividad, grupo, día y hora"],
+    path: "/regala-danza/",
+    title: "Regala danza",
+    needs: ["Modalidades de bono, validez, entrega y canje"],
   },
   {
     path: "/legal/privacy-policy/",

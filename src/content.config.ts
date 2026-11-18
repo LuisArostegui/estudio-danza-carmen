@@ -99,6 +99,32 @@ const home = defineCollection({
         title: z.string(),
         paragraphs: z.array(z.string()),
       }),
+      testimonials: z.object({
+        accent: z.string().optional(),
+        /** Keep `pending: true` until a real, authorised review exists. */
+        items: z.array(
+          z.object({
+            quote: z.string(),
+            author: z.string().optional(),
+            pending: z.boolean(),
+          }),
+        ),
+        photo: photo(image),
+      }),
+      gift: z.object({
+        eyebrow: z.string(),
+        title: z.string(),
+        subtitle: z.string(),
+        body: z.string(),
+        cta,
+      }),
+      instagram: z.object({
+        // Needs owner confirmation: account handle taken from the WordPress site.
+        handle: z.string(),
+        href: z.string(),
+        /** Six tiles, decorative. Missing photos render as identified gaps. */
+        photos: z.array(photo(image).unwrap()),
+      }),
     }),
 });
 
@@ -175,10 +201,41 @@ const school = defineCollection({
     phoneLabel: z.string(),
     phoneHref: z.string(),
     directionsHref: z.string().optional(),
+    /** Map pin (OpenStreetMap). Needs owner confirmation. */
+    mapLat: z.number().optional(),
+    mapLon: z.number().optional(),
     /** Where enquiries are delivered. Empty means the form runs in test mode. */
     formEndpoint: z.string().default(""),
     pendingFacts: z.array(z.string()).default([]),
   }),
 });
 
-export const collections = { home, categories, activities, school };
+const time = z.string().regex(/^\d{2}:\d{2}$/, "Formato HH:MM");
+
+/**
+ * Weekly timetable. `isExample: true` means the data is illustrative only:
+ * the page shows an example note and stays noindex until the school confirms
+ * the real schedule.
+ */
+const schedule = defineCollection({
+  loader: glob({ pattern: "horario.md", base: "./src/content/schedule" }),
+  schema: z.object({
+    isExample: z.boolean(),
+    updated: z.string().optional(),
+    note: z.string().optional(),
+    days: z.array(z.string()).min(1),
+    slots: z.array(z.object({ start: time, end: time })).min(1),
+    sessions: z.array(
+      z.object({
+        /** Activity id from src/content/activities, e.g. "diverballet". */
+        activity: z.string(),
+        day: z.string(),
+        start: time,
+        end: time,
+        group: z.string().optional(),
+      }),
+    ),
+  }),
+});
+
+export const collections = { home, categories, activities, school, schedule };

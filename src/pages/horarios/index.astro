@@ -1,0 +1,86 @@
+---
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import Timetable from "../../components/Timetable.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("schedule", "horario");
+if (!entry) throw new Error("Missing src/content/schedule/horario.md");
+const schedule = entry.data;
+
+/** Example timetables stay noindex and out of the verified-page tests. */
+const pageStatus = schedule.isExample ? "pending" : "complete";
+---
+
+<BaseLayout
+  title="Horarios · Estudio de Danza Carmen"
+  description={schedule.isExample
+    ? "Ejemplo de horario semanal para revisar el diseño; los horarios reales están pendientes de confirmar."
+    : "Días, franjas horarias y grupos de las clases de la escuela."}
+  pageStatus={pageStatus}
+>
+  <section class="timetable-page" aria-labelledby="schedule-title">
+    <div class="shell">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: "Horarios" }]}
+      />
+
+      <header class="timetable-page__header">
+        <SectionTitle
+          as="h1"
+          id="schedule-title"
+          title="Horarios"
+          accent="calendario"
+          align="center"
+        />
+      </header>
+
+      {
+        schedule.isExample && (
+          <p
+            class="preview-note timetable-page__note"
+            data-testid="schedule-example-note"
+          >
+            Horario de ejemplo: no es el horario real. Pendiente de confirmar
+            con la escuela.
+          </p>
+        )
+      }
+      {
+        schedule.note && !schedule.isExample && (
+          <p class="timetable-page__note">{schedule.note}</p>
+        )
+      }
+      {
+        schedule.updated && (
+          <p class="timetable-page__updated">Actualizado: {schedule.updated}</p>
+        )
+      }
+
+      <Timetable schedule={schedule} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .timetable-page {
+    padding-block: var(--layout-block-y);
+  }
+
+  .timetable-page__header {
+    margin-bottom: 1.5rem;
+  }
+
+  .timetable-page__note,
+  .timetable-page__updated {
+    max-width: var(--layout-text-max);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .timetable-page__updated {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+  }
+</style>

@@ -2,6 +2,18 @@
 import SectionTitle from "../SectionTitle.astro";
 type Props = { reasons: any };
 const { reasons } = Astro.props;
+
+/* Four original ballerina line drawings, 96px, drawn inside a dashed circle. */
+const poses = [
+  /* en bas: rounded arms low */
+  "M48 36c-9 2-11 12-8 18M48 36c9 2 11 12 8 18M48 33v19M36 56q12-7 24 0q-12 5-24 0M45 58l-1 18M51 58l1 18M41 77h6M49 77h6",
+  /* fifth: arms overhead, on pointe */
+  "M47 36c-9-4-8-16 1-19M49 36c9-4 8-16-1-19M48 33v19M36 56q12-7 24 0q-12 5-24 0M46 58l1 19M50 58l-1 19M45 79l2-3M51 79l-2-3",
+  /* arabesque */
+  "M40 30l8 22M46 36l-18-4M47 38l22-10M34 58q10-8 22-2q-10 6-22 2M48 58l-2 19M52 57l24-9M43 78h6",
+  /* passe: leg bent, one arm up */
+  "M48 36c-9-3-9-13-2-17M48 36l17 7M48 33v19M36 56q12-7 24 0q-12 5-24 0M46 58l-1 19M53 58l9 7-12 3M41 78h8",
+];
 ---
 
 <section class="home-reasons" aria-labelledby="reasons-title">
@@ -13,14 +25,26 @@ const { reasons } = Astro.props;
       align="center"
       tone="dark"
       class="home-reasons__head"
+      data-reveal
     />
     <ul class="home-reasons__grid">
       {
         reasons.items.map((item: any, i: number) => (
-          <li class="reason">
-            <span class="reason__num" aria-hidden="true">
-              {String(i + 1).padStart(2, "0")}
-            </span>
+          <li
+            class="reason"
+            data-reveal
+            data-reveal-delay={String((i % 3) * 100)}
+          >
+            <svg
+              class="reason__icon"
+              viewBox="0 0 96 96"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="48" cy="48" r="46" class="reason__ring" />
+              <circle cx="48" cy="26" r="4.5" />
+              <path d={poses[i % poses.length]} />
+            </svg>
             <h3 class="reason__title">{item.title}</h3>
             <p class="reason__body">{item.body}</p>
           </li>
@@ -32,7 +56,7 @@ const { reasons } = Astro.props;
 
 <style>
   .home-reasons {
-    background: #000;
+    background: var(--color-block-dark);
     padding-block: var(--layout-block-y);
   }
   .home-reasons__head {
@@ -43,7 +67,7 @@ const { reasons } = Astro.props;
   .home-reasons__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 2rem 1.5rem;
     margin: 2rem 0 0;
     padding: 0;
     list-style: none;
@@ -60,18 +84,27 @@ const { reasons } = Astro.props;
     }
   }
   .reason {
-    padding-block-start: 1rem;
-    border-block-start: 1px solid rgb(253 216 214 / 35%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
-  .reason__num {
-    display: block;
-    color: var(--color-pink);
-    font-family: var(--font-family-decorative);
-    font-size: 2rem;
-    line-height: 1;
+  .reason__icon {
+    inline-size: 6rem;
+    block-size: 6rem;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .reason__ring {
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+    opacity: 0.8;
   }
   .reason__title {
-    margin: 0.5rem 0 0.35rem;
+    margin: 1rem 0 0.4rem;
     color: #fff;
     font-size: 0.95rem;
     font-weight: 500;
@@ -81,7 +114,7 @@ const { reasons } = Astro.props;
   }
   .reason__body {
     margin: 0;
-    color: var(--color-stage-text);
+    color: var(--color-dark-muted);
     font-size: 0.9375rem;
     line-height: 1.55;
   }

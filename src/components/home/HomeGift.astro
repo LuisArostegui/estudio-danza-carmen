@@ -1,0 +1,57 @@
+---
+import SectionTitle from "../SectionTitle.astro";
+type Props = { gift: any };
+import { pendingPages } from "../../lib/catalog";
+const { gift } = Astro.props;
+const ctaPending = pendingPages.some((page) => page.path === gift.cta.href);
+---
+
+<section class="home-gift" aria-labelledby="gift-title" data-testid="home-gift">
+  <div class="shell home-gift__inner" data-reveal>
+    <SectionTitle
+      id="gift-title"
+      title={gift.title}
+      eyebrow={gift.eyebrow}
+      align="center"
+    />
+    <p class="home-gift__subtitle">{gift.subtitle}</p>
+    <p class="home-gift__body">{gift.body}</p>
+    <a class="button button--primary" href={gift.cta.href}>{gift.cta.label}</a>
+    {ctaPending && <p class="home-gift__soon">Próximamente</p>}
+  </div>
+</section>
+
+<style>
+  .home-gift {
+    background: var(--color-surface-pale);
+    padding-block: var(--layout-block-y);
+    text-align: center;
+  }
+  .home-gift__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-inline-size: 52rem;
+  }
+  .home-gift__subtitle {
+    margin: var(--space-4) 0 0;
+    color: var(--color-pink-ink);
+    font-size: var(--font-size-lead);
+  }
+  .home-gift__body {
+    margin: var(--space-4) 0 var(--space-8);
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+    max-inline-size: 44rem;
+  }
+  .home-gift__soon {
+    margin: var(--space-3) 0 0;
+    padding: 0.2rem 0.75rem;
+    background: var(--color-pink);
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+</style>

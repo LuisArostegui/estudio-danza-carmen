@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { homeCopy } from "./helpers";
+import { homeCopy, waitForRevealsSettled } from "./helpers";
 
 test("home renders the landmarks, Elena's hero copy and the six header entries", async ({
   page,
@@ -80,6 +80,7 @@ test("footer contact link text does not repeat its own label", async ({
 
 test("home has no axe violations", async ({ page }) => {
   await page.goto("/");
+  await waitForRevealsSettled(page);
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
