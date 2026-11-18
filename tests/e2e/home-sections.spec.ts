@@ -39,6 +39,33 @@ async function scrollThrough(page: Page) {
   });
 }
 
+test("home reasons show the three ballet illustrations in reference order", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const icons = page.locator(".home-reasons img.reason__icon");
+  await expect(icons).toHaveCount(4);
+  for (const [index, pose] of [
+    "assemble",
+    "penche",
+    "echappe",
+    "assemble",
+  ].entries()) {
+    const icon = icons.nth(index);
+    await icon.scrollIntoViewIfNeeded();
+    await expect(icon).toHaveAttribute("alt", "");
+    await expect(icon).toHaveAttribute(
+      "src",
+      new RegExp(`ballet-${pose}\\..+\\.svg$`),
+    );
+    await expect
+      .poll(() => icon.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBe(147);
+  }
+});
+
 test.describe("home testimonials", () => {
   test("while every review is a placeholder: one slide, no controls, no fake numbering, no autoplay", async ({
     page,
