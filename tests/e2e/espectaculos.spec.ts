@@ -110,17 +110,21 @@ test.describe("/espectaculos/ (review)", () => {
     const opacity = (index: number) =>
       label(index).evaluate((el) => getComputedStyle(el).opacity);
 
-    // Without an authorised photo there is nothing to reveal: name visible.
-    await tiles(page).first().scrollIntoViewIfNeeded();
-    await expect(tiles(page).first()).toHaveClass(/is-gap/);
-    expect(await opacity(0)).toBe("1");
-
-    // A tile with a photo hides the name until hover or focus (200 ms veil).
-    for (const index of [0, 1]) {
-      await tiles(page)
+    // Drive both tile states explicitly so the test never depends on which
+    // productions already have an authorised photo in the content files.
+    const setGap = (index: number, gap: boolean) =>
+      tiles(page)
         .nth(index)
-        .evaluate((el) => el.classList.remove("is-gap"));
-    }
+        .evaluate((el, value) => el.classList.toggle("is-gap", value), gap);
+
+    // Without a photo there is nothing to reveal: the name stays visible.
+    await tiles(page).first().scrollIntoViewIfNeeded();
+    await setGap(0, true);
+    await expect.poll(() => opacity(0)).toBe("1");
+
+    // With a photo the name hides until hover or focus (200 ms veil).
+    await setGap(0, false);
+    await setGap(1, false);
     await expect.poll(() => opacity(0)).toBe("0");
     expect(
       await label(0).evaluate((el) => getComputedStyle(el).transitionDuration),
@@ -134,6 +138,17 @@ test.describe("/espectaculos/ (review)", () => {
     await page.keyboard.press("Tab");
     await tiles(page).nth(1).focus();
     await expect.poll(() => opacity(1)).toBe("1");
+  });
+
+  test("only tiles without an authorised photo are marked as gaps", async ({
+    page,
+  }) => {
+    await page.goto(PATH);
+    for (const [index, { hasPhoto }] of productions.entries()) {
+      const classes =
+        (await tiles(page).nth(index).getAttribute("class")) ?? "";
+      expect(classes.split(/\s+/).includes("is-gap")).toBe(!hasPhoto);
+    }
   });
 
   test("touch devices show every name without interaction", async ({
