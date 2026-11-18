@@ -4,6 +4,9 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { getSiteSettings } from "../lib/sanity/content";
 import "@fontsource-variable/montserrat";
 import "@fontsource/pinyon-script";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/400-italic.css";
 import "../styles/global.css";
 
 type Props = {
@@ -26,6 +29,22 @@ const pageTitle = title ?? siteSettings.siteName;
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
     {pageStatus === "pending" && <meta name="robots" content="noindex" />}
+    <script is:inline>
+      /* Headline comparison: ?titulo=serif switches H1 / section titles to Cormorant. */
+      if (new URLSearchParams(location.search).get("titulo") === "serif") {
+        document.documentElement.dataset.titulo = "serif";
+      }
+    </script>
+    <style is:global>
+      [data-titulo="serif"] .section-title {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: calc(var(--font-size-title) * 1.18);
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.1;
+        text-transform: none;
+      }
+    </style>
   </head>
   <body data-page-status={pageStatus}>
     <SiteHeader currentPath={currentPath} siteSettings={siteSettings} />

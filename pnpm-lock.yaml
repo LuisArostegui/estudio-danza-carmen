@@ -13,6 +13,9 @@ importers:
       "@fontsource-variable/montserrat":
         specifier: ^5.3.0
         version: 5.3.0
+      "@fontsource/cormorant-garamond":
+        specifier: ^5.3.0
+        version: 5.3.0
       "@fontsource/pinyon-script":
         specifier: ^5.3.0
         version: 5.3.0
@@ -2010,6 +2013,12 @@ packages:
     resolution:
       {
         integrity: sha512-7PaZoxaxrWLAyrhO46v65An9LhUhfkTExWLhfbywYZCnZEgg/W1rEHnlNmZKjNZ3nJTVYyicqxlJt10z/26yTA==,
+      }
+
+  "@fontsource/cormorant-garamond@5.3.0":
+    resolution:
+      {
+        integrity: sha512-weuGsCirGVWBWqpt6YUp0yLThTe4G8YO45noq8wxeJCRvEpq5lFrxNMFSTxcyOyV5k5otzJ8guDzYegdYlcLMQ==,
       }
 
   "@fontsource/pinyon-script@5.3.0":
@@ -11312,6 +11321,8 @@ snapshots:
   "@floating-ui/utils@0.2.12": {}
 
   "@fontsource-variable/montserrat@5.3.0": {}
+
+  "@fontsource/cormorant-garamond@5.3.0": {}
 
   "@fontsource/pinyon-script@5.3.0": {}
 

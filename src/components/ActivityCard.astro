@@ -65,6 +65,49 @@ const isPending = data.status === "pending";
     gap: 0.45rem;
     align-content: start;
     padding-block-start: 1rem;
+    overflow-wrap: break-word;
+  }
+
+  /* Phones: compact two-column cards. Desktop keeps the 4:3 photo and full type. */
+  @media (max-width: 39.99rem) {
+    .activity-card__media {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      max-block-size: 180px;
+    }
+
+    .activity-card__media :global(.photo) {
+      position: absolute;
+      inset: 0;
+    }
+
+    .activity-card__body {
+      gap: 0.35rem;
+      padding-block-start: 0.6rem;
+    }
+
+    .activity-card__title {
+      font-size: 0.95rem;
+    }
+
+    .activity-card__summary {
+      display: -webkit-box;
+      overflow: hidden;
+      max-block-size: calc(1.5em * 3);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .activity-card__cta,
+    .activity-card__badge {
+      font-size: 0.62rem;
+    }
+
+    .activity-card__badge {
+      padding: 0.2rem 0.45rem;
+    }
   }
 
   .activity-card__title {

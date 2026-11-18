@@ -9,7 +9,10 @@ subtitle: "Una escuela para descubrir, aprender y disfrutar del ballet a cualqui
 intro: "En Estudio de Danza Carmen llevamos desde 1988 compartiendo nuestra pasión por el ballet clásico. Contamos con diferentes grupos por edades y niveles, desde los primeros pasos de los más pequeños hasta la formación avanzada y las clases para adultos. Descubre nuestras clases y encuentra la que mejor se adapte a ti."
 description: "Clases de ballet clásico en Granada para todas las edades y niveles: desde Diverballet hasta ballet para adultos, puntas y repertorio."
 photo:
-  pending: "Foto horizontal de clase o espectáculo de ballet"
+  src: "../../assets/fotos/escenario-tutus-rosas.jpg"
+  alt: "Alumnas con tutús rosas en un espectáculo de la escuela"
+  focusDesktop: "60% 45%"
+  focusMobile: "62% 45%"
 presentation:
   # Heading proposed; items reuse Elena's Home wording.
   title: "Por qué elegir nuestra escuela"

@@ -2,13 +2,35 @@
 import Photo from "../Photo.astro";
 type Props = { hero: any };
 const { hero } = Astro.props;
+const slides: any[] = hero.slides ?? [];
+const many = slides.length > 1;
+const chevron = (flip: boolean) =>
+  flip ? "M6 4l8 8-8 8M13 4l8 8-8 8" : "M18 4l-8 8 8 8M11 4l-8 8 8 8";
 ---
 
-<section class="home-hero" aria-labelledby="home-title">
+<section
+  class="home-hero"
+  aria-labelledby="home-title"
+  data-testid="hero-carousel"
+  data-tone={slides[0]?.tone ?? "dark"}
+>
   <div class="home-hero__media" aria-hidden="true">
-    <Photo photo={hero.photo} priority tone="dark" sizes="100vw" />
+    {
+      slides.map((slide, i) => (
+        <div
+          class:list={["home-hero__slide", i === 0 && "is-active"]}
+          data-slide
+          data-tone={slide.tone ?? "dark"}
+          aria-hidden={i === 0 ? "false" : "true"}
+        >
+          <Photo photo={slide} priority={i === 0} tone="dark" sizes="100vw" />
+        </div>
+      ))
+    }
   </div>
   <div class="home-hero__scrim" aria-hidden="true"></div>
+  <div class="home-hero__scrim home-hero__scrim--light" aria-hidden="true">
+  </div>
   <div class="shell home-hero__inner">
     <div class="home-hero__copy">
       {hero.eyebrow && <p class="eyebrow home-hero__eyebrow">{hero.eyebrow}</p>}
@@ -25,7 +47,173 @@ const { hero } = Astro.props;
       </div>
     </div>
   </div>
+  {
+    many && (
+      <div
+        class="home-hero__controls"
+        role="group"
+        aria-label="Fotos de la escuela"
+      >
+        <button
+          type="button"
+          class="hc hc--arrow hc--prev"
+          data-prev
+          data-testid="hero-prev"
+          aria-label="Foto anterior"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d={chevron(false)} />
+          </svg>
+        </button>
+        <div class="hc__dots">
+          {slides.map((_, i) => (
+            <button
+              type="button"
+              class="hc hc--dot"
+              data-dot
+              data-testid="hero-dot"
+              aria-label={`Ir a la foto ${i + 1}`}
+              aria-current={i === 0 ? "true" : undefined}
+            >
+              <span />
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          class="hc hc--arrow hc--next"
+          data-next
+          data-testid="hero-next"
+          aria-label="Foto siguiente"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d={chevron(true)} />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="hc hc--pause"
+          data-pause
+          data-testid="hero-pause"
+          aria-label="Pausar fotos"
+        >
+          <svg
+            class="i-pause"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M8 5v14M16 5v14" />
+          </svg>
+          <svg
+            class="i-play"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M8 5l11 7-11 7z" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
 </section>
+
+<script>
+  document
+    .querySelectorAll<HTMLElement>("[data-testid='hero-carousel']")
+    .forEach((root) => {
+      const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+      if (slides.length < 2) return;
+      const dots = [...root.querySelectorAll<HTMLElement>("[data-dot]")];
+      const pauseBtn = root.querySelector<HTMLButtonElement>("[data-pause]")!;
+      const controls = root.querySelector<HTMLElement>(".home-hero__controls")!;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let index = 0;
+      let userPaused = reduce.matches;
+      let hovering = false;
+      let focusIn = false;
+      let timer: number | undefined;
+
+      const show = (n: number) => {
+        index = (n + slides.length) % slides.length;
+        slides.forEach((el, i) => {
+          el.classList.toggle("is-active", i === index);
+          el.setAttribute("aria-hidden", i === index ? "false" : "true");
+        });
+        dots.forEach((d, i) => {
+          if (i === index) d.setAttribute("aria-current", "true");
+          else d.removeAttribute("aria-current");
+        });
+        root.dataset.tone = slides[index].dataset.tone ?? "dark";
+      };
+      const stop = () => {
+        window.clearInterval(timer);
+        timer = undefined;
+      };
+      const sync = () => {
+        stop();
+        if (!userPaused && !hovering && !focusIn && !reduce.matches) {
+          timer = window.setInterval(() => show(index + 1), 6000);
+        }
+      };
+      const setPaused = (v: boolean) => {
+        userPaused = v;
+        root.classList.toggle("is-paused", v);
+        pauseBtn.setAttribute(
+          "aria-label",
+          v ? "Reanudar fotos" : "Pausar fotos",
+        );
+        sync();
+      };
+      root.classList.toggle("is-paused", userPaused);
+      if (userPaused) pauseBtn.setAttribute("aria-label", "Reanudar fotos");
+
+      root.querySelector("[data-prev]")!.addEventListener("click", () => {
+        show(index - 1);
+        sync();
+      });
+      root.querySelector("[data-next]")!.addEventListener("click", () => {
+        show(index + 1);
+        sync();
+      });
+      dots.forEach((d, i) =>
+        d.addEventListener("click", () => {
+          show(i);
+          sync();
+        }),
+      );
+      pauseBtn.addEventListener("click", () => setPaused(!userPaused));
+      controls.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+        e.preventDefault();
+        show(index + (e.key === "ArrowRight" ? 1 : -1));
+        sync();
+      });
+      root.addEventListener("mouseenter", () => {
+        hovering = true;
+        sync();
+      });
+      root.addEventListener("mouseleave", () => {
+        hovering = false;
+        sync();
+      });
+      root.addEventListener("focusin", () => {
+        focusIn = true;
+        sync();
+      });
+      root.addEventListener("focusout", (e) => {
+        if (!root.contains((e as FocusEvent).relatedTarget as Node)) {
+          focusIn = false;
+          sync();
+        }
+      });
+      reduce.addEventListener("change", () => {
+        if (reduce.matches) setPaused(true);
+      });
+      sync();
+    });
+</script>
 
 <style>
   .home-hero {
@@ -41,26 +229,89 @@ const { hero } = Astro.props;
     inset: 0;
     z-index: -2;
   }
+  .home-hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+  .home-hero__slide.is-active {
+    opacity: 1;
+  }
   .home-hero__media :global(.photo--pending) {
     place-items: start end;
     padding: 0.75rem;
+  }
+  .home-hero__scrim {
+    z-index: -1;
+  }
+  .home-hero__scrim--light {
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+  .home-hero[data-tone="light"] .home-hero__scrim--light {
+    opacity: 1;
   }
   @media (max-width: 47.99rem) {
     .home-hero__media :global(.photo__gap-label) {
       display: none;
     }
+    .home-hero__media {
+      inset: 0 0 auto;
+      block-size: 13.5rem;
+    }
+    .home-hero__scrim {
+      background: linear-gradient(
+        180deg,
+        rgb(7 6 11 / 5%) 0,
+        rgb(7 6 11 / 30%) 7rem,
+        var(--color-stage) 13.5rem
+      );
+    }
+    .home-hero__scrim--light {
+      background: linear-gradient(
+        180deg,
+        rgb(7 6 11 / 25%) 0,
+        rgb(7 6 11 / 55%) 7rem,
+        var(--color-stage) 13.5rem
+      );
+    }
+    .home-hero__inner {
+      padding-block: 13.75rem 2.5rem;
+    }
+    .home-hero__controls {
+      position: absolute;
+      inset-block-start: 10rem;
+      inset-inline: 0;
+      justify-content: center;
+    }
   }
-  .home-hero__scrim {
-    z-index: -1;
-    background: linear-gradient(
-      90deg,
-      rgb(7 6 11 / 94%) 0%,
-      rgb(7 6 11 / 82%) 55%,
-      rgb(7 6 11 / 55%) 100%
-    );
-  }
-  .home-hero__inner {
-    padding-block: 2.5rem 2.75rem;
+  @media (min-width: 48rem) {
+    .home-hero__scrim {
+      background:
+        linear-gradient(
+          90deg,
+          rgb(7 6 11 / 92%) 0%,
+          rgb(7 6 11 / 72%) 38%,
+          rgb(7 6 11 / 18%) 68%,
+          rgb(7 6 11 / 0%) 100%
+        ),
+        linear-gradient(0deg, rgb(7 6 11 / 55%) 0%, transparent 30%);
+    }
+    .home-hero__scrim--light {
+      background:
+        linear-gradient(
+          90deg,
+          rgb(7 6 11 / 94%) 0%,
+          rgb(7 6 11 / 84%) 45%,
+          rgb(7 6 11 / 45%) 72%,
+          rgb(7 6 11 / 25%) 100%
+        ),
+        linear-gradient(0deg, rgb(7 6 11 / 60%) 0%, transparent 30%);
+    }
+    .home-hero__inner {
+      padding-block: 3rem;
+    }
   }
   .home-hero__copy {
     max-inline-size: 38rem;
@@ -76,6 +327,14 @@ const { hero } = Astro.props;
     letter-spacing: var(--letter-spacing-display);
     line-height: 1.2;
     text-transform: uppercase;
+  }
+  :global(html[data-titulo="serif"]) .home-hero__title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: calc(var(--font-size-display) * 1.2);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.08;
+    text-transform: none;
   }
   .home-hero__rule {
     margin-block: 1.1rem;
@@ -105,6 +364,121 @@ const { hero } = Astro.props;
       min-block-size: 34rem;
       display: flex;
       align-items: center;
+    }
+  }
+
+  /* Carousel controls */
+  .home-hero__controls {
+    z-index: 2;
+    display: flex;
+    align-items: center;
+  }
+  .hc {
+    display: grid;
+    place-items: center;
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+  }
+  .hc:focus-visible {
+    outline: 2px solid var(--color-pink);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .hc svg {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgb(0 0 0 / 55%));
+  }
+  .hc--dot span {
+    display: block;
+    inline-size: 1.5rem;
+    block-size: 2px;
+    background: rgb(255 255 255 / 55%);
+    box-shadow: 0 0 4px rgb(0 0 0 / 45%);
+  }
+  .hc--dot[aria-current="true"] span {
+    background: var(--color-pink);
+    block-size: 3px;
+  }
+  .hc__dots {
+    display: flex;
+  }
+  .hc--pause .i-play,
+  .is-paused .hc--pause .i-pause {
+    display: none;
+  }
+  .is-paused .hc--pause .i-play {
+    display: block;
+    fill: currentColor;
+  }
+  @media (min-width: 48rem) {
+    .home-hero__controls {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline: 0;
+      justify-content: center;
+    }
+    .hc--arrow {
+      position: absolute;
+      inset-block-start: calc(50% - 1.5rem - 0.75rem);
+      min-inline-size: 3rem;
+      min-block-size: 3rem;
+    }
+    .hc--arrow svg {
+      inline-size: 2rem;
+      block-size: 2rem;
+    }
+    .hc--prev {
+      inset-inline-start: 1rem;
+    }
+    .hc--next {
+      inset-inline-end: 1rem;
+    }
+  }
+  @media (hover: hover) {
+    .hc:hover {
+      color: var(--color-pink);
+    }
+  }
+
+  /* One load moment: copy fades and rises once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .home-hero__copy > * {
+      animation: hero-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .home-hero__copy > :nth-child(2) {
+      animation-delay: 70ms;
+    }
+    .home-hero__copy > :nth-child(3) {
+      animation-delay: 140ms;
+    }
+    .home-hero__copy > :nth-child(4) {
+      animation-delay: 210ms;
+    }
+    .home-hero__copy > :nth-child(5) {
+      animation-delay: 280ms;
+    }
+  }
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero__slide,
+    .home-hero__scrim--light {
+      transition: none;
     }
   }
 </style>

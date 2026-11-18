@@ -6,5 +6,13 @@
 - Do not invent schedules, prices, testimonials, metrics, rights, or business claims. Mark unknown business facts as `Needs owner confirmation`.
 - Reuse existing components and tokens before adding abstractions. Keep optional CMS sections absent when their content is missing.
 - Use test-driven development for behavior changes and run the narrow test first. Before a PR, run `pnpm validate` and report any checks that could not run.
-- Route selectively to control cost: use Sol with high reasoning for planning, Luna for bounded exploration and mechanical execution, Terra for routine multi-file integration or QA, and at most two child agents at once. Use a stronger model only after a concrete failure or ambiguity.
+- Route selectively to control cost, using the project agents in `.claude/agents/`:
+  - `carmen-planner` (opus) for planning, architecture decisions, and splitting work into file-disjoint tasks.
+  - `carmen-explorer` (haiku) for bounded, read-only search and lookups.
+  - `carmen-builder` (haiku) for mechanical execution of a precise spec in assigned files.
+  - `carmen-ui` (sonnet) for UI polish and responsive layout.
+  - `carmen-tester` (sonnet) for tests, QA, and screenshots.
+  - `carmen-reviewer` (sonnet) for independent review; it must not be the agent that built the UI.
+  - Run at most two child agents at once.
+  - Escalate to a stronger model (opus) only after a concrete failure or ambiguity, not by default.
 - Preserve unrelated working-tree changes. Never merge, deploy, publish, or close an issue unless the user explicitly authorized that external action.

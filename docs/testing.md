@@ -54,6 +54,7 @@ Playwright runs two projects only: `mobile-390` (390x844, touch) and `desktop-14
 
 - `home.spec.ts`: landmarks, Elena's literal hero copy (read from `src/content/home/inicio.md`), the six header entries, footer contact links, mobile menu, `?cms=keys` flag, axe.
 - `preview-flow.spec.ts`: the Inicio -> Clases de ballet -> Ballet para adultos -> contacto journey, header dropdown (desktop hover/focus/Escape, mobile chevron and 44px targets), focus outlines, internal links returning 200, no horizontal overflow, image rendering, show gallery hover/focus/touch/reduced motion, carousel, enquiry form validation and test mode (no network POST), axe on each verified page, and the pending-page guard.
+- `home-hero.spec.ts`: Home hero carousel (4 dots, prev/next/dot/ArrowLeft/ArrowRight, one non-aria-hidden slide, fixed H1, only first image eager), autoplay and pause using the Playwright clock, hover pause, `prefers-reduced-motion` (no autoplay, `Reanudar fotos`, no copy animation), mobile fold and 44px control targets, desktop hero height, the `?titulo=serif` headline variant (computed fonts, axe), and the two-column ballet landing cards at 360px. It also writes `home-slide{1..4}-*-fold.png` and `home-serif-*-fold.png`.
 - Screenshots (above the fold and full page, both widths) are written to `test-results/preview-shots/`, which is gitignored.
 
 The axe result is an automated signal only; it is not a WCAG conformance claim.

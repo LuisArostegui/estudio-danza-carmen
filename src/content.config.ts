@@ -43,7 +43,17 @@ const home = defineCollection({
         body: z.string(),
         primaryCta: cta,
         secondaryCta: cta,
-        photo: photo(image),
+        /** Home carousel photos; the text above stays fixed. */
+        slides: z
+          .array(
+            photo(image)
+              .unwrap()
+              .extend({
+                /** "light" = bright photo, gets a stronger scrim. */
+                tone: z.enum(["dark", "light"]).default("dark"),
+              }),
+          )
+          .min(1),
       }),
       story: z.object({
         accent: z.string().optional(),

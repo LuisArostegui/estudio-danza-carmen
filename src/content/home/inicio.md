@@ -15,12 +15,31 @@ hero:
   secondaryCta:
     label: "Conoce nuestra escuela"
     href: "/sobre-nosotros/"
-  photo:
-    # Add the authorised stage photo here, e.g. src: "../../assets/fotos/portada-escenario.jpg"
-    alt: ""
-    pending: "Foto de escenario autorizada para la portada (la de la captura de referencia)"
-    focusDesktop: "65% 45%"
-    focusMobile: "70% 40%"
+  # Carousel photos, shown in this order. Only the photos change; the text stays.
+  # focusDesktop / focusMobile = two numbers (left-right, top-bottom) saying which
+  # part of the photo stays visible when it is cropped (0% = left/top, 100% = right/bottom).
+  # tone "light" = bright photo, the dark veil behind the text gets stronger.
+  slides:
+    - src: "../../assets/fotos/escenario-vestidos-rojos.jpg"
+      alt: "Alumnas de la escuela bailando sobre el escenario con vestidos rojos y luz azul"
+      focusDesktop: "50% 50%"
+      focusMobile: "50% 55%"
+      tone: "dark"
+    - src: "../../assets/fotos/escenario-tutus-rosas.jpg"
+      alt: "Alumnas jóvenes con tutús rosa pálido en un escenario de luz morada"
+      focusDesktop: "50% 45%"
+      focusMobile: "50% 45%"
+      tone: "dark"
+    - src: "../../assets/fotos/aula-barra.jpg"
+      alt: "Alumnas en la barra del aula luminosa, con la profesora a la derecha"
+      focusDesktop: "55% 50%"
+      focusMobile: "60% 50%"
+      tone: "light"
+    - src: "../../assets/fotos/zapatillas-barra.jpg"
+      alt: "Detalle de piernas y zapatillas de ballet junto a la barra sobre suelo de madera"
+      focusDesktop: "50% 60%"
+      focusMobile: "50% 60%"
+      tone: "light"
 
 story:
   accent: "Nuestra historia"
@@ -39,15 +58,18 @@ classes:
       body: "Aprende ballet clásico en grupos organizados por edad y nivel, desde iniciación hasta formación avanzada."
       href: "/clases-de-ballet-granada/"
       photo:
-        pending: "Foto de grupo de ballet en escena"
+        src: "../../assets/fotos/escenario-tutus-rosas.jpg"
+        alt: "Alumnas con tutús rosas en un espectáculo de la escuela"
+        focusDesktop: "62% 50%"
+        focusMobile: "60% 45%"
     - title: "Ballet para adultos"
       body: "Empieza desde cero o retoma tu camino en la danza con clases pensadas para disfrutar, aprender y cuidarte."
       href: "/clases-de-ballet-granada/ballet-para-adultos/"
       photo:
-        src: "../../assets/fotos/ballet-para-adultos-ia.png"
-        alt: "Bailarina adulta en arabesque sobre fondo rosado"
-        focusDesktop: "68% 40%"
-        focusMobile: "70% 35%"
+        src: "../../assets/fotos/aula-barra.jpg"
+        alt: "Alumnas en la barra del aula siguiendo a la profesora"
+        focusDesktop: "40% 50%"
+        focusMobile: "35% 50%"
     - title: "Salud corporal"
       body: "Cuida tu cuerpo con pilates, barre, acondicionamiento físico y otras clases enfocadas al bienestar y el movimiento."
       href: "/salud-corporal/"
@@ -83,7 +105,10 @@ rad:
     label: "Descubre nuestra formación RAD"
     href: "/examenes-rad/"
   photo:
-    pending: "Foto de aula con alumnado en la barra (con consentimiento)"
+    src: "../../assets/fotos/zapatillas-barra.jpg"
+    alt: "Pies de alumnas con zapatillas de ballet junto a la barra"
+    focusDesktop: "50% 60%"
+    focusMobile: "50% 60%"
 
 shows:
   title: "De nuestras aulas al escenario"

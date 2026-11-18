@@ -14,10 +14,10 @@ intro: "Tanto si quieres empezar desde cero, si bailaste en el pasado y te gusta
 # Button label proposed from Elena's "Escríbenos sin compromiso".
 ctaLabel: "Consulta sin compromiso"
 photo:
-  src: "../../assets/fotos/ballet-para-adultos-ia.png"
-  alt: "Bailarina adulta en arabesque sobre fondo rosado"
-  focusDesktop: "70% 40%"
-  focusMobile: "68% 30%"
+  src: "../../assets/fotos/aula-barra.jpg"
+  alt: "Alumnas en la barra del aula siguiendo a la profesora"
+  focusDesktop: "40% 50%"
+  focusMobile: "35% 50%"
 benefits:
   - title: "Empiezas donde estés y avanzas a tu ritmo"
     body: "Tanto si partes de cero como si tienes experiencia, verás tu progreso sin comparaciones ni presión. Cada clase es un paso más."
@@ -49,7 +49,8 @@ pendingFacts:
   - "«Más de 30 años» aquí frente a «más de 35 años» en la portada"
   - "Grupos de adultos jóvenes para estudiantes de la UGR"
   - "Texto del botón «Consulta sin compromiso» (propuesto)"
-  - "Fotos autorizadas de la clase de adultos"
+  - "¿La foto del aula con barra es de un grupo de adultos? Si no, falta una foto de esa clase"
+  - "Fotos autorizadas de la clase de adultos para la galería"
 ---
 
 ## ¿Cómo son las clases de ballet para adultos?
