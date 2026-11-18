@@ -135,8 +135,10 @@ for (const file of await findIndexFiles(distDirectory)) {
 const sorted = [...pages].sort(([a], [b]) => a.localeCompare(b));
 const complete = sorted.filter(([, page]) => page.status === "complete");
 const pending = sorted.filter(([, page]) => page.status === "pending");
+// Built pages with real content that are still in owner review.
+const review = sorted.filter(([, page]) => page.status === "review");
 const unknown = sorted.filter(
-  ([, page]) => !["complete", "pending"].includes(page.status),
+  ([, page]) => !["complete", "pending", "review"].includes(page.status),
 );
 
 console.log(`\nCOMPLETE (${complete.length}):`);
@@ -147,6 +149,8 @@ for (const [route] of complete) {
 }
 console.log(`\nPENDING (not verified) (${pending.length}):`);
 for (const [route] of pending) console.log(`  ${route}`);
+console.log(`\nIN REVIEW (not verified) (${review.length}):`);
+for (const [route] of review) console.log(`  ${route}`);
 
 const problems = [];
 for (const route of VERIFIED_ROUTES) {
@@ -159,6 +163,9 @@ for (const route of VERIFIED_ROUTES) {
 for (const [route, page] of pending) {
   if (!page.noindex) problems.push(`pending page lacks noindex: ${route}`);
 }
+for (const [route, page] of review) {
+  if (!page.noindex) problems.push(`review page lacks noindex: ${route}`);
+}
 for (const [route, page] of unknown) {
   problems.push(`page without data-page-status (${page.status}): ${route}`);
 }
@@ -170,5 +177,5 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `\nVerification status OK: ${VERIFIED_ROUTES.length} verified routes complete; ${pending.length} pending pages excluded and noindex.`,
+  `\nVerification status OK: ${VERIFIED_ROUTES.length} verified routes complete; ${pending.length} pending and ${review.length} in-review pages excluded and noindex.`,
 );

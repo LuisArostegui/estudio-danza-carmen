@@ -62,7 +62,8 @@ export async function getSchool() {
 export type MenuLink = {
   label: string;
   href: string;
-  status: "complete" | "pending";
+  /** Only `pending` is announced as "en preparación" in the header. */
+  status: "complete" | "pending" | "review";
 };
 
 export type MenuItem = MenuLink & { children?: MenuLink[] };
@@ -85,25 +86,38 @@ export async function getSiteNavigation(): Promise<MenuItem[]> {
       })),
   }));
 
-  const direct = ["/espectaculos/", "/examenes-rad/", "/cursos/"].map(
-    (href) => {
-      const page = pendingPages.find((item) => item.path === href);
-      return {
-        label: page?.menuLabel ?? href,
-        href,
-        status: "pending" as const,
-      };
-    },
-  );
+  const direct: MenuItem[] = directPages.map(({ label, href }) => ({
+    label,
+    href,
+    status: directPageStatus(href),
+  }));
 
   return [...families, ...direct];
+}
+
+/** Header entries without a dropdown, in Elena's order (01 · §2). */
+export const directPages = [
+  { label: "Espectáculos", href: "/espectaculos/" },
+  { label: "Exámenes RAD", href: "/examenes-rad/" },
+  { label: "Cursos", href: "/cursos/" },
+] as const;
+
+/**
+ * Built pages with real content that are still waiting for owner review.
+ * They stay noindex but are no longer announced as "en preparación".
+ */
+export const reviewPaths: string[] = ["/espectaculos/"];
+
+/** One status per route, shared by the header and the page itself. */
+export function directPageStatus(href: string): MenuLink["status"] {
+  if (pendingPages.some((page) => page.path === href)) return "pending";
+  return reviewPaths.includes(href) ? "review" : "complete";
 }
 
 export type PendingPage = {
   /** Route with leading and trailing slash. */
   path: string;
   title: string;
-  menuLabel?: string;
   /** What Elena or the school still has to provide. */
   needs: string[];
 };
@@ -123,15 +137,8 @@ export const pendingPages: PendingPage[] = [
     ],
   },
   {
-    path: "/espectaculos/",
-    title: "Espectáculos",
-    menuLabel: "Espectáculos",
-    needs: ["Fotos autorizadas de cada producción", "Confirmar títulos"],
-  },
-  {
     path: "/examenes-rad/",
     title: "Exámenes RAD",
-    menuLabel: "Exámenes RAD",
     needs: [
       "Denominación exacta: «preparadora» o «examinador oficial»",
       "Uso de la marca RAD",
@@ -140,7 +147,6 @@ export const pendingPages: PendingPage[] = [
   {
     path: "/cursos/",
     title: "Cursos",
-    menuLabel: "Cursos",
     needs: [
       "Próximas convocatorias con fecha, horario, nivel, precio y plazas",
     ],

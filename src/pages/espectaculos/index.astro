@@ -1,0 +1,449 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Photo from "../../components/Photo.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { directPageStatus } from "../../lib/catalog";
+
+/**
+ * Espectáculos: Elena's dossier copy (00 · «H1: Espectáculos») with the seven
+ * productions in dossier order. In review: noindex until Elena signs it off.
+ * Photo gaps and pending facts are shown only in the private preview.
+ */
+const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
+
+const pageEntry = await getEntry("performancesPage", "espectaculos");
+if (!pageEntry) throw new Error("Missing src/content/pages/espectaculos.md");
+const page = pageEntry.data;
+
+const productions = (await getCollection("performances")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const number = (order: number) => String(order).padStart(2, "0");
+const pendingFacts = [
+  ...page.pendingFacts,
+  ...productions.flatMap((item) =>
+    item.data.pendingFacts.filter(
+      (fact) => !/fotos autorizadas de|fecha y lugar de la/.test(fact),
+    ),
+  ),
+];
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.description}
+  pageStatus={directPageStatus("/espectaculos/")}
+>
+  <section class="shows-intro" aria-labelledby="shows-title">
+    <div class="shell">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: page.title }]}
+      />
+      <SectionTitle as="h1" id="shows-title" title={page.title} />
+      <p class="shows-intro__lead">{page.intro}</p>
+      {
+        showPreviewNotes && pendingFacts.length > 0 && (
+          <div class="preview-note shows-intro__note">
+            <p class="shows-intro__badge">Página en revisión</p>
+            <ul>
+              {pendingFacts.map((fact) => (
+                <li>{fact}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="shows-story" aria-labelledby="shows-story-title">
+    <div class="shell shows-story__grid">
+      <SectionTitle id="shows-story-title" title={page.story.title} />
+      <div class="shows-story__body" data-reveal>
+        {page.story.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="shows-archive" aria-labelledby="shows-archive-title">
+    <div class="shell">
+      <SectionTitle
+        id="shows-archive-title"
+        title={page.archive.title}
+        intro={page.archive.intro}
+        align="center"
+      />
+
+      <ul
+        class="show-index"
+        data-testid="performance-index"
+        data-performance-index
+        aria-label="Ir a cada espectáculo"
+      >
+        {
+          productions.map((item) => (
+            <li>
+              <a
+                class:list={["show-tile", { "is-gap": !item.data.photo?.src }]}
+                href={`#${item.id}`}
+              >
+                {item.data.photo?.src || showPreviewNotes ? (
+                  <Photo
+                    photo={item.data.photo}
+                    tone="dark"
+                    decorative
+                    sizes="(min-width: 64rem) 25vw, 50vw"
+                  />
+                ) : (
+                  <span class="photo show-tile__plain" aria-hidden="true" />
+                )}
+                <span class="show-tile__number" aria-hidden="true">
+                  {number(item.data.order)}
+                </span>
+                <span class="show-tile__label" data-performance-label>
+                  {item.data.title}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Entries continue the «Nuestros espectáculos» section (H2 → H3). -->
+  <div class="shows-entries">
+    <div class="shell show-entries">
+      {
+        productions.map((item) => {
+          const hasMedia = Boolean(item.data.photo?.src) || showPreviewNotes;
+          return (
+            <article
+              id={item.id}
+              class:list={["show-entry", { "has-media": hasMedia }]}
+              aria-labelledby={`${item.id}-title`}
+              data-reveal
+            >
+              {hasMedia && (
+                <div class="show-entry__media photo-frame">
+                  <Photo
+                    photo={item.data.photo}
+                    tone="light"
+                    sizes="(min-width: 48rem) 40vw, 100vw"
+                  />
+                </div>
+              )}
+              <div class="show-entry__body">
+                <p class="show-entry__number" aria-hidden="true">
+                  {number(item.data.order)}
+                </p>
+                <h3 id={`${item.id}-title`} class="show-entry__title">
+                  {item.data.title}
+                </h3>
+                <p>{item.data.summary}</p>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+
+  <section
+    class="shows-closing"
+    aria-labelledby="shows-closing-title"
+    data-testid="performances-cta"
+  >
+    <div class="shell shows-closing__inner" data-reveal>
+      <SectionTitle
+        id="shows-closing-title"
+        title={page.closing.title}
+        align="center"
+        tone="dark"
+      />
+      {page.closing.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      <p class="shows-closing__question">{page.closing.question}</p>
+      <a class="button button--light" href={page.closing.cta.href}>
+        {page.closing.cta.label}
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .shows-intro {
+    padding-block: var(--layout-block-y) 1rem;
+  }
+
+  .shows-intro__lead {
+    max-width: var(--layout-text-max);
+    margin: 0;
+    color: var(--color-ink);
+    font-size: var(--font-size-lead);
+    line-height: 1.7;
+  }
+
+  .shows-intro__note {
+    display: grid;
+    gap: 0.4rem;
+    margin-block-start: 1.5rem;
+  }
+
+  .shows-intro__note p,
+  .shows-intro__note ul {
+    margin: 0;
+  }
+
+  .shows-intro__note ul {
+    padding-left: 1.25rem;
+  }
+
+  .shows-intro__badge {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .shows-story {
+    padding-block: var(--layout-block-y);
+  }
+
+  .shows-story__body {
+    max-width: var(--layout-text-max);
+  }
+
+  .shows-story__body p {
+    margin: 0 0 1rem;
+  }
+
+  @media (min-width: 64rem) {
+    .shows-story__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+
+  .shows-archive {
+    padding-block: var(--layout-block-y);
+    background: var(--color-tint);
+  }
+
+  /* Index: Elena's hover request (02 · p. 16) rebuilt from the Arabesque
+     overlay pattern: 40 % dark veil, 200 ms, revealed by pointer or focus on
+     a real link, and always visible on touch screens. */
+  .show-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .show-index {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .show-index li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 48rem) {
+    .show-index li:last-child:nth-child(odd) {
+      grid-column: auto / span 2;
+    }
+  }
+
+  .show-tile {
+    position: relative;
+    display: block;
+    block-size: 100%;
+    min-block-size: 10rem;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .show-index li:last-child:nth-child(odd) .show-tile {
+    aspect-ratio: 2 / 1;
+  }
+
+  .show-tile :global(.photo) {
+    position: absolute;
+    inset: 0;
+    transition: transform var(--motion-duration-base) var(--motion-ease-image);
+  }
+
+  .show-tile :global(.photo__gap-label) {
+    display: none;
+  }
+
+  .show-tile__plain {
+    background: var(--color-stage);
+  }
+
+  .show-tile__number {
+    position: absolute;
+    inset-block-start: 0.9rem;
+    inset-inline-start: 1rem;
+    color: rgb(255 255 255 / 85%);
+    font-size: 0.75rem;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 70%);
+    letter-spacing: var(--letter-spacing-label);
+  }
+
+  .show-tile__label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: var(--color-overlay);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-label);
+    line-height: 1.4;
+    text-align: center;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 60%);
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity var(--motion-duration-overlay) ease-in-out;
+  }
+
+  .show-tile:hover .show-tile__label,
+  .show-tile:focus-visible .show-tile__label {
+    opacity: 1;
+  }
+
+  .show-tile:hover :global(.photo),
+  .show-tile:focus-visible :global(.photo) {
+    transform: scale(var(--motion-image-zoom));
+  }
+
+  /* No authorised photo yet: nothing to reveal, so the name stays visible
+     and the veil only marks hover / focus. */
+  .show-tile.is-gap .show-tile__label {
+    background: transparent;
+    opacity: 1;
+    transition: background-color var(--motion-duration-overlay) ease-in-out;
+  }
+
+  .show-tile.is-gap:hover .show-tile__label,
+  .show-tile.is-gap:focus-visible .show-tile__label {
+    background: var(--color-overlay);
+  }
+
+  .show-tile:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: -3px;
+  }
+
+  @media (hover: none) {
+    .show-tile__label {
+      place-items: end start;
+      padding: 0.9rem 1rem;
+      background: linear-gradient(180deg, transparent 35%, rgb(0 0 0 / 78%));
+      font-size: 0.72rem;
+      text-align: start;
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .show-tile__label,
+    .show-tile.is-gap .show-tile__label,
+    .show-tile :global(.photo) {
+      transition: none;
+    }
+
+    .show-tile:hover :global(.photo),
+    .show-tile:focus-visible :global(.photo) {
+      transform: none;
+    }
+  }
+
+  .shows-entries {
+    padding-block: var(--layout-block-y);
+  }
+
+  .show-entries {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+
+  .show-entry {
+    display: grid;
+    gap: 1.25rem;
+    scroll-margin-block-start: 5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .show-entry.has-media {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .show-entry.has-media:nth-child(even) .show-entry__media {
+      order: 2;
+    }
+  }
+
+  .show-entry__media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .show-entry__body {
+    max-width: var(--layout-text-max);
+  }
+
+  .show-entry__body p {
+    margin: 0;
+  }
+
+  .show-entry__number {
+    margin-block-end: 0.5rem !important;
+    color: var(--color-pink-ink);
+    font-size: 0.75rem;
+    letter-spacing: var(--letter-spacing-label);
+  }
+
+  .show-entry__title {
+    margin: 0 0 0.75rem;
+    color: var(--color-ink);
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .shows-closing {
+    padding-block: var(--layout-block-y);
+    background: var(--color-stage);
+    color: var(--color-stage-text);
+  }
+
+  .shows-closing__inner {
+    display: grid;
+    justify-items: center;
+    max-width: 46rem;
+    text-align: center;
+  }
+
+  .shows-closing__inner p {
+    margin: 0 0 1rem;
+  }
+
+  .shows-closing__question {
+    margin-block: 0.5rem 1.75rem !important;
+    color: #fff;
+    font-size: var(--font-size-lead);
+  }
+</style>
