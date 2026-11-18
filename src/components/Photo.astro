@@ -1,0 +1,138 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+/**
+ * Optimised photo with per-device framing, or an identified gap when the
+ * authorised photo is still missing. Never falls back to stock imagery.
+ */
+type PhotoData = {
+  src?: ImageMetadata;
+  alt?: string;
+  pending?: string;
+  focusDesktop?: string;
+  focusMobile?: string;
+};
+
+type Props = {
+  photo?: PhotoData;
+  /** Responsive `sizes` attribute, e.g. "(min-width: 64rem) 50vw, 100vw". */
+  sizes?: string;
+  widths?: number[];
+  class?: string;
+  /** Load eagerly (above the fold). */
+  priority?: boolean;
+  /** Tone of the gap placeholder. */
+  tone?: "dark" | "light";
+  /** Inside a link: hide the gap from assistive tech (link text names it). */
+  decorative?: boolean;
+};
+
+const {
+  photo = {},
+  sizes = "100vw",
+  widths = [480, 768, 1080, 1440, 1920],
+  class: className,
+  priority = false,
+  tone = "light",
+  decorative = false,
+} = Astro.props;
+
+const style = `--focus-desktop: ${photo.focusDesktop ?? "50% 50%"}; --focus-mobile: ${photo.focusMobile ?? "50% 50%"};`;
+const gapLabel = photo.pending ?? "Foto autorizada";
+---
+
+{
+  photo.src ? (
+    <Picture
+      src={photo.src}
+      alt={photo.alt ?? ""}
+      widths={widths.filter((width) => width <= (photo.src?.width ?? 1920))}
+      sizes={sizes}
+      formats={["avif", "webp"]}
+      loading={priority ? "eager" : "lazy"}
+      fetchpriority={priority ? "high" : "auto"}
+      class:list={["photo", className]}
+      style={style}
+    />
+  ) : (
+    <div
+      class:list={["photo", "photo--pending", `photo--${tone}`, className]}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : `Foto pendiente: ${gapLabel}`}
+      aria-hidden={decorative ? "true" : undefined}
+      data-photo-pending={gapLabel}
+    >
+      <span class="photo__gap-label" aria-hidden="true">
+        <span class="photo__gap-title">Foto pendiente</span>
+        <span class="photo__gap-text">{gapLabel}</span>
+      </span>
+    </div>
+  )
+}
+
+<style>
+  .photo {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: var(--focus-mobile);
+  }
+
+  @media (min-width: 48rem) {
+    .photo {
+      object-position: var(--focus-desktop);
+    }
+  }
+
+  .photo--pending {
+    display: grid;
+    place-items: start start;
+    padding: 1rem;
+    min-block-size: 8rem;
+  }
+
+  .photo--dark {
+    background:
+      radial-gradient(
+        ellipse at 70% 30%,
+        rgb(110 70 120 / 45%),
+        transparent 60%
+      ),
+      linear-gradient(160deg, #1c1622, #07060b);
+    color: rgb(255 255 255 / 78%);
+  }
+
+  .photo--light {
+    background-color: var(--color-tint);
+    background-image:
+      repeating-linear-gradient(
+        135deg,
+        transparent 0 14px,
+        var(--color-tint-line) 14px 15px
+      ),
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--color-pink) 50%, #fff),
+        var(--color-tint)
+      );
+    color: var(--color-pink-ink);
+  }
+
+  .photo__gap-label {
+    display: grid;
+    gap: 0.15rem;
+    max-inline-size: 22rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px dashed currentcolor;
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .photo__gap-title {
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+</style>

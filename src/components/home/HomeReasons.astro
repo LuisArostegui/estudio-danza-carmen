@@ -1,0 +1,107 @@
+---
+import assembleIcon from "../../assets/icons/ballet-assemble.svg?url";
+import pencheIcon from "../../assets/icons/ballet-penche.svg?url";
+import echappeIcon from "../../assets/icons/ballet-echappe.svg?url";
+import retireIcon from "../../assets/icons/ballet-retire.svg?no-inline";
+import SectionTitle from "../SectionTitle.astro";
+import type { CollectionEntry } from "astro:content";
+
+type Props = { reasons: CollectionEntry<"home">["data"]["reasons"] };
+const { reasons } = Astro.props;
+
+// The first three illustrations come from https://arabesque.qodeinteractive.com/ballet-home/.
+const icons = [assembleIcon, pencheIcon, echappeIcon, retireIcon];
+---
+
+<section class="home-reasons" aria-labelledby="reasons-title">
+  <div class="shell">
+    <SectionTitle
+      id="reasons-title"
+      title={reasons.title}
+      intro={reasons.body}
+      align="center"
+      tone="dark"
+      class="home-reasons__head"
+      data-reveal
+    />
+    <ul class="home-reasons__grid">
+      {
+        reasons.items.map((item, i) => (
+          <li
+            class="reason"
+            data-reveal
+            data-reveal-delay={String((i % 3) * 100)}
+          >
+            <img
+              class="reason__icon"
+              src={icons[i % icons.length]}
+              width="147"
+              height="147"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+            <h3 class="reason__title">{item.title}</h3>
+            <p class="reason__body">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .home-reasons {
+    background: var(--color-block-dark);
+    padding-block: var(--layout-block-y);
+  }
+  .home-reasons__head {
+    max-inline-size: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .home-reasons__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 40rem) {
+    .home-reasons__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 64rem) {
+    .home-reasons__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+  }
+  .reason {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .reason__icon {
+    inline-size: clamp(7rem, 12vw, 9.1875rem);
+    block-size: auto;
+  }
+  .reason__title {
+    margin: 1rem 0 0.4rem;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-display);
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+  .reason__body {
+    margin: 0;
+    color: var(--color-dark-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+</style>

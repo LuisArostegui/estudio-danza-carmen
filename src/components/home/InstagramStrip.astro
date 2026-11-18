@@ -1,0 +1,115 @@
+---
+import Photo from "../Photo.astro";
+type Props = { instagram: any };
+const { instagram } = Astro.props;
+---
+
+<section
+  class="instagram-strip"
+  aria-label="Instagram"
+  data-testid="home-instagram"
+>
+  <ul class="instagram-strip__grid" data-reveal>
+    {
+      instagram.photos.map((photo: any) => (
+        <li class="instagram-strip__tile photo-frame">
+          <Photo
+            photo={photo}
+            tone="light"
+            decorative
+            sizes="(min-width: 64rem) 17vw, 34vw"
+          />
+        </li>
+      ))
+    }
+  </ul>
+
+  <a
+    class="instagram-strip__badge"
+    href={instagram.href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`Síguenos en Instagram (${instagram.handle})`}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+      <circle cx="12" cy="12" r="4"></circle>
+      <circle cx="17.5" cy="6.5" r="0.9" class="instagram-strip__dot"></circle>
+    </svg>
+  </a>
+</section>
+
+<style>
+  .instagram-strip {
+    position: relative;
+    background: var(--color-surface-default);
+  }
+
+  .instagram-strip__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .instagram-strip__tile {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    filter: grayscale(1);
+    transition: filter 300ms var(--motion-ease-standard);
+  }
+
+  .instagram-strip__tile:hover {
+    filter: none;
+  }
+
+  .instagram-strip__tile :global(picture),
+  .instagram-strip__tile :global(.photo) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .instagram-strip__badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    inline-size: 88px;
+    block-size: 88px;
+    border-radius: 50%;
+    background: var(--color-surface-default);
+    color: var(--color-pink-ink);
+    transform: translate(-50%, -50%);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .instagram-strip__badge svg {
+    inline-size: 2.1rem;
+    block-size: 2.1rem;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .instagram-strip__dot {
+    fill: currentcolor;
+    stroke: none;
+  }
+
+  @media (min-width: 64rem) {
+    .instagram-strip__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-strip__tile {
+      transition: none;
+    }
+  }
+</style>

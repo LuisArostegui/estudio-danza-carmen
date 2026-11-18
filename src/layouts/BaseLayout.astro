@@ -2,14 +2,22 @@
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { getSiteSettings } from "../lib/sanity/content";
+import "@fontsource-variable/montserrat";
+import "@fontsource/pinyon-script";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/400-italic.css";
 import "../styles/global.css";
 
 type Props = {
   title?: string;
+  description?: string;
+  /** Pending pages are noindex and excluded from verified-page tests. */
+  pageStatus?: "complete" | "pending";
 };
 
 const siteSettings = await getSiteSettings();
-const { title } = Astro.props;
+const { title, description, pageStatus = "complete" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const pageTitle = title ?? siteSettings.siteName;
 ---
@@ -19,13 +27,77 @@ const pageTitle = title ?? siteSettings.siteName;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {pageStatus === "pending" && <meta name="robots" content="noindex" />}
+    <script is:inline>
+      /* Review variants: ?titulo=serif switches H1 / section titles to Cormorant;
+         ?paleta=escenario swaps the colour tokens only. A URL value wins and is
+         kept in sessionStorage while navigating; ?titulo=default / ?paleta=default clears it. */
+      (() => {
+        const q = new URLSearchParams(location.search);
+        const pick = (name, value) => {
+          let v = q.get(name);
+          try {
+            if (v === null) v = sessionStorage.getItem(name);
+            else if (v === value) sessionStorage.setItem(name, v);
+            else sessionStorage.removeItem(name);
+          } catch (e) {}
+          if (v === value) document.documentElement.dataset[name] = value;
+        };
+        pick("titulo", "serif");
+        pick("paleta", "escenario");
+      })();
+      /* Scroll reveal: hidden state only exists when JS runs and motion is allowed. */
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("js-reveal");
+      }
+    </script>
+    <style is:global>
+      [data-titulo="serif"] .section-title {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: calc(var(--font-size-title) * 1.18);
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.1;
+        text-transform: none;
+      }
+    </style>
   </head>
-  <body>
+  <body data-page-status={pageStatus}>
     <SiteHeader currentPath={currentPath} siteSettings={siteSettings} />
     <main id="main-content" class="site-main">
       <slot />
     </main>
     <SiteFooter currentPath={currentPath} siteSettings={siteSettings} />
+    <script is:inline>
+      (() => {
+        const items = document.querySelectorAll("[data-reveal]");
+        if (!document.documentElement.classList.contains("js-reveal")) return;
+        const revealAll = () =>
+          items.forEach((el) => el.classList.add("is-revealed"));
+        window.addEventListener("beforeprint", revealAll);
+        window.setTimeout(revealAll, 3000);
+        if (!("IntersectionObserver" in window)) {
+          items.forEach((el) => el.classList.add("is-revealed"));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-revealed");
+              io.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.15 },
+        );
+        items.forEach((el) => {
+          const delay = Math.min(Number(el.dataset.revealDelay) || 0, 300);
+          if (delay) el.style.transitionDelay = delay + "ms";
+          io.observe(el);
+        });
+      })();
+    </script>
     <script is:inline>
       (() => {
         const params = new URLSearchParams(window.location.search);

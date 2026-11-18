@@ -1,91 +1,33 @@
 ---
-import { isCurrentPath } from "../lib/navigation";
+import { getSchool, getSiteNavigation } from "../lib/catalog";
 import type { SiteSettings } from "../lib/sanity/types";
 
 type Props = {
   currentPath: string;
-  siteSettings: SiteSettings;
+  siteSettings?: SiteSettings;
 };
 
-const { currentPath, siteSettings } = Astro.props;
-const addressLines = siteSettings.address
-  .split(/\r?\n/)
-  .map((line) => line.trim())
-  .filter(Boolean);
----
+const { currentPath } = Astro.props;
+const [menu, school] = await Promise.all([getSiteNavigation(), getSchool()]);
 
-<div class="site-topbar" role="region" aria-label="Informacion de la escuela">
-  <div class="site-topbar__inner">
-    <p data-cms-field="siteSettings.topbarMessage">
-      {siteSettings.topbarMessage}
-    </p>
-    <div class="site-topbar__details">
-      {
-        siteSettings.email && (
-          <a
-            href={`mailto:${siteSettings.email}`}
-            data-cms-field="siteSettings.email"
-          >
-            {siteSettings.email}
-          </a>
-        )
-      }
-      {
-        addressLines.length > 0 && (
-          <span data-cms-field="siteSettings.address">
-            {addressLines.join(", ")}
-          </span>
-        )
-      }
-      <span data-cms-field="siteSettings.phoneLabel">
-        {siteSettings.phoneLabel}
-      </span>
-    </div>
-  </div>
-</div>
+const normalize = (path: string) =>
+  (path.split(/[?#]/)[0] || "/").replace(/\/+$/, "") || "/";
+const here = normalize(currentPath);
+const isExact = (href: string) => normalize(href) === here;
+const isWithin = (href: string) => {
+  const target = normalize(href);
+  return target !== "/" && (here === target || here.startsWith(`${target}/`));
+};
+---
 
 <header class="site-header" data-site-header>
   <div class="site-header__inner">
     <a
       class="site-header__brand"
       href="/"
-      aria-label={siteSettings.siteName}
-      data-cms-field="siteSettings.brandLabel"
+      aria-label={`${school.name}, inicio`}
     >
-      <span class="site-header__brand-mark">{siteSettings.brandLabel}</span>
-    </a>
-
-    <nav
-      class="site-nav site-nav--desktop"
-      aria-label={siteSettings.mainNavigationLabel}
-    >
-      <ul class="site-nav__list">
-        {
-          siteSettings.headerNavigation.map((item, index) => {
-            const isCurrent = isCurrentPath(currentPath, item);
-
-            return (
-              <li>
-                <a
-                  class:list={["site-nav__link", { "is-current": isCurrent }]}
-                  href={item.href}
-                  aria-current={isCurrent ? "page" : undefined}
-                  data-cms-field={`siteSettings.headerNavigation[${index}].label`}
-                >
-                  {item.label}
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
-
-    <a
-      class="site-header__search"
-      href="/classes/"
-      aria-label={siteSettings.searchLabel}
-    >
+      {school.name}
     </a>
 
     <button
@@ -93,91 +35,187 @@ const addressLines = siteSettings.address
       type="button"
       aria-controls="site-navigation"
       aria-expanded="false"
+      aria-label="Abrir menú"
       data-menu-button
     >
       <span class="site-header__menu-icon" aria-hidden="true">
         <span></span><span></span><span></span>
       </span>
-      <span data-cms-field="siteSettings.menuLabel"
-        >{siteSettings.menuLabel}</span
-      >
     </button>
-  </div>
 
-  <nav
-    class="site-nav site-nav--mobile"
-    id="site-navigation"
-    aria-label={siteSettings.mobileNavigationLabel}
-    data-site-navigation
-  >
-    <ul class="site-nav__list">
-      {
-        siteSettings.headerNavigation.map((item, index) => {
-          const isCurrent = isCurrentPath(currentPath, item);
-
-          return (
-            <li>
-              <a
-                class:list={["site-nav__link", { "is-current": isCurrent }]}
-                href={item.href}
-                aria-current={isCurrent ? "page" : undefined}
-                data-cms-field={`siteSettings.headerNavigation[${index}].label`}
-                data-menu-link
+    <nav
+      class="site-nav"
+      id="site-navigation"
+      aria-label="Navegación principal"
+      data-site-navigation
+    >
+      <ul class="site-nav__list">
+        {
+          menu.map((item, index) => {
+            const current = isWithin(item.href);
+            const children = item.children ?? [];
+            const panelId = `submenu-${index}`;
+            return (
+              <li
+                class:list={[
+                  "site-nav__item",
+                  { "has-menu": children.length > 0 },
+                ]}
               >
-                {item.label}
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
-  </nav>
+                <div class="site-nav__row">
+                  <a
+                    class:list={["site-nav__link", { "is-current": current }]}
+                    href={item.href}
+                    aria-current={
+                      isExact(item.href) ? "page" : current ? "true" : undefined
+                    }
+                    data-category-link
+                  >
+                    {item.label}
+                    {item.status === "pending" && (
+                      <span class="visually-hidden"> (en preparación)</span>
+                    )}
+                    {children.length > 0 && (
+                      <svg
+                        class="site-nav__chevron"
+                        viewBox="0 0 10 6"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M1 1l4 4 4-4"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                        />
+                      </svg>
+                    )}
+                  </a>
+                  {children.length > 0 && (
+                    <button
+                      class="site-nav__toggle"
+                      type="button"
+                      aria-expanded="false"
+                      aria-controls={panelId}
+                      aria-label={`Mostrar clases de ${item.label}`}
+                      data-submenu-toggle
+                    >
+                      <svg
+                        viewBox="0 0 10 6"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M1 1l4 4 4-4"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {children.length > 0 && (
+                  <ul class="site-nav__panel" id={panelId}>
+                    {children.map((child) => (
+                      <li>
+                        <a
+                          class="site-nav__child"
+                          href={child.href}
+                          aria-current={
+                            isExact(child.href) ? "page" : undefined
+                          }
+                        >
+                          {child.label}
+                          {child.status === "pending" && (
+                            <>
+                              <span
+                                class="site-nav__pending"
+                                aria-hidden="true"
+                              />
+                              <span class="visually-hidden">
+                                {" "}
+                                (en preparación)
+                              </span>
+                            </>
+                          )}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
 </header>
 
 <script>
-  const header = document.querySelector("[data-site-header]");
-  const button = header?.querySelector("[data-menu-button]");
-  const navigation = header?.querySelector("[data-site-navigation]");
-  const links = navigation?.querySelectorAll("[data-menu-link]") ?? [];
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const button = header?.querySelector<HTMLButtonElement>("[data-menu-button]");
+  const nav = header?.querySelector<HTMLElement>("[data-site-navigation]");
 
-  if (
-    button instanceof HTMLButtonElement &&
-    navigation instanceof HTMLElement
-  ) {
-    const closeMenu = (options = { restoreFocus: false }) => {
-      header?.removeAttribute("data-menu-open");
-      button.setAttribute("aria-expanded", "false");
-      navigation.classList.remove("is-open");
-      document.body.classList.remove("menu-open");
-
-      if (options.restoreFocus) {
-        button.focus();
-      }
+  if (header && button && nav) {
+    const setMenu = (open: boolean, restoreFocus = false) => {
+      header.toggleAttribute("data-menu-open", open);
+      button.setAttribute("aria-expanded", String(open));
+      button.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      document.body.classList.toggle("menu-open", open);
+      if (!open && restoreFocus) button.focus();
     };
 
-    button.addEventListener("click", () => {
-      const shouldOpen = button.getAttribute("aria-expanded") !== "true";
+    button.addEventListener("click", () =>
+      setMenu(button.getAttribute("aria-expanded") !== "true", true),
+    );
 
-      button.setAttribute("aria-expanded", String(shouldOpen));
-      navigation.classList.toggle("is-open", shouldOpen);
-      document.body.classList.toggle("menu-open", shouldOpen);
-
-      if (shouldOpen) {
-        header?.setAttribute("data-menu-open", "true");
-      } else {
-        header?.removeAttribute("data-menu-open");
-        button.focus();
-      }
-    });
-
-    window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeMenu({ restoreFocus: true });
-      }
-    });
-
-    for (const link of links) {
-      link.addEventListener("click", () => closeMenu());
+    for (const toggle of nav.querySelectorAll<HTMLButtonElement>(
+      "[data-submenu-toggle]",
+    )) {
+      toggle.addEventListener("click", () => {
+        const open = toggle.getAttribute("aria-expanded") !== "true";
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.closest(".site-nav__item")?.classList.toggle("is-open", open);
+      });
     }
+
+    const desktop = window.matchMedia("(min-width: 64rem)");
+    desktop.addEventListener("change", () => setMenu(false));
+
+    const items = nav.querySelectorAll<HTMLElement>(".has-menu");
+    for (const item of items) {
+      const clear = () => item.classList.remove("is-dismissed");
+      item.addEventListener("pointerleave", clear);
+      item.addEventListener("keydown", (event) => {
+        if (["ArrowDown", "Enter", " "].includes(event.key)) clear();
+      });
+      item.addEventListener("focusout", (event) => {
+        if (!item.contains(event.relatedTarget as Node | null)) clear();
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (!desktop.matches && button.getAttribute("aria-expanded") === "true") {
+        setMenu(false, true);
+        return;
+      }
+      if (desktop.matches) {
+        const open = [...items].find(
+          (item) => item.matches(":focus-within") || item.matches(":hover"),
+        );
+        if (open) {
+          open.classList.add("is-dismissed");
+          open.querySelector<HTMLElement>("[data-category-link]")?.focus();
+        }
+      }
+    });
+
+    nav.addEventListener("click", (event) => {
+      if (!desktop.matches && (event.target as Element).closest("a"))
+        setMenu(false);
+    });
   }
 </script>

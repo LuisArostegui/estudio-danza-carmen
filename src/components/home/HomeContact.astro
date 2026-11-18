@@ -1,0 +1,42 @@
+---
+import EnquiryForm from "../EnquiryForm.astro";
+import ContactBlock from "../ContactBlock.astro";
+import SectionTitle from "../SectionTitle.astro";
+import { getActivities, getSchool } from "../../lib/catalog";
+type Props = { contact: any };
+const { contact } = Astro.props;
+const activities = await getActivities();
+const school = await getSchool();
+---
+
+<section id="contacto" class="home-contact" aria-labelledby="contact-title">
+  <div class="shell home-contact__inner">
+    <div data-reveal>
+      <SectionTitle
+        id="contact-title"
+        title={contact.title}
+        accent={contact.accent}
+        align="center"
+      />
+    </div>
+    <div data-reveal data-reveal-delay="100">
+      <EnquiryForm
+        activities={activities}
+        intro={contact.paragraphs}
+        school={school}
+        idPrefix="inicio"
+      />
+    </div>
+    <ContactBlock />
+  </div>
+</section>
+
+<style>
+  .home-contact {
+    background: var(--color-surface-default);
+    padding-block: var(--layout-block-y);
+  }
+  .home-contact__inner {
+    max-inline-size: 60rem;
+  }
+</style>

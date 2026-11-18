@@ -1,0 +1,72 @@
+---
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import { getEntry } from "astro:content";
+import ContactBlock from "../../components/ContactBlock.astro";
+import EnquiryForm from "../../components/EnquiryForm.astro";
+import { getActivities, getSchool } from "../../lib/catalog";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const home = await getEntry("home", "inicio");
+if (!home) throw new Error("Missing src/content/home/inicio.md");
+const contact = home.data.contact;
+
+const school = await getSchool();
+const activities = await getActivities();
+const description = contact.paragraphs[0];
+---
+
+<BaseLayout
+  title="Consulta · Estudio de Danza Carmen"
+  description={description}
+>
+  <section class="contact-page" aria-labelledby="contact-title">
+    <div class="shell">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: "Consulta" }]}
+      />
+
+      <header class="contact-page__header">
+        <SectionTitle
+          as="h1"
+          id="contact-title"
+          title={contact.title}
+          accent={contact.accent}
+          align="center"
+        />
+      </header>
+
+      <section
+        id="consulta"
+        class="contact-page__form"
+        aria-label="Formulario de consulta"
+      >
+        <EnquiryForm
+          activities={activities}
+          intro={contact.paragraphs}
+          school={school}
+        />
+      </section>
+
+      <section aria-labelledby="contact-data-title">
+        <h2 id="contact-data-title" class="visually-hidden">
+          Datos de contacto y mapa
+        </h2>
+        <ContactBlock />
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-page {
+    padding-block: var(--layout-block-y);
+  }
+
+  .contact-page__header {
+    display: grid;
+    gap: 0.5rem;
+    margin-block: 1.5rem 2.5rem;
+    text-align: center;
+  }
+</style>

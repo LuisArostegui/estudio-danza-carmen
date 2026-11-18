@@ -1,0 +1,447 @@
+---
+/**
+ * Weekly timetable modelled on Arabesque's monthly calendar (rebuilt, not
+ * copied). Desktop: a real table with days as columns and time slots as rows.
+ * Phones (< 48rem): the same sessions as a day-by-day list. Both views share
+ * one set of filter tabs; the script hides non-matching sessions and keeps
+ * the grid shape. With JS off every session is visible.
+ */
+import type { CollectionEntry } from "astro:content";
+import {
+  activityHref,
+  familyLabel,
+  familyOrder,
+  getActivities,
+  type Family,
+} from "../lib/catalog";
+
+type Schedule = CollectionEntry<"schedule">["data"];
+type Props = { schedule: Schedule };
+
+const schedule: Schedule = (Astro.props as Props).schedule;
+
+const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
+const activities = await getActivities();
+const byId = new Map(activities.map((activity) => [activity.id, activity]));
+
+const slots = [...schedule.slots].sort((a, b) =>
+  a.start.localeCompare(b.start),
+);
+
+const sessions = schedule.sessions.map((session) => {
+  const activity = byId.get(session.activity);
+  if (!activity) {
+    throw new Error(
+      `Horario: actividad desconocida «${session.activity}» en horario.md`,
+    );
+  }
+  if (!schedule.days.includes(session.day)) {
+    throw new Error(`Horario: día «${session.day}» no está en days`);
+  }
+  if (!slots.some((slot) => slot.start === session.start)) {
+    throw new Error(`Horario: ${session.start} no coincide con ninguna franja`);
+  }
+  const slot = slots.find((item) => item.start === session.start)!;
+  if (slot.end !== session.end) {
+    throw new Error(
+      `Horario: ${session.start}–${session.end} no coincide con el final de la franja (${slot.end})`,
+    );
+  }
+  return {
+    ...session,
+    title: activity.data.title,
+    family: activity.data.family as Family,
+    href: activityHref(activity),
+  };
+});
+
+/** Lunes–Viernes always; Sábado (or any other day) only when it has classes. */
+const days = schedule.days.filter(
+  (day) =>
+    WEEKDAYS.includes(day) || sessions.some((session) => session.day === day),
+);
+const listDays = days.filter((day) =>
+  sessions.some((session) => session.day === day),
+);
+
+const families = familyOrder.filter((family) =>
+  sessions.some((session) => session.family === family),
+);
+
+const sessionsAt = (day: string, start: string) =>
+  sessions.filter((session) => session.day === day && session.start === start);
+
+const sessionsOn = (day: string) =>
+  sessions
+    .filter((session) => session.day === day)
+    .sort((a, b) => a.start.localeCompare(b.start));
+
+const formatRange = (start: string, end: string) => `${start} – ${end}`;
+---
+
+<section class="timetable" data-timetable data-testid="timetable">
+  <div class="timetable__tabs" role="group" aria-label="Filtrar por disciplina">
+    <button
+      type="button"
+      class="timetable__tab"
+      data-timetable-tab
+      data-family="all"
+      aria-pressed="true"
+      data-testid="timetable-tab"
+    >
+      Todas
+    </button>
+    {
+      families.map((family) => (
+        <button
+          type="button"
+          class="timetable__tab"
+          data-timetable-tab
+          data-family={family}
+          aria-pressed="false"
+          data-testid="timetable-tab"
+        >
+          {familyLabel[family]}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="timetable__table-wrap">
+    <table class="timetable__table">
+      <caption class="visually-hidden">
+        Horario semanal de clases por día y franja horaria
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">
+            <span class="visually-hidden">Franja horaria</span>
+          </th>
+          {
+            days.map((day) => (
+              <th scope="col" class="timetable__day-head">
+                {day}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          slots.map((slot) => (
+            <tr>
+              <th scope="row" class="timetable__slot">
+                {formatRange(slot.start, slot.end)}
+              </th>
+              {days.map((day) => {
+                return (
+                  <td data-testid="timetable-cell">
+                    {sessionsAt(day, slot.start).map((session) => (
+                      <a
+                        class="timetable__session"
+                        href={session.href}
+                        data-family={session.family}
+                      >
+                        <span class="timetable__name">{session.title}</span>
+                        <span class="timetable__time">
+                          {formatRange(session.start, session.end)}
+                        </span>
+                        {session.group && (
+                          <span class="timetable__group">{session.group}</span>
+                        )}
+                      </a>
+                    ))}
+                  </td>
+                );
+              })}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="timetable__list">
+    {
+      listDays.map((day) => (
+        <section class="timetable__day" data-timetable-day>
+          <h2 class="timetable__day-title">{day}</h2>
+          <ul class="timetable__items">
+            {sessionsOn(day).map((session) => (
+              <li data-family={session.family} data-testid="timetable-item">
+                <a class="timetable__item" href={session.href}>
+                  <span class="timetable__item-time">
+                    {formatRange(session.start, session.end)}
+                  </span>
+                  <span class="timetable__item-name">{session.title}</span>
+                  {session.group && (
+                    <span class="timetable__item-group">{session.group}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+
+  <p
+    class="visually-hidden"
+    role="status"
+    aria-live="polite"
+    data-timetable-live
+  >
+  </p>
+
+  <div class="timetable__help">
+    <p>¿Dudas sobre el grupo adecuado?</p>
+    <a class="button button--primary" href="/contacto/">Haz tu consulta</a>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-timetable]");
+
+  if (root) {
+    const tabs = root.querySelectorAll<HTMLButtonElement>(
+      "[data-timetable-tab]",
+    );
+    const sessionEls = root.querySelectorAll<HTMLElement>(
+      "a[data-family], li[data-family]",
+    );
+    const live = root.querySelector<HTMLElement>("[data-timetable-live]");
+    const dayEls = root.querySelectorAll<HTMLElement>("[data-timetable-day]");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const family = tab.dataset.family ?? "all";
+
+        tabs.forEach((other) =>
+          other.setAttribute("aria-pressed", String(other === tab)),
+        );
+
+        sessionEls.forEach((el) => {
+          el.hidden = family !== "all" && el.dataset.family !== family;
+        });
+
+        dayEls.forEach((day) => {
+          day.hidden = !day.querySelector("[data-family]:not([hidden])");
+        });
+
+        if (live) {
+          const n = root.querySelectorAll(
+            "li[data-family]:not([hidden])",
+          ).length;
+          live.textContent = `${n} ${n === 1 ? "clase visible" : "clases visibles"}`;
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  .timetable {
+    display: grid;
+    gap: 2rem;
+    margin-block: 2rem 0;
+  }
+
+  .timetable__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .timetable__tab {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .timetable__tab[aria-pressed="true"] {
+    background: var(--color-pink);
+  }
+
+  .timetable__tab:focus-visible,
+  .timetable__session:focus-visible,
+  .timetable__item:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* Desktop table: hidden on phones. */
+  .timetable__table-wrap {
+    display: none;
+  }
+
+  .timetable__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-body);
+  }
+
+  .timetable__table th,
+  .timetable__table td {
+    border: 1px solid var(--color-border-subtle);
+    vertical-align: middle;
+  }
+
+  .timetable__table thead th {
+    height: 3.5rem;
+    color: var(--color-ink);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.16em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .timetable__slot {
+    width: 9rem;
+    color: var(--color-body);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-regular);
+    letter-spacing: 0.08em;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .timetable__table tbody tr:nth-child(even) {
+    background: var(--color-surface-soft);
+  }
+
+  .timetable__table td {
+    height: 5.5rem;
+    padding: 0.4rem;
+    text-align: center;
+  }
+
+  .timetable__session {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    height: 100%;
+    padding: 0.5rem 0.25rem;
+    justify-content: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .timetable__session:hover {
+    background: var(--color-pink);
+  }
+
+  .timetable__name {
+    color: var(--color-ink);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.12em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .timetable__time,
+  .timetable__group {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .timetable__group {
+    color: var(--color-text-secondary);
+  }
+
+  /* Phone list: hidden from 48rem up. */
+  .timetable__list {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .timetable__day-title {
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-ink);
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .timetable__items {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .timetable__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    background: var(--color-surface-soft);
+    color: var(--color-body);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .timetable__item-time {
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timetable__item-name {
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .timetable__item-name::before,
+  .timetable__item-group::before {
+    content: "·";
+    margin-inline-end: 0.6rem;
+    color: var(--color-border-strong);
+  }
+
+  .timetable__help {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .timetable__help p {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .timetable__table-wrap {
+      display: block;
+    }
+
+    .timetable__list {
+      display: none;
+    }
+  }
+</style>

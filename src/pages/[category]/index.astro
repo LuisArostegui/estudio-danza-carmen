@@ -1,0 +1,260 @@
+---
+import ActivityCard from "../../components/ActivityCard.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import EnquiryForm from "../../components/EnquiryForm.astro";
+import Photo from "../../components/Photo.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  familySlug,
+  getActivities,
+  getCategories,
+  getSchool,
+  type Activity,
+  type Category,
+} from "../../lib/catalog";
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+
+  return Promise.all(
+    categories.map(async (category) => ({
+      params: { category: familySlug[category.data.family] },
+      props: {
+        category,
+        activities: await getActivities(category.data.family),
+      },
+    })),
+  );
+}
+
+type Props = { category: Category; activities: Activity[] };
+
+const { category, activities } = Astro.props;
+const { data } = category;
+const isPending = data.status === "pending";
+const school = await getSchool();
+const pageTitle = `${data.title} · Estudio de Danza Carmen`;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={data.description}
+  pageStatus={data.status}
+>
+  <div class="shell category-page">
+    <Breadcrumbs
+      items={[{ label: "Inicio", href: "/" }, { label: data.menuLabel }]}
+    />
+
+    <header class:list={["category-hero", { "has-photo": data.photo?.src }]}>
+      {
+        data.photo?.src && (
+          <div class="category-hero__photo">
+            <Photo
+              photo={data.photo}
+              priority
+              sizes="(min-width: 48rem) 45vw, 100vw"
+            />
+          </div>
+        )
+      }
+      <div class="category-hero__text">
+        <SectionTitle as="h1" title={data.title} />
+        {data.subtitle && <p class="category-hero__lead">{data.subtitle}</p>}
+        {
+          isPending ? (
+            <p class="preview-note" data-testid="category-pending-note">
+              Página de categoría en preparación: faltan introducción, fotos y
+              textos de cada clase.
+            </p>
+          ) : (
+            data.intro && <p class="category-hero__intro">{data.intro}</p>
+          )
+        }
+      </div>
+    </header>
+
+    <section class="category-cards" aria-labelledby="category-cards-title">
+      <h2 id="category-cards-title" class="visually-hidden">
+        {`Clases de ${data.menuLabel}`}
+      </h2>
+      <ul class="category-cards__grid" data-testid="activity-cards">
+        {
+          activities.map((activity) => (
+            <li>
+              <ActivityCard activity={activity} />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    {
+      data.presentation && (
+        <section
+          class="category-presentation"
+          aria-labelledby="category-presentation-title"
+        >
+          <SectionTitle
+            id="category-presentation-title"
+            title={data.presentation.title}
+          />
+          <ul class="category-presentation__items">
+            {data.presentation.items.map((item) => (
+              <li class="category-presentation__item">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </li>
+            ))}
+          </ul>
+          {data.presentation.cta && (
+            <a class="text-link" href={data.presentation.cta.href}>
+              {data.presentation.cta.label}
+            </a>
+          )}
+        </section>
+      )
+    }
+
+    {
+      data.form && (
+        <section id="consulta" class="category-form">
+          <EnquiryForm
+            activities={activities}
+            title={data.form.title}
+            intro={[data.form.body]}
+            school={school}
+            idPrefix="consulta-categoria"
+          />
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .category-page {
+    display: grid;
+    gap: var(--layout-block-y);
+    padding-block: var(--layout-block-y);
+  }
+
+  .category-hero {
+    display: grid;
+    gap: 1.5rem;
+    max-width: var(--layout-text-max);
+  }
+
+  .category-hero__text {
+    display: grid;
+    gap: 1rem;
+    align-content: center;
+  }
+
+  .category-hero__photo {
+    aspect-ratio: 16 / 10;
+    max-block-size: 260px;
+    overflow: hidden;
+    inline-size: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .category-hero.has-photo {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      align-items: center;
+      gap: clamp(2rem, 4vw, 4rem);
+      max-width: none;
+    }
+
+    .category-hero.has-photo .category-hero__photo {
+      order: 2;
+      aspect-ratio: 4 / 3;
+      max-block-size: 380px;
+    }
+  }
+
+  .category-hero__lead {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: var(--font-size-lead);
+    line-height: 1.5;
+  }
+
+  .category-hero__intro {
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+    line-height: 1.6;
+  }
+
+  .category-cards__grid {
+    display: grid;
+    gap: 1.5rem 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 40rem) {
+    .category-cards__grid {
+      gap: 2.25rem 1.25rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .category-cards__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .category-presentation {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+
+  .category-presentation__items {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .category-presentation__items {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  .category-presentation__item {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-block-start: 1rem;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .category-presentation h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.35;
+  }
+
+  .category-presentation__item p {
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-small);
+    line-height: 1.6;
+  }
+
+  .category-form {
+    scroll-margin-top: 6rem;
+  }
+</style>

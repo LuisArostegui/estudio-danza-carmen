@@ -1,0 +1,182 @@
+---
+import Photo from "../Photo.astro";
+import SectionTitle from "../SectionTitle.astro";
+type Props = { classes: any };
+const { classes } = Astro.props;
+---
+
+<section
+  id="nuestras-clases"
+  class="home-classes"
+  aria-labelledby="classes-title"
+>
+  <div class="home-classes__head">
+    <SectionTitle
+      id="classes-title"
+      title={classes.title}
+      eyebrow={classes.eyebrow}
+      intro={classes.body}
+      align="center"
+      class="shell home-classes__head-inner"
+      data-reveal
+    />
+  </div>
+  <ul class="home-classes__grid">
+    {
+      classes.cards.map((card: any, i: number) => (
+        <li data-reveal data-reveal-delay={String((i % 3) * 100)}>
+          <a class="class-card" href={card.href}>
+            <span class="class-card__photo photo-frame">
+              <Photo
+                decorative
+                photo={card.photo}
+                tone="light"
+                sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 50vw, 100vw"
+              />
+            </span>
+            <span class="class-card__shade" aria-hidden="true" />
+            <span class="class-card__num" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}.
+            </span>
+            <span class="class-card__text">
+              <h3 class="class-card__title">{card.title}</h3>
+              <span class="class-card__body">{card.body}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .home-classes__head {
+    background: var(--color-page);
+    padding-block: var(--layout-block-y) 1.75rem;
+  }
+  .home-classes__head-inner {
+    max-inline-size: 48rem;
+    text-align: center;
+  }
+  .home-classes__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--color-page);
+  }
+  @media (min-width: 40rem) {
+    .home-classes__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 64rem) {
+    .home-classes__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .class-card {
+    position: relative;
+    display: block;
+    block-size: 15rem;
+    overflow: hidden;
+    background: var(--color-tint);
+    color: #fff;
+    text-decoration: none;
+  }
+  @media (min-width: 40rem) {
+    .class-card {
+      block-size: 22rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .class-card {
+      block-size: 28rem;
+    }
+  }
+  .class-card__photo {
+    position: absolute;
+    inset: 0;
+  }
+  .class-card__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 34%) 0,
+      rgb(0 0 0 / 0%) 20%,
+      rgb(0 0 0 / 0%) 45%,
+      rgb(0 0 0 / 80%) 100%
+    );
+  }
+  .class-card__photo :global(.photo--pending) {
+    padding-block-start: 2.75rem;
+  }
+  .class-card__text {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: block;
+    padding: 1.1rem;
+  }
+  .class-card__num {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 0.9rem;
+    inset-inline-start: 1.1rem;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-label);
+    text-shadow: 0 1px 6px rgb(0 0 0 / 55%);
+  }
+  .class-card__title {
+    margin: 0.15rem 0 0.3rem;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-display);
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+  .class-card__body {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: rgb(255 255 255 / 92%);
+  }
+  .class-card:focus-visible {
+    outline: 3px solid var(--color-pink);
+    outline-offset: -3px;
+  }
+  /* Black and white by default, colour returns on hover / focus. */
+  .class-card__photo :global(img) {
+    filter: grayscale(1) contrast(1.05);
+    transition:
+      filter 200ms ease-out,
+      transform 400ms ease-out;
+  }
+  .class-card:hover .class-card__photo :global(img),
+  .class-card:focus-visible .class-card__photo :global(img) {
+    filter: none;
+  }
+  .class-card:hover .class-card__photo :global(img) {
+    transform: scale(1.04);
+  }
+  /* Touch has no hover: show the photos in colour. */
+  @media (hover: none) {
+    .class-card__photo :global(img) {
+      filter: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .class-card__photo :global(img) {
+      transition: none;
+    }
+    .class-card:hover .class-card__photo :global(img) {
+      transform: none;
+    }
+  }
+</style>

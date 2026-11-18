@@ -1,0 +1,132 @@
+---
+import Photo from "../Photo.astro";
+import SectionTitle from "../SectionTitle.astro";
+type Props = { shows: any };
+const { shows } = Astro.props;
+---
+
+<section class="home-shows" aria-labelledby="shows-title">
+  <div class="shell">
+    <div class="home-shows__head" data-reveal>
+      <SectionTitle id="shows-title" title={shows.title} align="center" />
+      <p class="home-shows__lead">{shows.lead}</p>
+      <p class="home-shows__body">{shows.body}</p>
+    </div>
+  </div>
+  <div
+    class="gallery"
+    data-testid="show-gallery"
+    data-reveal
+    data-reveal-delay="100"
+  >
+    {
+      shows.items.map((item: any) => (
+        <figure class="gallery__tile photo-frame" tabindex="0">
+          <Photo
+            photo={item.photo}
+            tone="light"
+            sizes="(min-width: 64rem) 25vw, 50vw"
+          />
+          <figcaption class="gallery__caption">{item.name}</figcaption>
+        </figure>
+      ))
+    }
+  </div>
+  <div class="shell home-shows__foot">
+    <a class="text-link" href={shows.cta.href}>{shows.cta.label}</a>
+  </div>
+</section>
+
+<style>
+  .home-shows {
+    background: var(--color-tint);
+    padding-block: var(--layout-block-y);
+  }
+  .home-shows__head {
+    max-inline-size: 48rem;
+    margin: 0 auto 2rem;
+    text-align: center;
+  }
+  .home-shows__head p {
+    margin: 0 0 0.75rem;
+  }
+  .home-shows__lead {
+    color: var(--color-ink);
+    font-size: var(--font-size-lead);
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  @media (min-width: 48rem) {
+    .gallery {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .gallery__tile {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--color-tint);
+  }
+  .gallery__tile:focus-visible {
+    outline: 3px solid var(--color-pink);
+    outline-offset: -3px;
+  }
+  .gallery__tile :global(.photo) {
+    transition: transform 600ms ease-out;
+  }
+  .gallery__tile:hover :global(.photo),
+  .gallery__tile:focus-visible :global(.photo),
+  .gallery__tile:focus-within :global(.photo) {
+    transform: scale(1.04);
+  }
+  .gallery__caption {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: var(--color-overlay);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-label);
+    line-height: 1.4;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+  }
+  .gallery__tile:hover .gallery__caption,
+  .gallery__tile:focus-visible .gallery__caption,
+  .gallery__tile:focus-within .gallery__caption {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .gallery__caption {
+      opacity: 1;
+      place-items: end center;
+      padding: 12px;
+      background: linear-gradient(180deg, transparent 40%, rgb(0 0 0 / 75%));
+      font-size: 0.7rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery__caption,
+    .gallery__tile :global(.photo) {
+      transition: none;
+    }
+    .gallery__tile:hover :global(.photo),
+    .gallery__tile:focus-visible :global(.photo),
+    .gallery__tile:focus-within :global(.photo) {
+      transform: none;
+    }
+  }
+  .home-shows__foot {
+    margin-block-start: 1.5rem;
+    text-align: center;
+  }
+</style>

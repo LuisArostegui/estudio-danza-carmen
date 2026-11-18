@@ -1,0 +1,861 @@
+---
+import SectionTitle from "./SectionTitle.astro";
+import {
+  familyLabel,
+  familyOrder,
+  getSchool,
+  type Activity,
+} from "../lib/catalog";
+
+type School = Awaited<ReturnType<typeof getSchool>>;
+
+type Props = {
+  /** Options for the activity selector, already sorted by family and order. */
+  activities: Activity[];
+  /** Activity id preselected on the server (works without JavaScript). */
+  selected?: string;
+  title?: string;
+  intro?: string[];
+  idPrefix?: string;
+  school: School;
+};
+
+const {
+  activities,
+  selected,
+  title,
+  intro = [],
+  idPrefix = "consulta",
+  school,
+} = Astro.props;
+
+const testMode = !school.formEndpoint.trim();
+
+const groups = familyOrder
+  .map((family) => ({
+    family,
+    label: familyLabel[family],
+    items: activities.filter((activity) => activity.data.family === family),
+  }))
+  .filter((group) => group.items.length > 0);
+
+const id = (name: string) => `${idPrefix}-${name}`;
+---
+
+<div class="enquiry">
+  {
+    title && (
+      <SectionTitle title={title} align="center" class="enquiry__title" />
+    )
+  }
+
+  <form
+    class="enquiry__form"
+    method="post"
+    novalidate
+    data-enquiry-form
+    data-endpoint={school.formEndpoint}
+    data-testid="enquiry-form"
+  >
+    <div
+      class="enquiry__summary"
+      tabindex="-1"
+      data-enquiry-summary
+      data-testid="enquiry-errors"
+      role="alert"
+      hidden
+    >
+      <p class="enquiry__summary-title">Revisa los datos marcados:</p>
+      <ul data-enquiry-summary-list></ul>
+    </div>
+
+    <div class="enquiry__row">
+      <div class="field" data-field="nombre">
+        <input
+          id={id("nombre")}
+          name="nombre"
+          type="text"
+          autocomplete="name"
+          placeholder=" "
+          required
+        />
+        <label class="field__label" for={id("nombre")}
+          >Nombre<span class="field__req" aria-hidden="true">*</span></label
+        >
+        <p
+          class="field__error"
+          id={`${id("nombre")}-error`}
+          data-error-for="nombre"
+          hidden
+        >
+          <svg
+            class="field__icon"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+            ><circle
+              cx="8"
+              cy="8"
+              r="6.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"></circle><path
+              d="M8 4.6v4.2M8 10.9v.1"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"></path></svg
+          >
+          <span data-error-text></span>
+        </p>
+      </div>
+
+      <div class="field" data-field="correo">
+        <input
+          id={id("correo")}
+          name="correo"
+          type="email"
+          autocomplete="email"
+          spellcheck="false"
+          placeholder=" "
+          required
+        />
+        <label class="field__label" for={id("correo")}
+          >Correo electrónico<span class="field__req" aria-hidden="true">*</span
+          ></label
+        >
+        <p
+          class="field__error"
+          id={`${id("correo")}-error`}
+          data-error-for="correo"
+          hidden
+        >
+          <svg
+            class="field__icon"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+            ><circle
+              cx="8"
+              cy="8"
+              r="6.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"></circle><path
+              d="M8 4.6v4.2M8 10.9v.1"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"></path></svg
+          >
+          <span data-error-text></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="field" data-field="mensaje">
+      <textarea
+        id={id("mensaje")}
+        name="mensaje"
+        rows="5"
+        minlength="10"
+        placeholder=" "
+        required></textarea>
+      <label class="field__label" for={id("mensaje")}
+        >Cuéntanos qué estás buscando<span class="field__req" aria-hidden="true"
+          >*</span
+        ></label
+      >
+      <p
+        class="field__error"
+        id={`${id("mensaje")}-error`}
+        data-error-for="mensaje"
+        hidden
+      >
+        <svg
+          class="field__icon"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+          focusable="false"
+          ><circle
+            cx="8"
+            cy="8"
+            r="6.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"></circle><path
+            d="M8 4.6v4.2M8 10.9v.1"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"></path></svg
+        >
+        <span data-error-text></span>
+      </p>
+    </div>
+
+    <div class="enquiry__row">
+      <div class="field" data-field="telefono">
+        <input
+          id={id("telefono")}
+          name="telefono"
+          type="tel"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder=" "
+        />
+        <label class="field__label" for={id("telefono")}
+          >Teléfono (opcional)</label
+        >
+        <p
+          class="field__error"
+          id={`${id("telefono")}-error`}
+          data-error-for="telefono"
+          hidden
+        >
+          <svg
+            class="field__icon"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+            ><circle
+              cx="8"
+              cy="8"
+              r="6.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"></circle><path
+              d="M8 4.6v4.2M8 10.9v.1"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"></path></svg
+          >
+          <span data-error-text></span>
+        </p>
+      </div>
+
+      <div class="field field--select" data-field="actividad">
+        <select id={id("actividad")} name="actividad" required>
+          <option value=""></option>
+          {
+            groups.map((group) => (
+              <optgroup label={group.label}>
+                {group.items.map((activity) => (
+                  <option
+                    value={activity.id}
+                    selected={activity.id === selected}
+                  >
+                    {activity.data.title}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          }
+        </select>
+        <label class="field__label" for={id("actividad")}
+          >Clase o disciplina de interés<span
+            class="field__req"
+            aria-hidden="true">*</span
+          ></label
+        >
+        <p
+          class="field__error"
+          id={`${id("actividad")}-error`}
+          data-error-for="actividad"
+          hidden
+        >
+          <svg
+            class="field__icon"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+            ><circle
+              cx="8"
+              cy="8"
+              r="6.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"></circle><path
+              d="M8 4.6v4.2M8 10.9v.1"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"></path></svg
+          >
+          <span data-error-text></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="field field--check" data-field="privacidad">
+      <input id={id("privacidad")} name="privacidad" type="checkbox" required />
+      <label class="field__label" for={id("privacidad")}>
+        <span
+          >He leído y acepto la <a href="/legal/privacy-policy/"
+            >política de privacidad</a
+          >.<span class="field__req" aria-hidden="true">*</span></span
+        >
+      </label>
+      <p
+        class="field__error field__error--check"
+        id={`${id("privacidad")}-error`}
+        data-error-for="privacidad"
+        hidden
+      >
+        <svg
+          class="field__icon"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+          focusable="false"
+          ><circle
+            cx="8"
+            cy="8"
+            r="6.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"></circle><path
+            d="M8 4.6v4.2M8 10.9v.1"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"></path></svg
+        >
+        <span data-error-text></span>
+      </p>
+    </div>
+
+    <p class="enquiry__required-note">
+      Los campos marcados con * son obligatorios.
+    </p>
+
+    <button
+      class="button button--primary enquiry__submit"
+      type="submit"
+      data-enquiry-submit
+    >
+      Enviar consulta
+    </button>
+
+    {
+      testMode && (
+        <p class="enquiry__preview" data-testid="enquiry-preview">
+          Vista previa: el formulario está en modo de prueba y no envía datos.
+        </p>
+      )
+    }
+
+    <div
+      class="enquiry__status"
+      data-enquiry-status
+      data-testid="enquiry-status"
+      role="status"
+      hidden
+    >
+      <p data-status-text></p>
+      <p class="enquiry__status-links" data-status-links>
+        <a href={school.whatsappHref} target="_blank" rel="noopener"
+          >{school.whatsappLabel}</a
+        >
+        <span aria-hidden="true"> · </span>
+        <a href={school.phoneHref}>{school.phoneLabel}</a>
+      </p>
+    </div>
+  </form>
+
+  {
+    intro.length > 0 && (
+      <div class="enquiry__intro">
+        {intro.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  [hidden] {
+    display: none !important;
+  }
+  .enquiry {
+    width: min(100%, 52rem);
+    margin-inline: auto;
+  }
+  .enquiry__title {
+    margin-bottom: 2rem;
+  }
+  .enquiry__form {
+    text-align: start;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .enquiry__row {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 48rem) {
+    .enquiry__row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .field {
+    position: relative;
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+  .field input:not([type="checkbox"]),
+  .field select,
+  .field textarea {
+    inline-size: 100%;
+    min-block-size: 3.5rem;
+    padding: 1.35rem 1.1rem 0.45rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+    background-color: #fff;
+    border: 1px solid #8f8a8c;
+    border-radius: 0;
+    appearance: none;
+    transition: border-color 150ms ease;
+  }
+  .field select {
+    padding-inline-end: 2.5rem;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-body) 50%),
+      linear-gradient(135deg, var(--color-body) 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.3rem) 50%,
+      calc(100% - 1rem) 50%;
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
+  }
+  .field textarea {
+    min-block-size: 9rem;
+    resize: vertical;
+    padding-block-start: 1.7rem;
+  }
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: var(--color-pink-ink);
+  }
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible,
+  .field input[type="checkbox"]:focus-visible,
+  .enquiry__form a:focus-visible,
+  .enquiry__summary:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* Floating label: sits where the placeholder would be, lifts when focused or filled. */
+  .field:not(.field--check) .field__label {
+    position: absolute;
+    inset-inline: 1.1rem;
+    inset-block-start: 1.05rem;
+    max-inline-size: calc(100% - 2.2rem);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-body);
+    font-size: 1rem;
+    line-height: 1.4;
+    pointer-events: none;
+    transform-origin: left top;
+    transition:
+      transform 150ms ease,
+      color 150ms ease;
+  }
+  .field input:focus ~ .field__label,
+  .field input:not(:placeholder-shown) ~ .field__label,
+  .field input:-webkit-autofill ~ .field__label,
+  .field textarea:focus ~ .field__label,
+  .field textarea:not(:placeholder-shown) ~ .field__label,
+  .field select:focus ~ .field__label,
+  .field--select:has(option:checked:not([value=""])) .field__label {
+    transform: translateY(-0.7rem) scale(0.75);
+    color: var(--color-pink-ink);
+  }
+  .field__req {
+    margin-inline-start: 0.15em;
+    color: var(--color-pink-ink);
+  }
+
+  .field [aria-invalid="true"] {
+    border-color: var(--color-pink-ink);
+  }
+
+  .field--check {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+  }
+  .field--check input[type="checkbox"] {
+    appearance: none;
+    display: grid;
+    place-content: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin: 0.6rem 0 0;
+    background: #fff;
+    border: 1px solid var(--color-pink-ink);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .field--check input[type="checkbox"]::after {
+    content: "";
+    inline-size: 0.35rem;
+    block-size: 0.7rem;
+    border: solid var(--color-pink-ink);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform 120ms ease;
+  }
+  .field--check input[type="checkbox"]:checked {
+    background: var(--color-pink);
+  }
+  .field--check input[type="checkbox"]:checked::after {
+    transform: rotate(45deg) scale(1);
+  }
+  .field--check .field__label {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    font-size: var(--font-size-small);
+    color: var(--color-body);
+    cursor: pointer;
+  }
+  .field--check .field__error {
+    grid-column: 2;
+  }
+  .field__label a {
+    color: var(--color-ink);
+    text-underline-offset: 0.2em;
+  }
+
+  .field__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-pink-ink);
+  }
+  .field__icon {
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-block-start: 0.1em;
+  }
+
+  .enquiry__required-note {
+    margin: 0;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--color-body);
+  }
+  .enquiry__submit {
+    justify-self: center;
+    min-inline-size: 14rem;
+    letter-spacing: 0.22em;
+  }
+  .enquiry__preview {
+    margin: -0.4rem 0 0;
+    text-align: center;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--color-body);
+  }
+
+  .enquiry__summary {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-pink-ink);
+    background: var(--color-tint);
+  }
+  .enquiry__summary-title {
+    margin: 0 0 0.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+  }
+  .enquiry__summary ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-inline-start: 1.25rem;
+  }
+  .enquiry__summary a {
+    color: var(--color-ink);
+    text-underline-offset: 0.2em;
+  }
+
+  .enquiry__status {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-pink);
+    background: var(--color-tint);
+    text-align: center;
+  }
+  .enquiry__status p {
+    margin: 0;
+  }
+  .enquiry__status-links a {
+    display: inline-block;
+    min-block-size: 44px;
+    line-height: 44px;
+    color: var(--color-ink);
+  }
+
+  .enquiry__intro {
+    margin-top: 2rem;
+  }
+  .enquiry__intro p {
+    max-inline-size: var(--layout-text-max);
+    margin-inline: auto;
+    text-align: center;
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+  }
+  .enquiry__intro p + p {
+    margin-top: 1rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field input,
+    .field select,
+    .field textarea,
+    .field .field__label,
+    .field--check input[type="checkbox"]::after {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type FieldName =
+    "nombre" | "correo" | "telefono" | "actividad" | "mensaje" | "privacidad";
+
+  type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+  const FIELD_ORDER: FieldName[] = [
+    "nombre",
+    "correo",
+    "mensaje",
+    "telefono",
+    "actividad",
+    "privacidad",
+  ];
+
+  const MESSAGES = {
+    nombre: "Escribe tu nombre.",
+    correoVacio: "Escribe tu correo electrónico.",
+    correoFormato: "Revisa el correo: falta la @ o el dominio.",
+    telefono: "El teléfono debe tener al menos 9 cifras.",
+    actividad: "Elige la actividad que te interesa.",
+    mensaje: "Cuéntanos un poco más (mínimo 10 caracteres).",
+    privacidad: "Necesitamos que aceptes la política de privacidad.",
+  };
+
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const STATUS_TEXT = {
+    test: "Modo de prueba: tu consulta es válida, pero todavía no se envía a ningún buzón. Mientras tanto, escríbenos por WhatsApp o llámanos.",
+    success:
+      "Gracias, hemos recibido tu consulta. Te responderemos lo antes posible.",
+    error:
+      "No hemos podido enviar la consulta. Inténtalo de nuevo o escríbenos por WhatsApp.",
+  } as const;
+
+  const rules: Record<FieldName, (control: Control) => string> = {
+    nombre: (control) => (control.value.trim() ? "" : MESSAGES.nombre),
+    correo: (control) => {
+      const value = control.value.trim();
+      if (!value) return MESSAGES.correoVacio;
+      return EMAIL_PATTERN.test(value) ? "" : MESSAGES.correoFormato;
+    },
+    telefono: (control) => {
+      const value = control.value.trim();
+      if (!value) return "";
+      return value.replace(/\D/g, "").length >= 9 ? "" : MESSAGES.telefono;
+    },
+    actividad: (control) => (control.value ? "" : MESSAGES.actividad),
+    mensaje: (control) =>
+      control.value.trim().length >= 10 ? "" : MESSAGES.mensaje,
+    privacidad: (control) =>
+      (control as HTMLInputElement).checked ? "" : MESSAGES.privacidad,
+  };
+
+  function initEnquiry(form: HTMLFormElement) {
+    const summary = form.querySelector<HTMLElement>("[data-enquiry-summary]");
+    const summaryList = form.querySelector<HTMLUListElement>(
+      "[data-enquiry-summary-list]",
+    );
+    const status = form.querySelector<HTMLElement>("[data-enquiry-status]");
+    const statusText = form.querySelector<HTMLElement>("[data-status-text]");
+    const statusLinks = form.querySelector<HTMLElement>("[data-status-links]");
+    const submit = form.querySelector<HTMLButtonElement>(
+      "[data-enquiry-submit]",
+    );
+    const submitLabel = submit?.textContent ?? "Enviar consulta";
+
+    const control = (name: FieldName) =>
+      form.querySelector<Control>(`[name="${name}"]`);
+    const errorFor = (name: FieldName) =>
+      form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+
+    function setFieldError(name: FieldName, message: string) {
+      const field = control(name);
+      const error = errorFor(name);
+      const wrapper = form.querySelector<HTMLElement>(`[data-field="${name}"]`);
+      if (!field || !error) return;
+
+      const text = error.querySelector<HTMLElement>("[data-error-text]");
+
+      if (message) {
+        field.setAttribute("aria-invalid", "true");
+        field.setAttribute("aria-describedby", error.id);
+        if (text) text.textContent = message;
+        error.hidden = false;
+        wrapper?.classList.add("is-invalid");
+      } else {
+        field.removeAttribute("aria-invalid");
+        field.removeAttribute("aria-describedby");
+        if (text) text.textContent = "";
+        error.hidden = true;
+        wrapper?.classList.remove("is-invalid");
+      }
+    }
+
+    function validateField(name: FieldName): string {
+      const field = control(name);
+      if (!field) return "";
+      const message = rules[name](field);
+      setFieldError(name, message);
+      return message;
+    }
+
+    function invalidFields(): { name: FieldName; message: string }[] {
+      return FIELD_ORDER.map((name) => ({
+        name,
+        message: validateField(name),
+      })).filter((item) => item.message);
+    }
+
+    function hasInvalidFields() {
+      return form.querySelector('[aria-invalid="true"]') !== null;
+    }
+
+    function showSummary(items: { name: FieldName; message: string }[]) {
+      if (!summary || !summaryList) return;
+      summaryList.replaceChildren(
+        ...items.map(({ name, message }) => {
+          const item = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = `#${control(name)?.id ?? ""}`;
+          link.textContent = message;
+          link.dataset.errorLink = name;
+          item.append(link);
+          return item;
+        }),
+      );
+      summary.hidden = false;
+      summary.focus();
+    }
+
+    function hideSummary() {
+      if (!summary || !summaryList) return;
+      summary.hidden = true;
+      summaryList.replaceChildren();
+    }
+
+    function setStatus(mode: keyof typeof STATUS_TEXT) {
+      if (!status || !statusText) return;
+      status.dataset.mode = mode;
+      statusText.textContent = STATUS_TEXT[mode];
+      if (statusLinks) statusLinks.hidden = mode === "success";
+      status.hidden = false;
+    }
+
+    function setSending(sending: boolean) {
+      if (!submit) return;
+      submit.disabled = sending;
+      submit.textContent = sending ? "Enviando…" : submitLabel;
+    }
+
+    // Preselect the activity from ?actividad=<id> (set by activity pages).
+    const preselected = new URLSearchParams(window.location.search).get(
+      "actividad",
+    );
+    const select = control("actividad") as HTMLSelectElement | null;
+    if (
+      preselected &&
+      select &&
+      Array.from(select.options).some((option) => option.value === preselected)
+    ) {
+      select.value = preselected;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      // Never let the browser navigate: a GET fallback would put personal data in the URL.
+      event.preventDefault();
+
+      const invalid = invalidFields();
+      if (invalid.length > 0) {
+        showSummary(invalid);
+        return;
+      }
+
+      hideSummary();
+      if (status) status.hidden = true;
+
+      const endpoint = form.dataset.endpoint?.trim() ?? "";
+      if (!endpoint) {
+        // Test mode: validate only, send nothing.
+        setStatus("test");
+        return;
+      }
+
+      setSending(true);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        form.reset();
+        setStatus("success");
+      } catch {
+        setStatus("error");
+      } finally {
+        setSending(false);
+      }
+    });
+
+    // Re-validate a field once it has been marked invalid.
+    const revalidate = (event: Event) => {
+      const target = event.target as HTMLElement | null;
+      const name = target?.getAttribute("name") as FieldName | null;
+      if (!name || !(name in rules)) return;
+      if (target?.getAttribute("aria-invalid") !== "true") return;
+      validateField(name);
+      if (!hasInvalidFields()) hideSummary();
+    };
+    form.addEventListener("change", revalidate);
+    form.addEventListener("focusout", revalidate);
+
+    // Error summary links move focus to the field instead of jumping.
+    summary?.addEventListener("click", (event) => {
+      const link = (event.target as HTMLElement).closest<HTMLAnchorElement>(
+        "a[data-error-link]",
+      );
+      if (!link) return;
+      event.preventDefault();
+      const name = link.dataset.errorLink as FieldName;
+      control(name)?.focus();
+    });
+  }
+
+  document
+    .querySelectorAll<HTMLFormElement>("[data-enquiry-form]")
+    .forEach(initEnquiry);
+</script>

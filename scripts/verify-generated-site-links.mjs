@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
@@ -15,7 +16,17 @@ const linkinatorCliPath = path.join(
 const host = "127.0.0.1";
 const port = "4322";
 const baseUrl = `http://${host}:${port}`;
-const PLANNED_ROUTE_PATTERN = `${baseUrl}/(classes|schedules|teachers|facilities|performances|courses|rad|contact|legal/legal-notice|legal/privacy-policy|legal/cookie-policy)/?$`;
+
+/**
+ * Routes that must be built, complete and indexable. A pending or missing
+ * page here fails the run, so a placeholder can never count as verified.
+ */
+const VERIFIED_ROUTES = [
+  "/",
+  "/clases-de-ballet-granada/",
+  "/clases-de-ballet-granada/ballet-para-adultos/",
+  "/contacto/",
+];
 
 function waitForServer(url, timeoutMs = 10_000) {
   const startedAt = Date.now();
@@ -92,9 +103,72 @@ try {
     "--check-css",
     "--skip",
     "^https://",
-    "--skip",
-    PLANNED_ROUTE_PATTERN,
   ]);
 } finally {
   server.kill("SIGTERM");
 }
+
+async function findIndexFiles(directory) {
+  const found = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const full = path.join(directory, entry.name);
+    if (entry.isDirectory()) found.push(...(await findIndexFiles(full)));
+    else if (entry.name === "index.html") found.push(full);
+  }
+  return found;
+}
+
+const distDirectory = path.resolve("dist");
+const pages = new Map();
+for (const file of await findIndexFiles(distDirectory)) {
+  const route =
+    "/" +
+    path.relative(distDirectory, path.dirname(file)).split(path.sep).join("/");
+  const html = await readFile(file, "utf8");
+  pages.set(route === "/" ? "/" : `${route}/`, {
+    status:
+      html.match(/<body[^>]*data-page-status="([a-z]+)"/)?.[1] ?? "missing",
+    noindex: /<meta[^>]*name="robots"[^>]*noindex/.test(html),
+  });
+}
+
+const sorted = [...pages].sort(([a], [b]) => a.localeCompare(b));
+const complete = sorted.filter(([, page]) => page.status === "complete");
+const pending = sorted.filter(([, page]) => page.status === "pending");
+const unknown = sorted.filter(
+  ([, page]) => !["complete", "pending"].includes(page.status),
+);
+
+console.log(`\nCOMPLETE (${complete.length}):`);
+for (const [route] of complete) {
+  console.log(
+    `  ${VERIFIED_ROUTES.includes(route) ? "[verified]" : "          "} ${route}`,
+  );
+}
+console.log(`\nPENDING (not verified) (${pending.length}):`);
+for (const [route] of pending) console.log(`  ${route}`);
+
+const problems = [];
+for (const route of VERIFIED_ROUTES) {
+  const page = pages.get(route);
+  if (!page) problems.push(`verified route is missing from dist: ${route}`);
+  else if (page.status !== "complete")
+    problems.push(`verified route is ${page.status}, not complete: ${route}`);
+  else if (page.noindex) problems.push(`verified route is noindex: ${route}`);
+}
+for (const [route, page] of pending) {
+  if (!page.noindex) problems.push(`pending page lacks noindex: ${route}`);
+}
+for (const [route, page] of unknown) {
+  problems.push(`page without data-page-status (${page.status}): ${route}`);
+}
+
+if (problems.length > 0) {
+  console.error("\nVerification status check FAILED:");
+  for (const problem of problems) console.error(`- ${problem}`);
+  process.exit(1);
+}
+
+console.log(
+  `\nVerification status OK: ${VERIFIED_ROUTES.length} verified routes complete; ${pending.length} pending pages excluded and noindex.`,
+);

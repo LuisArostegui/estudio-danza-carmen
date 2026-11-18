@@ -1,0 +1,73 @@
+---
+/**
+ * Breadcrumb trail. The last item is the current page: it is never a link and
+ * carries aria-current="page".
+ */
+type Crumb = { label: string; href?: string };
+
+type Props = { items: Crumb[] };
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label="Migas de pan">
+  <ol>
+    {
+      items.map((item, index) => {
+        const isCurrent = index === items.length - 1;
+        return (
+          <li>
+            {isCurrent || !item.href ? (
+              <span aria-current={isCurrent ? "page" : undefined}>
+                {item.label}
+              </span>
+            ) : (
+              <a href={item.href}>{item.label}</a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-body);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .breadcrumbs li + li::before {
+    content: "›";
+    margin-inline-end: 0.35rem;
+  }
+
+  .breadcrumbs a {
+    color: var(--color-body);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  .breadcrumbs a:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    color: var(--color-ink);
+  }
+</style>
