@@ -4,6 +4,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_SANITY_PROJECT_ID?: string;
   readonly PUBLIC_SANITY_DATASET?: string;
   readonly PUBLIC_SANITY_STUDIO_URL?: string;
+  /** Turnstile site key for the contact form; live mode needs it at build time. */
+  readonly PUBLIC_TURNSTILE_SITE_KEY?: string;
   readonly SANITY_API_READ_TOKEN?: string;
   readonly SANITY_PREVIEW_DRAFTS?: string;
   readonly SANITY_REVALIDATE_SECRET?: string;

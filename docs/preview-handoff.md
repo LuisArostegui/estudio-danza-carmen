@@ -1,5 +1,16 @@
 # Preview handoff
 
+## Update 2026-11-19 · CD-28 contact form
+
+- The enquiry form has a live mode (Turnstile widget, Worker POST, delivery
+  states). It is inactive in the preview: `formEndpoint` is empty and no
+  `PUBLIC_TURNSTILE_SITE_KEY` is set, so the form still runs in test mode.
+- Configuration, response codes and owner items: `docs/contact-form-config.md`.
+- E2E coverage of the live states runs against stubbed Turnstile and Worker:
+  `tests/e2e/contact-form.spec.ts`.
+
+---
+
 ## Update 2026-11-19 · branch `feat/preview-completion`
 
 Every planned screen can now be walked in the local preview. Route inventory,

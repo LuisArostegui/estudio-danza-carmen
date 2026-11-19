@@ -12,6 +12,7 @@ directionsHref: "https://www.google.com/maps/search/?api=1&query=Calle+Casillas+
 mapLat: 37.1738088
 mapLon: -3.604957
 # Empty endpoint = the form runs in test mode and sends nothing.
+# Live mode needs this set to "/api/contact" AND PUBLIC_TURNSTILE_SITE_KEY at build time (see docs/contact-form-config.md).
 formEndpoint: ""
 # Needs owner confirmation (shown only in the private preview):
 pendingFacts:
