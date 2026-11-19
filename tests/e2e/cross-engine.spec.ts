@@ -6,9 +6,10 @@ import { ADULTOS_PATH, isMobileMenu } from "./helpers";
  * Chromium projects and in the opt-in Firefox/WebKit projects
  * (`PLAYWRIGHT_ENGINES=firefox,webkit`).
  *
- * 200 % zoom is emulated as the CSS viewport a 1440x900 window has at 200 %
- * (720x450, device scale 2). It is layout-equivalent, not the browser's own
- * zoom control.
+ * Reflow sizes: 320x640 and 720x450 (the CSS width of a 1440 px window at
+ * 200 %). Only the viewport changes; each project keeps its own device scale
+ * (1x to 3x), so this is a reflow check, not a test of the browser's zoom.
+ * Real 200 % zoom stays a manual check.
  */
 
 const REPRESENTATIVE_ROUTES = [
@@ -24,7 +25,7 @@ const REPRESENTATIVE_ROUTES = [
 
 const REFLOW_SIZES = [
   { label: "narrow-320", width: 320, height: 640 },
-  { label: "zoom-200", width: 720, height: 450 },
+  { label: "reflow-720", width: 720, height: 450 },
 ] as const;
 
 async function horizontalOverflow(page: Page) {
@@ -75,7 +76,7 @@ async function clearOfHeader(page: Page, selector: string) {
   }, selector);
 }
 
-test.describe("reflow at narrow width and 200 % zoom", () => {
+test.describe("reflow at 320x640 and 720x450", () => {
   // Sizes are set per test; one run per project is enough.
   for (const size of REFLOW_SIZES) {
     for (const route of REPRESENTATIVE_ROUTES) {

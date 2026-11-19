@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import { mkdtempSync } from "node:fs";
 import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { env } from "node:process";
 
@@ -36,7 +38,20 @@ const engineJourneys = [
   "horarios.spec.ts",
 ];
 const engineProjects = [];
+/**
+ * Playwright's Firefox can exit with "Could not find profile folder" when it
+ * cannot use the default macOS app-data folders; give it temporary ones.
+ */
+function firefoxLaunchEnv() {
+  const temp = (name) => mkdtempSync(path.join(tmpdir(), `carmen-${name}-`));
+  return {
+    ...env,
+    MOZ_APP_DATA: env.MOZ_APP_DATA ?? temp("moz-app-data"),
+    MOZ_LOCAL_APP_DATA: env.MOZ_LOCAL_APP_DATA ?? temp("moz-local-app-data"),
+  };
+}
 if (engines.includes("firefox")) {
+  const launchOptions = { env: firefoxLaunchEnv() };
   engineProjects.push(
     {
       name: "firefox-390",
@@ -46,6 +61,7 @@ if (engines.includes("firefox")) {
         ...devices["Desktop Firefox"],
         viewport: { width: 390, height: 844 },
         hasTouch: true,
+        launchOptions,
       },
     },
     {
@@ -54,6 +70,7 @@ if (engines.includes("firefox")) {
       use: {
         ...devices["Desktop Firefox"],
         viewport: { width: 1440, height: 900 },
+        launchOptions,
       },
     },
   );

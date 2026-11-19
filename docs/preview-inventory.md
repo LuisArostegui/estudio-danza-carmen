@@ -51,22 +51,34 @@ from the captures (shared privately, not in the PR, because the photos' consent 
 Automated with Playwright on the static build. No page status changed and
 Contacto stays in test mode.
 
-| Engine (Playwright build) | Sizes                                                            | Specs                                                                                         | Result                                                                                                                         |
-| ------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Chromium                  | 390 (touch), 1440; plus 320, 768, 1024 and emulated 200 % zoom   | whole suite                                                                                   | Pass after fixes                                                                                                               |
-| WebKit                    | 390 (touch), 768 (touch), 1440; plus 320 and emulated 200 % zoom | `cross-engine`, `preview-flow`, `sobre-nosotros`, `espectaculos`, `support-pages`, `horarios` | Pass after fixes                                                                                                               |
-| Firefox                   | 390, 1440 (configured)                                           | same as WebKit                                                                                | **Not run**: Playwright's Firefox build exits with «Could not find profile folder» on the local macOS host; to rerun elsewhere |
+| Engine (Playwright build) | Sizes                                                    | Specs                                                                                         | Result                 |
+| ------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------- |
+| Chromium                  | 390 (touch), 1440; plus 320x640, 720x450, 768 and 1024   | whole suite                                                                                   | 418 passed, 36 skipped |
+| Firefox                   | 390 (touch), 1440; plus 320x640 and 720x450              | `cross-engine`, `preview-flow`, `sobre-nosotros`, `espectaculos`, `support-pages`, `horarios` | 212 passed, 12 skipped |
+| WebKit                    | 390 (touch), 768 (touch), 1440; plus 320x640 and 720x450 | same as Firefox                                                                               | 317 passed, 19 skipped |
+
+Skips are the suite's own conditional ones (desktop-only, touch-only, or the
+testimonial carousel while reviews are pending). 320x640 and 720x450 are
+reflow checks: only the viewport changes and each project keeps its device
+scale (1x to 3x). They are not a test of the browser's 200 % zoom.
 
 **Fixed:** `/espectaculos/` scrolled sideways by 20 px at 320 px in every
 engine (the 2:1 last tile turned its minimum height into a minimum width); in
-WebKit, the form error summary took focus but stayed off-screen at 320 px and
-at 200 % zoom.
+WebKit, the form error summary took focus but stayed off-screen at 320x640
+and 720x450.
+
+**Test fixes:** Firefox exited at launch with «Could not find profile folder»
+on the local macOS host; its projects now get temporary `MOZ_APP_DATA` and
+`MOZ_LOCAL_APP_DATA` folders. `waitForRevealsSettled` waited forever in
+Firefox for the decorative scroll-driven animation
+(`animation-timeline: view()`); it now only waits for `document.timeline`
+animations.
 
 **Accepted limitation:** WebKit, like Safari's default, skips links on Tab
 (Option+Tab reaches them). Not a site defect.
 
 **Still manual:** real Safari on macOS and iOS, a screen reader (VoiceOver or
-NVDA), the browser's own zoom control, and Firefox.
+NVDA), and real 200 % zoom with the browser's own zoom control.
 
 ## Routes
 

@@ -55,10 +55,13 @@ export async function waitForRevealsSettled(page: Page): Promise<void> {
         const s = getComputedStyle(el);
         return s.opacity === "1" && s.transform === "none";
       });
+    // Scroll-driven animations (animation-timeline: view() in global.css)
+    // never finish while the page is still; Firefox reports them as running.
     const running = document
       .getAnimations()
       .filter(
         (a) =>
+          a.timeline === document.timeline &&
           a.playState === "running" &&
           Number.isFinite(a.effect?.getComputedTiming().endTime as number),
       );
