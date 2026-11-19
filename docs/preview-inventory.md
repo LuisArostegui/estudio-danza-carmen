@@ -1,16 +1,50 @@
 # Preview inventory by route
 
-Branch `feat/preview-completion` (from `origin/main` at `0ca733f`). Session date
-2026-11-19. Nothing merged, published or deployed. Local preview:
+Last update: branch `feat/preview-visual-close` (from `origin/main` at
+`2deeabe`, after #71), 2026-11-19. Previous update: `feat/preview-completion`
+(#71). Nothing merged, published or deployed. Local preview:
 `http://127.0.0.1:4321/` (`.claude/launch.json` → `carmen-dev`).
 
 Statuses: `complete` = verified and indexable; `review` = full content with
 `noindex`, waiting for Elena's sign-off; `pending` = placeholder page with
 `noindex`. Evidence = Playwright spec that covers the route at 390 and 1440 px
-(screenshots in `test-results/preview-shots/`).
+(screenshots in `test-results/preview-shots/`); `responsive-review.spec.ts`
+adds 768 px (and 1024 px for the home hero).
 
 PDF references: `00` = «Estructura y desarrollo web», `01` = «Instrucciones
 menú», `02` = «Menú». Page numbers are counted from each PDF's cover.
+
+## Visual close · 2026-11-19 (#30 photos, #32 responsive)
+
+**Elena's approval:** none received yet. No page changed status and no
+`pendingFacts` entry was replaced; `VERIFIED_ROUTES` and `VERIFIED_PAGES` are
+unchanged. Every unconfirmed fact stays as Needs owner confirmation.
+
+**Photos:** no new authorised photos were provided. The site still uses the
+four photos in `src/assets/fotos/` (consent records still to confirm). The
+exact list of slots that still need a photo, by priority, is in
+`src/assets/fotos/README.md` → «Slots still waiting for an authorised photo»:
+2 Inicio class cards, 7 productions (Inicio tiles + Espectáculos), 18 ficha
+heroes, 3 adult-class gallery photos, Sobre nosotros (history gallery,
+portraits, another room), 2 category heroes and 2 Instagram tiles.
+
+**Responsive review at 390, 768 and 1440 px:**
+
+| Check                                    | Result                                                                                                                                                                                                                                                                               |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Horizontal overflow, all 33 built routes | None at 390, 768 or 1440 px                                                                                                                                                                                                                                                          |
+| Home hero, carousel arrows               | **Fixed.** At 768 px the left arrow covered the first letter of «TUYA.». The copy now keeps clear of both arrows (checked at 390, 768, 1024–1080, 1280 and 1440 px); 1440 px is unchanged                                                                                            |
+| Home hero, text over the four photos     | **Fixed from 768 to 1280 px.** The veil faded out before the copy ended (body text down to 2.6:1 at 768 px, title down to 2.6:1 between 1025 and 1152 px). The wider veil now covers 48–80rem; swept 768–1440 px in 16 px steps on all four slides: title ≥ 5.1:1, body text ≥ 7.1:1 |
+| Home hero at 390 px                      | Text sits below the photo on the solid stage colour (≥ 15:1)                                                                                                                                                                                                                         |
+| Show tiles (Inicio)                      | No photos yet: labels sit on the dark gap tiles                                                                                                                                                                                                                                      |
+| Crops of the four photos in every slot   | Faces and main subjects stay in frame; focus values kept                                                                                                                                                                                                                             |
+
+**Visual change:** accepted in review on 2026-11-19. Still open: purging
+the cached copies of the early public captures (owner checklist item 13).
+
+**Owner decisions needed for this pass:** which production, class and team
+photos can be used (with rights and guardian consent), and sign-off per screen
+from the captures (shared privately, not in the PR, because the photos' consent is still pending).
 
 ## Routes
 
@@ -69,3 +103,7 @@ menú», `02` = «Menú». Page numbers are counted from each PDF's cover.
 10. Map pin, WhatsApp and phone.
 11. Mailbox and form delivery provider.
 12. Legal texts.
+13. Cached preview captures (open): the capture branch from the visual-close
+    PR was deleted, but its commit is still served by SHA without signing in.
+    Luis asks GitHub Support to purge it (commit id in the private session
+    notes, not in this repo). Keep open while photo consent is pending.
