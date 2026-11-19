@@ -12,4 +12,25 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"],
   },
+  "env": {
+    // Private review Worker for Elena: `estudio-danza-carmen-review` on
+    // workers.dev, behind Cloudflare Access. It serves only dist-review/, which
+    // `pnpm build:review` creates and checks, so a normal `pnpm build` (dist/)
+    // can never be uploaded as the review site.
+    // No vars or secrets are defined, so the form stays in test mode and
+    // /api/contact answers 503 not_configured. Version URLs are off so the
+    // only hostname is the Access-protected workers.dev one.
+    // See docs/private-review-preview.md.
+    "review": {
+      "name": "estudio-danza-carmen-review",
+      "workers_dev": true,
+      "preview_urls": false,
+      "assets": {
+        "directory": "./dist-review",
+        "binding": "ASSETS",
+        "not_found_handling": "404-page",
+        "run_worker_first": ["/api/*"],
+      },
+    },
+  },
 }

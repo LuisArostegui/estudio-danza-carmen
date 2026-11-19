@@ -1144,7 +1144,9 @@ const id = (name: string) => `${idPrefix}-${name}`;
       void sendLive();
     });
 
-    // Re-validate a field once it has been marked invalid.
+    // Re-validate a field once it has been marked invalid. `input` clears the
+    // error while the visitor types, so the layout no longer shifts on
+    // focusout, between mousedown and mouseup on the next control.
     const revalidate = (event: Event) => {
       const target = event.target as HTMLElement | null;
       const name = target?.getAttribute("name") as FieldName | null;
@@ -1153,6 +1155,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
       validateField(name);
       if (!hasInvalidFields()) hideSummary();
     };
+    form.addEventListener("input", revalidate);
     form.addEventListener("change", revalidate);
     form.addEventListener("focusout", revalidate);
 

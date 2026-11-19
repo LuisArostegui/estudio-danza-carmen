@@ -1,3 +1,18 @@
+/* Metric-matched local fallback for Montserrat so the swap to the web font
+   does not shift layout (CLS 0.18 on the adult ballet ficha, #34). Values
+   follow Montserrat's metrics scaled onto Arial; Arimo and Liberation Sans
+   share Arial's metrics where Arial is missing (Android, Linux). */
+@font-face {
+  font-family: "Montserrat Fallback";
+  src:
+    local("Arial"), local("ArialMT"), local("Arimo"), local("Liberation Sans"),
+    local("Helvetica");
+  size-adjust: 112.83%;
+  ascent-override: 85.79%;
+  descent-override: 22.25%;
+  line-gap-override: 0%;
+}
+
 :root {
   scroll-padding-top: 5rem;
 
@@ -46,8 +61,8 @@
   --color-overlay: rgb(0 0 0 / 40%);
 
   --font-family-base:
-    "Montserrat Variable", "Montserrat", system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+    "Montserrat Variable", "Montserrat", "Montserrat Fallback", system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-family-decorative:
     "Pinyon Script", "Brush Script MT", "Segoe Script", cursive;
   --font-weight-regular: 400;

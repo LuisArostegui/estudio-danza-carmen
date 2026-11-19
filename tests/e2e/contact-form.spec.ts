@@ -396,6 +396,31 @@ test.describe("live contact form: client rules", () => {
     expect(api.count).toBe(0);
   });
 
+  test("fixing fields after an empty submit does not move the next control under the pointer", async ({
+    page,
+  }) => {
+    // Regression: errors used to clear on focusout, so pressing the privacy
+    // checkbox right after typing the message shifted it up between
+    // mousedown and mouseup and the click was lost.
+    await openContact(page, "?actividad=ballet-para-adultos");
+    await submit(page);
+    await expect(page.getByTestId("enquiry-errors")).toBeFocused();
+
+    await page.getByLabel("Nombre").fill("Ana Prueba");
+    await page.getByLabel("Correo electrónico").fill("ana@example.com");
+    await page
+      .getByLabel("Cuéntanos qué estás buscando")
+      .fill("Quiero información sobre las clases.");
+
+    // The message error is gone while typing, before focus leaves the field.
+    await expect(page.locator('[data-error-for="mensaje"]')).toBeHidden();
+    await expect(page.getByLabel("Cuéntanos qué estás buscando")).toBeFocused();
+
+    const privacy = page.locator('[name="privacidad"]');
+    await privacy.click();
+    await expect(privacy).toBeChecked();
+  });
+
   test("the honeypot stays hidden from visitors and assistive tech", async ({
     page,
   }) => {

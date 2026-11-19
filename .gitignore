@@ -93,6 +93,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+dist-review
 .output
 
 # Gatsby files
@@ -160,3 +161,4 @@ test-results/
 
 # Claude
 .claude/checkpoints/
+.wrangler/

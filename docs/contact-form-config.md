@@ -48,6 +48,54 @@ Cloudflare dashboard. The repository only holds the non-secret names.
 
 Until steps 6 and 7 are done the public form stays in test mode.
 
+## Preview test environment
+
+The private review Worker (`env.review`, see
+[private-review-preview.md](private-review-preview.md)) stays in **test mode**:
+it has no vars or secrets and the review build keeps `formEndpoint` empty
+(`pnpm build:review` and `pnpm deploy:review` fail otherwise). Only switch it to live after the
+environment's configuration and data handling are approved.
+
+When a real end-to-end test is authorised, use a separate set of values:
+
+| Item                   | Preview value                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Turnstile widget       | A widget for the review hostname only, separate from production.                         |
+| `TURNSTILE_SECRET_KEY` | That widget's secret, set with `wrangler secret put TURNSTILE_SECRET_KEY --env review`.  |
+| `RESEND_API_KEY`       | A Resend key limited to sending, used only by the review Worker.                         |
+| `CONTACT_TO_EMAIL`     | One authorised test mailbox. Needs owner confirmation.                                   |
+| `CONTACT_FROM_EMAIL`   | `onboarding@resend.dev` until `send.carmendanza.es` is verified (see below).             |
+| Test data              | Fictitious name and message; the reply-to address must be a mailbox the tester controls. |
+
+Evidence to record: date, commit, status 200 from `/api/contact`, the message
+arriving in the test mailbox, and a reply from that mailbox reaching the
+reply-to address. No names, addresses or screenshots with personal data.
+
+Local checks that need no account: `wrangler dev --env-file <file>` with
+Cloudflare's public Turnstile test keys (site key `1x00000000000000000000AA`,
+always-fail secret `2x0000000000000000000000000000000AA`) exercises the 403
+path through the real Siteverify without calling Resend. Results are in
+[preview-qa-2026-11-19.md](preview-qa-2026-11-19.md).
+
+### Resend test sender
+
+Resend's `onboarding@resend.dev` sender only delivers to the email address of
+the Resend account owner; other recipients get a 403. So the test mailbox must
+be the account owner's address. Resend also offers `delivered@resend.dev`,
+`bounced@resend.dev` and `complained@resend.dev` to simulate outcomes; they
+count against the sending quota and do not test the reply-to.
+
+### Sending subdomain records
+
+Verifying `send.carmendanza.es` in Resend generates the exact records in the
+domain's Records tab. Expect, all under `send.carmendanza.es` and never on the
+root: an MX and an SPF TXT record for the bounce (return-path) subdomain, and a
+DKIM TXT record at `resend._domainkey`. Resend notes that newer domains may get
+CNAME records for SPF, so copy the dashboard values. If the zone moves to
+Cloudflare, these records must be DNS only (not proxied). A DMARC record for
+the subdomain is recommended. The root MX (`dsmail.es`) and root SPF stay
+unchanged. No DNS change is made without separate authorisation.
+
 ## Response contract
 
 The Worker (`src/worker/contact.js`) returns JSON with `ok` and, on failure, an
