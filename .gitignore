@@ -160,3 +160,4 @@ test-results/
 
 # Claude
 .claude/checkpoints/
+.wrangler/

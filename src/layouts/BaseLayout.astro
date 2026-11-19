@@ -30,6 +30,8 @@ const {
 } = Astro.props;
 const currentPath = Astro.url.pathname;
 const pageTitle = title ?? siteSettings.siteName;
+// Private review build (pnpm build:review): every page is noindex.
+const reviewNoindex = import.meta.env.PUBLIC_REVIEW_NOINDEX === "true";
 ---
 
 <html lang="es">
@@ -39,7 +41,7 @@ const pageTitle = title ?? siteSettings.siteName;
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
     {
-      (pageStatus !== "complete" || noindex) && (
+      (pageStatus !== "complete" || noindex || reviewNoindex) && (
         <meta name="robots" content="noindex" />
       )
     }

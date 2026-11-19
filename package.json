@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:review": "PUBLIC_HIDE_PREVIEW_NOTES=true PUBLIC_REVIEW_NOINDEX=true astro build && node scripts/write-review-headers.mjs && node scripts/verify-review-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "typecheck": "astro check",
