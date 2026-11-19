@@ -1,4 +1,5 @@
 dist/
+dist-review/
 .astro/
 node_modules/
 coverage/

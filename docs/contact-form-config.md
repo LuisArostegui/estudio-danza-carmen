@@ -53,7 +53,7 @@ Until steps 6 and 7 are done the public form stays in test mode.
 The private review Worker (`env.review`, see
 [private-review-preview.md](private-review-preview.md)) stays in **test mode**:
 it has no vars or secrets and the review build keeps `formEndpoint` empty
-(`pnpm build:review` fails otherwise). Only switch it to live after the
+(`pnpm build:review` and `pnpm deploy:review` fail otherwise). Only switch it to live after the
 environment's configuration and data handling are approved.
 
 When a real end-to-end test is authorised, use a separate set of values:

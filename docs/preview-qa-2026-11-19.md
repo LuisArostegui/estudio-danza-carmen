@@ -70,8 +70,10 @@ keys or stubbed services), **Verified send** (a real email delivered).
 - **Observed:** the four verified routes (`/`, ballet index, Ballet para
   adultos, Contacto) have no `robots` meta and no `X-Robots-Tag`. Deployed as a
   review URL they could be indexed if Access failed.
-- **Fix:** `pnpm build:review` (meta `noindex` on every page, `_headers` with
-  `X-Robots-Tag: noindex, nofollow`, and a build check). See
+- **Fix:** `pnpm build:review` writes a separate `dist-review/` artifact (meta
+  `noindex` on every page, `_headers` with `X-Robots-Tag: noindex, nofollow`)
+  and checks it is complete; `env.review` serves only `dist-review/`, and
+  `pnpm deploy:review` re-checks it before uploading. See
   [private-review-preview.md](private-review-preview.md).
 
 ## Performance (Lighthouse Mobile)
@@ -180,7 +182,7 @@ assistive technology; it is not a VoiceOver recording.
 ## Pending Cases (Need A Person)
 
 Computer use only grants read access to Safari (no clicks or typing), so these
-were not run. Use the build from `pnpm build:review` served with
+were not run. Use `dist-review/` from `pnpm build:review` served with
 `pnpm dlx wrangler@4.164.0 dev --env review`, or the deployed review URL.
 
 1. **Safari macOS.** Inicio → menu «Clases de ballet» → Ballet para adultos →
@@ -209,7 +211,7 @@ were not run. Use the build from `pnpm build:review` served with
 - `src/styles/global.css`: `Montserrat Fallback` metric override (D2).
 - `src/layouts/BaseLayout.astro`: `PUBLIC_REVIEW_NOINDEX` (D3).
 - `scripts/write-review-headers.mjs`, `scripts/verify-review-build.mjs`,
-  `package.json` → `build:review` (D3).
+  `package.json` → `build:review` and `deploy:review` (D3).
 - `wrangler.jsonc` → `env.review` (#35).
 - Tests: `tests/unit/review-build.test.mjs`, new case in
   `tests/e2e/contact-form.spec.ts`.

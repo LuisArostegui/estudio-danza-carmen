@@ -1,4 +1,4 @@
-// Writes dist/_headers for the private review build so every static asset is
+// Writes dist-review/_headers for the private review build so every static asset is
 // served with X-Robots-Tag: noindex. Workers Static Assets applies _headers to
 // asset responses; /api/* responses come from the Worker and return JSON.
 // This complements Cloudflare Access. It never replaces it.
@@ -15,7 +15,7 @@ export async function writeReviewHeaders(outDir) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const outDir = resolve(process.argv[2] ?? "dist");
+  const outDir = resolve(process.argv[2] ?? "dist-review");
   await writeReviewHeaders(outDir);
   console.log(`Wrote review _headers to ${outDir}`);
 }

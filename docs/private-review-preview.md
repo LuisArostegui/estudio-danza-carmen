@@ -14,8 +14,9 @@ Access** from the first deploy:
 
 - Worker name: `estudio-danza-carmen-review` (`wrangler.jsonc` → `env.review`).
 - URL: `https://estudio-danza-carmen-review.<account-subdomain>.workers.dev`.
-- Built with `pnpm build:review`, deployed with
-  `pnpm dlx wrangler@4.164.0 deploy --env review`.
+- Built with `pnpm build:review` into `dist-review/`, deployed with
+  `pnpm deploy:review` (re-checks the artifact, then
+  `wrangler deploy --env review`).
 
 | Criterion        | Separate review Worker (recommended)                                                       | Worker Version URLs / Previews of the production Worker                                                                                    |
 | ---------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -35,20 +36,31 @@ production configuration and secrets.
 
 - `wrangler.jsonc` → `env.review`: Worker `estudio-danza-carmen-review`,
   `workers_dev: true`, `preview_urls: false` (no extra Version URL hostnames),
-  same static assets and `/api/*` routing as production. No vars or secrets.
+  same `/api/*` routing as production, but its assets come only from
+  `dist-review/`. A normal `pnpm build` writes `dist/`, so it cannot be uploaded
+  as the review site: with no `dist-review/`, Wrangler refuses to deploy. No
+  vars or secrets.
 - `pnpm build:review`:
-  1. builds with `PUBLIC_HIDE_PREVIEW_NOTES=true` and `PUBLIC_REVIEW_NOINDEX=true`
+  1. builds into `dist-review/` with `PUBLIC_HIDE_PREVIEW_NOTES=true` and `PUBLIC_REVIEW_NOINDEX=true`
      (`BaseLayout` then adds `<meta name="robots" content="noindex">` to every
      page);
-  2. writes `dist/_headers` with `X-Robots-Tag: noindex, nofollow` for `/*`
+  2. writes `dist-review/_headers` with `X-Robots-Tag: noindex, nofollow` for `/*`
      (`scripts/write-review-headers.mjs`);
-  3. fails if any page lacks `noindex`, if `_headers` is missing, or if the form
-     is in live mode (`scripts/verify-review-build.mjs`).
+  3. checks the artifact (`scripts/verify-review-build.mjs`) and fails if the
+     directory is missing, any required page is missing (Inicio, 404, ballet
+     index, Ballet para adultos, Horarios, Contacto), `_headers` has no
+     `X-Robots-Tag: noindex` under the `/*` rule, any page lacks `noindex`,
+     the contact form is missing or live, or review notes are still visible.
+- `pnpm deploy:review`: runs the same check on `dist-review/` and only then
+  `wrangler deploy --env review`. It does not build, so what is checked is
+  exactly what is uploaded.
 
 `noindex` and a hard-to-guess hostname do not replace Access. They only keep
 the review build out of search engines if Access is ever misconfigured.
 
-Verified locally on 2026-11-19 with `wrangler dev --env review`: `/`,
+Verified locally on 2026-11-19 with `wrangler dev --env review` (serving
+`dist-review/`) and `wrangler deploy --env review --dry-run` (reads 190 files
+from `dist-review/`; fails when the folder is missing): `/`,
 `/contacto/`, an image under `/_astro/` and the 404 page all return
 `x-robots-tag: noindex, nofollow`; `/api/contact` answers without secrets
 (`415` for a request with no form body, `503 not_configured` for a form body).
@@ -78,16 +90,18 @@ Safe order so site content is never public. Cloudflare's docs do not say
 whether Access can be switched on while the `workers.dev` route is off, so the
 first upload carries no site content:
 
-1. Build a placeholder: a `dist` folder with only an `index.html` that says
-   «Acceso restringido» (no photos, no copy), and deploy it with
-   `deploy --env review`. This creates the Worker and its hostname.
+1. Build a placeholder: a `dist-review` folder with only an `index.html` that
+   says «Acceso restringido» (no photos, no copy), and deploy it with
+   `pnpm dlx wrangler@4.164.0 deploy --env review`. This is the one deliberate
+   upload that skips the artifact check (it would fail on the missing pages).
+   It creates the Worker and its hostname.
 2. In Workers & Pages → `estudio-danza-carmen-review` → Settings → Domains &
    Routes, enable Cloudflare Access on the `workers.dev` route and set the
    policy below (the Access application can also be edited in Zero Trust →
    Access → Applications).
 3. Check from a session with no Access cookie that the hostname redirects to
    the Access login (see below). Stop here if it returns `200`.
-4. Only then run `pnpm build:review` and deploy the real build.
+4. Only then run `pnpm build:review` and `pnpm deploy:review`.
 5. Run the checks below again before sharing anything.
 
 ## Verification After Deploy
@@ -115,7 +129,7 @@ screenshots containing pending photos.
 
 ## Updating And Rollback
 
-- Update: `pnpm build:review && pnpm dlx wrangler@4.164.0 deploy --env review`.
+- Update: `pnpm build:review && pnpm deploy:review`.
 - Rollback: `pnpm dlx wrangler@4.164.0 rollback --env review` or the dashboard
   Deployments tab.
 - Remove: delete the Worker `estudio-danza-carmen-review` and its Access
