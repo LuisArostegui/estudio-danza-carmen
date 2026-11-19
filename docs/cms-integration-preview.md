@@ -62,13 +62,13 @@ This replaces visible Home text with field keys such as `homeContent.title` and 
 
 ## Node Runtime
 
-Use Node 22 for local development and CI. Astro 7 requires Node `>=22.12.0`, and Node 24 currently crashes on Windows after a successful `astro build` with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`. The repository pins `.nvmrc` to `22.13.2` and `package.json` to `>=22.12 <24` until the Windows Node 24 exit crash is no longer reproducible.
+Use the Node 22 patch version in `.nvmrc` for local development and CI. Astro 7.4.12 requires Node 22.23.4 or newer, and the root package restricts the supported runtime to the Node 22 line.
 
 With nvm-windows:
 
 ```text
-nvm install 22.13.2
-nvm use 22.13.2
+nvm install 22.23.5
+nvm use 22.23.5
 pnpm install
 ```
 
