@@ -8,7 +8,7 @@ import { readdirSync } from "node:fs";
  */
 
 const SHOTS_DIR = "test-results/preview-shots";
-const WIDTHS = [390, 768, 1024, 1440] as const;
+const WIDTHS = [390, 768, 1024, 1025, 1050, 1080, 1280, 1440] as const;
 
 /** Every generated page, read from `dist/` (built before Playwright runs). */
 function builtRoutes(dir = "dist", prefix = "/"): string[] {

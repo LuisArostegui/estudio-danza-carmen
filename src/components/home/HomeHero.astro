@@ -291,8 +291,10 @@ const chevron = (flip: boolean) =>
       );
     }
   }
-  /* Tablets: the copy spans most of the width, so the veil reaches further. */
-  @media (min-width: 48rem) and (max-width: 63.99rem) {
+  /* Tablets and small laptops: until the centred shell (72rem) leaves room
+     on the left, the copy spans most of the width, so the veil reaches
+     further. Kept up to 80rem for margin past that point. */
+  @media (min-width: 48rem) and (max-width: 79.99rem) {
     .home-hero__scrim {
       background:
         linear-gradient(
