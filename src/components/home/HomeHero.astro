@@ -283,6 +283,37 @@ const chevron = (flip: boolean) =>
     }
     .home-hero__inner {
       padding-block: 3rem;
+      /* Keep the copy clear of the edge arrows (1rem + 3rem) until the
+         centred shell clears them on its own. */
+      padding-inline: max(
+        var(--layout-page-gutter),
+        calc(5rem - max(0rem, (100vw - 72rem) / 2))
+      );
+    }
+  }
+  /* Tablets: the copy spans most of the width, so the veil reaches further. */
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    .home-hero__scrim {
+      background:
+        linear-gradient(
+          90deg,
+          rgb(var(--stage-rgb) / 86%) 0%,
+          rgb(var(--stage-rgb) / 72%) 55%,
+          rgb(var(--stage-rgb) / 40%) 85%,
+          rgb(var(--stage-rgb) / 25%) 100%
+        ),
+        linear-gradient(0deg, rgb(var(--stage-rgb) / 35%) 0%, transparent 28%);
+    }
+    .home-hero__scrim--light {
+      background:
+        linear-gradient(
+          90deg,
+          rgb(var(--stage-rgb) / 90%) 0%,
+          rgb(var(--stage-rgb) / 80%) 55%,
+          rgb(var(--stage-rgb) / 55%) 85%,
+          rgb(var(--stage-rgb) / 40%) 100%
+        ),
+        linear-gradient(0deg, rgb(var(--stage-rgb) / 40%) 0%, transparent 28%);
     }
   }
   .home-hero__copy {
