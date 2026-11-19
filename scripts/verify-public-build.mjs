@@ -52,14 +52,31 @@ try {
     path.join(outDir, "horarios/index.html"),
     "utf8",
   );
-  if (!horarios.includes('data-testid="schedule-empty"'))
-    problems.push("horarios: empty state missing");
+  // Expected state follows the timetable data: an example timetable must be
+  // replaced by the empty state; a confirmed one must be shown.
+  const scheduleSource = await readFile(
+    "src/content/schedule/horario.md",
+    "utf8",
+  );
+  const isExample = /^isExample:\s*true\b/m.test(scheduleSource);
+  const hasSessions = /^\s*(?:-\s+)?activity:/m.test(scheduleSource);
+  const hasTable = horarios.includes('data-testid="timetable"');
+  const hasEmpty = horarios.includes('data-testid="schedule-empty"');
   if (horarios.includes('data-testid="schedule-example-note"'))
     problems.push("horarios: example notice in public build");
   if (/<meta name="description" content="Ejemplo/.test(horarios))
     problems.push("horarios: example meta description in public build");
-  if (horarios.includes("Actualizado:"))
-    problems.push("horarios: «Actualizado» date without a timetable");
+  if (isExample || !hasSessions) {
+    if (!hasEmpty)
+      problems.push("horarios: empty state missing for example data");
+    if (hasTable) problems.push("horarios: example timetable in public build");
+    if (horarios.includes("Actualizado:"))
+      problems.push("horarios: «Actualizado» date without a timetable");
+  } else {
+    if (!hasTable) problems.push("horarios: confirmed timetable missing");
+    if (hasEmpty)
+      problems.push("horarios: empty state shown with a confirmed timetable");
+  }
 
   if (problems.length) {
     console.error("Public build check FAILED:");

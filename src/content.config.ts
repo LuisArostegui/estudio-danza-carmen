@@ -217,6 +217,11 @@ const school = defineCollection({
   }),
 });
 
+/** Build-time environment (the config runs in Node; no Node types here). */
+const buildEnv =
+  (globalThis as { process?: { env: Record<string, string | undefined> } })
+    .process?.env ?? {};
+
 const time = z.string().regex(/^\d{2}:\d{2}$/, "Formato HH:MM");
 
 /**
@@ -387,7 +392,12 @@ const infoPages = defineCollection({
  * the title and summary is optional: cards show only what is confirmed.
  */
 const courses = defineCollection({
-  loader: glob({ pattern: "*.md", base: "./src/content/courses" }),
+  // CARMEN_COURSES_DIR lets scripts/verify-courses-page.mjs build the page
+  // with fixture courses (tests/fixtures/courses-*) instead of real ones.
+  loader: glob({
+    pattern: "*.md",
+    base: buildEnv.CARMEN_COURSES_DIR ?? "./src/content/courses",
+  }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),

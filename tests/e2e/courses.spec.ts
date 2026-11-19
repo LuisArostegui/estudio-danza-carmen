@@ -26,6 +26,23 @@ test.describe("course list dates", () => {
     expect(past.map((c) => c.id)).toEqual(["vencido"]);
   });
 
+  test("only a structured date allows booking; free text never does", () => {
+    const { upcoming, past } = splitCourses(
+      [
+        // Free text says January 2025 but there is no structured date.
+        { id: "texto", data: { published: true, dates: "6 de enero de 2025" } },
+        course("fechado", { startDate: "2027-03-06" }),
+        course("vencido", { startDate: "2025-01-06" }),
+      ],
+      "2026-11-19",
+    );
+    expect(upcoming.map((c) => [c.id, c.mode])).toEqual([
+      ["fechado", "book"],
+      ["texto", "ask"],
+    ]);
+    expect(past.map((c) => [c.id, c.mode])).toEqual([["vencido", "past"]]);
+  });
+
   test("a course ending today is still upcoming", () => {
     const { upcoming } = splitCourses(
       [course("hoy", { startDate: "2026-11-19" })],

@@ -1,14 +1,19 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import Photo from "./Photo.astro";
+import type { CourseMode } from "../lib/courses";
 
 /**
  * One course card. Every fact is optional and shown only when confirmed.
- * A past course keeps its information but has no booking link.
+ * `mode` comes from splitCourses (src/lib/courses.ts):
+ * - book: structured future date → «Más información y reservas»;
+ * - ask: date to be confirmed → enquiry link, never a booking link;
+ * - past: course finished → no link.
  */
-type Props = { course: CollectionEntry<"courses">; past?: boolean };
+type Props = { course: CollectionEntry<"courses">; mode: CourseMode };
 
-const { course, past = false } = Astro.props;
+const { course, mode } = Astro.props;
+const past = mode === "past";
 const d = course.data;
 const euros = new Intl.NumberFormat("es-ES", {
   style: "currency",
@@ -27,6 +32,7 @@ const facts = [
 <li
   class:list={["course", { "course--past": past }]}
   data-testid={past ? "past-course-card" : "course-card"}
+  data-course-mode={mode}
 >
   {
     d.poster?.src && (
@@ -52,10 +58,22 @@ const facts = [
         </dl>
       )
     }
+    {mode === "ask" && <p class="course__tbc">Fecha por confirmar</p>}
     {
-      !past && (
-        <a class="button button--primary" href="/contacto/">
+      mode === "book" && (
+        <a
+          class="button button--primary"
+          href="/contacto/"
+          data-testid="course-book"
+        >
           Más información y reservas
+        </a>
+      )
+    }
+    {
+      mode === "ask" && (
+        <a class="text-link" href="/contacto/" data-testid="course-ask">
+          Consulta las fechas
         </a>
       )
     }
@@ -96,6 +114,13 @@ const facts = [
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
+  }
+
+  .course__tbc {
+    margin: 0;
+    color: var(--color-pink-ink);
+    font-size: var(--font-size-small);
+    font-style: italic;
   }
 
   .course__title {

@@ -6,9 +6,9 @@ import { splitCourses, todayInMadrid } from "../../lib/courses";
 
 /**
  * Cursos: dossier copy plus one card per published course in
- * src/content/courses/. Only courses that have not ended appear under
- * «Próximos cursos» with a booking link; past ones move to «Cursos anteriores»
- * without it. With no upcoming course, Elena's empty state is shown. «Today» is
+ * src/content/courses/. Courses with a structured future date appear under
+ * «Próximos cursos» with a booking link; undated ones appear there with an
+ * enquiry link; past ones move to «Cursos anteriores» without a link. With no upcoming course, Elena's empty state is shown. «Today» is
  * the build date in Granada, so the site must be rebuilt to refresh it.
  */
 const entry = await getEntry("infoPages", "cursos");
@@ -27,7 +27,7 @@ const { upcoming: courses, past } = splitCourses(
         courses.length > 0 ? (
           <ul class="courses__list" data-testid="course-list">
             {courses.map((course) => (
-              <CourseCard course={course} />
+              <CourseCard course={course} mode={course.mode} />
             ))}
           </ul>
         ) : (
@@ -56,7 +56,7 @@ const { upcoming: courses, past } = splitCourses(
             <h2 class="courses__past-title">Cursos anteriores</h2>
             <ul class="courses__list">
               {past.map((course) => (
-                <CourseCard course={course} past />
+                <CourseCard course={course} mode="past" />
               ))}
             </ul>
           </div>

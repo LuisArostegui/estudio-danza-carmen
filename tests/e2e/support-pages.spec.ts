@@ -57,18 +57,42 @@ test.describe("/examenes-rad/ (review)", () => {
 });
 
 test.describe("/cursos/ (review)", () => {
-  test("shows the empty state inviting to ask for dates", async ({ page }) => {
+  // Rendering of each course case (empty, bookable, date to confirm, past)
+  // is checked with fixture data by `pnpm check:courses`. Here the real page
+  // must be consistent with whatever courses the school has published.
+  test("shows either upcoming courses or the empty state, never both", async ({
+    page,
+  }) => {
     await page.goto("/cursos/");
     await expectReview(page, "Cursos y talleres de danza en Granada");
+    const cards = page.getByTestId("course-card");
     const empty = page.getByTestId("courses-empty");
-    await expect(empty).toBeVisible();
-    await expect(empty).toContainText(
-      "¡Estamos preparando nuevas actividades!",
+    if ((await cards.count()) === 0) {
+      await expect(empty).toBeVisible();
+      await expect(empty).toContainText(
+        "¡Estamos preparando nuevas actividades!",
+      );
+      await expect(empty.getByRole("link")).toHaveAttribute(
+        "href",
+        "/contacto/",
+      );
+    } else {
+      await expect(empty).toHaveCount(0);
+      // Every upcoming card offers exactly one way to ask or book.
+      for (const card of await cards.all())
+        await expect(
+          card.locator(
+            '[data-testid="course-book"], [data-testid="course-ask"]',
+          ),
+        ).toHaveCount(1);
+    }
+    // Past courses never offer a link.
+    await expect(page.getByTestId("past-course-card").locator("a")).toHaveCount(
+      0,
     );
-    await expect(empty.getByRole("link")).toHaveAttribute("href", "/contacto/");
-    await expect(page.getByTestId("course-card")).toHaveCount(0);
     const copy = await publicCopy(page);
     expect(copy).not.toContain("no tenemos cursos con inscripciones abiertas");
+    expect(copy).not.toContain("Plantilla de curso");
   });
 });
 
