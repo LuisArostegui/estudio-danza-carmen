@@ -30,14 +30,17 @@ portraits, another room), 2 category heroes and 2 Instagram tiles.
 
 **Responsive review at 390, 768 and 1440 px:**
 
-| Check                                    | Result                                                                                                                                                                                                  |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Horizontal overflow, all 33 built routes | None at 390, 768 or 1440 px                                                                                                                                                                             |
-| Home hero, carousel arrows               | **Fixed.** At 768 px the left arrow covered the first letter of «TUYA.». The copy now keeps clear of both arrows (checked at 390, 768, 1024–1080, 1280 and 1440 px); 1440 px is unchanged                          |
+| Check                                    | Result                                                                                                                                                                                                                                                                               |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Horizontal overflow, all 33 built routes | None at 390, 768 or 1440 px                                                                                                                                                                                                                                                          |
+| Home hero, carousel arrows               | **Fixed.** At 768 px the left arrow covered the first letter of «TUYA.». The copy now keeps clear of both arrows (checked at 390, 768, 1024–1080, 1280 and 1440 px); 1440 px is unchanged                                                                                            |
 | Home hero, text over the four photos     | **Fixed from 768 to 1280 px.** The veil faded out before the copy ended (body text down to 2.6:1 at 768 px, title down to 2.6:1 between 1025 and 1152 px). The wider veil now covers 48–80rem; swept 768–1440 px in 16 px steps on all four slides: title ≥ 5.1:1, body text ≥ 7.1:1 |
-| Home hero at 390 px                      | Text sits below the photo on the solid stage colour (≥ 15:1)                                                                                                                                            |
-| Show tiles (Inicio)                      | No photos yet: labels sit on the dark gap tiles                                                                                                                                                         |
-| Crops of the four photos in every slot   | Faces and main subjects stay in frame; focus values kept                                                                                                                                                |
+| Home hero at 390 px                      | Text sits below the photo on the solid stage colour (≥ 15:1)                                                                                                                                                                                                                         |
+| Show tiles (Inicio)                      | No photos yet: labels sit on the dark gap tiles                                                                                                                                                                                                                                      |
+| Crops of the four photos in every slot   | Faces and main subjects stay in frame; focus values kept                                                                                                                                                                                                                             |
+
+**Visual change:** accepted in review on 2026-11-19. Still open: purging
+the cached copies of the early public captures (owner checklist item 13).
 
 **Owner decisions needed for this pass:** which production, class and team
 photos can be used (with rights and guardian consent), and sign-off per screen
@@ -100,3 +103,7 @@ from the captures (shared privately, not in the PR, because the photos' consent 
 10. Map pin, WhatsApp and phone.
 11. Mailbox and form delivery provider.
 12. Legal texts.
+13. Cached preview captures (open): the capture branch from the visual-close
+    PR was deleted, but its commit is still served by SHA without signing in.
+    Luis asks GitHub Support to purge it (commit id in the private session
+    notes, not in this repo). Keep open while photo consent is pending.
