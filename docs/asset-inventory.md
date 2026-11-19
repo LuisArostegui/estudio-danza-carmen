@@ -42,6 +42,18 @@ This document resolves CD-9 for the repository foundation stage. It creates the 
 
 One public-path media asset is present as the production-safe fallback hero: `public/assets/hero-carmen.png`. It is an AI-generated original created for this project and may be uploaded to Sanity with licence status `approved`; final Carmen photography can still replace it later.
 
+## Scope Differences With Elena's Brief
+
+- **Blog** is listed in `01 - INSTRUCCIONES MENU` (pp. 3 and 14) but is not built
+  in the MVP preview. It stays in the post-MVP backlog together with its
+  articles. Recorded 2026-11-19; see `docs/preview-inventory.md`.
+- **Profesorado** and **Instalaciones** are sections of `/sobre-nosotros/`
+  (`#profesorado`, `#instalaciones`), not separate pages, following Elena's
+  dossier structure.
+- `/sobre-nosotros/` reuses `aula-barra.jpg`, `zapatillas-barra.jpg` and
+  `escenario-vestidos-rojos.jpg` (same permission status as in
+  `src/assets/fotos/README.md`). Needs owner confirmation for this use.
+
 ## Rules For Identifiable People
 
 Before publishing photos, videos, or testimonials involving identifiable people, record:

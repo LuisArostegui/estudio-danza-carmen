@@ -133,15 +133,22 @@ test.describe("home testimonials", () => {
 });
 
 test.describe("home gift and Instagram", () => {
-  test("gift button links to the pending /regala-danza/ page", async ({
+  test("gift button links to the /regala-danza/ review page", async ({
     page,
   }) => {
     await page.goto("/");
     const cta = page.getByTestId("home-gift").getByRole("link");
     await expect(cta).toHaveCount(1);
     await expect(cta).toHaveAttribute("href", "/regala-danza/");
-    // The target page is still pending, so the section says so.
-    await expect(page.getByTestId("home-gift")).toContainText("Próximamente");
+    // Until Elena confirms the vouchers, Inicio invites to ask instead of
+    // announcing them.
+    const gift = page.getByTestId("home-gift");
+    await expect(cta).toHaveText(/Consulta las opciones de regalo/i);
+    await expect(gift).not.toContainText("contamos con bonos regalo");
+    // The target page now exists (in review), so no «Próximamente» label.
+    await expect(page.getByTestId("home-gift")).not.toContainText(
+      "Próximamente",
+    );
   });
 
   test("Instagram link opens the school profile safely", async ({ page }) => {

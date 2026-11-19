@@ -1,8 +1,17 @@
 ---
+import { getCollection } from "astro:content";
 import Photo from "../Photo.astro";
 import SectionTitle from "../SectionTitle.astro";
 type Props = { shows: any };
 const { shows } = Astro.props;
+
+/**
+ * Tiles come from the `performances` collection (same order as
+ * /espectaculos/), so each one links to its anchor on that page.
+ */
+const productions = (await getCollection("performances")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 ---
 
 <section class="home-shows" aria-labelledby="shows-title">
@@ -20,15 +29,22 @@ const { shows } = Astro.props;
     data-reveal-delay="100"
   >
     {
-      shows.items.map((item: any) => (
-        <figure class="gallery__tile photo-frame" tabindex="0">
+      productions.map((item) => (
+        <a
+          class:list={[
+            "gallery__tile photo-frame",
+            { "is-gap": !item.data.photo?.src },
+          ]}
+          href={`/espectaculos/#${item.id}`}
+        >
           <Photo
-            photo={item.photo}
+            photo={item.data.photo}
             tone="light"
+            decorative
             sizes="(min-width: 64rem) 25vw, 50vw"
           />
-          <figcaption class="gallery__caption">{item.name}</figcaption>
-        </figure>
+          <span class="gallery__caption">{item.data.title}</span>
+        </a>
       ))
     }
   </div>
@@ -66,14 +82,25 @@ const { shows } = Astro.props;
   }
   .gallery__tile {
     position: relative;
+    display: block;
     margin: 0;
+    color: #fff;
+    text-decoration: none;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--color-tint);
   }
   .gallery__tile:focus-visible {
-    outline: 3px solid var(--color-pink);
+    outline: 3px solid var(--color-focus);
     outline-offset: -3px;
+  }
+  /* No photo yet: the production name stays readable on the gap. */
+  .gallery__tile.is-gap :global(.photo__gap-label) {
+    display: none;
+  }
+  .gallery__tile.is-gap .gallery__caption {
+    opacity: 1;
+    background: var(--color-story-bg);
   }
   .gallery__tile :global(.photo) {
     transition: transform 600ms ease-out;

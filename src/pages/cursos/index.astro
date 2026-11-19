@@ -1,0 +1,140 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import InfoPage from "../../components/InfoPage.astro";
+import CourseCard from "../../components/CourseCard.astro";
+import { splitCourses, todayInMadrid } from "../../lib/courses";
+
+/**
+ * Cursos: dossier copy plus one card per published course in
+ * src/content/courses/. Courses with a structured future date appear under
+ * «Próximos cursos» with a booking link; undated ones appear there with an
+ * enquiry link; past ones move to «Cursos anteriores» without a link. With no upcoming course, Elena's empty state is shown. «Today» is
+ * the build date in Granada, so the site must be rebuilt to refresh it.
+ */
+const entry = await getEntry("infoPages", "cursos");
+if (!entry) throw new Error("Missing src/content/info/cursos.md");
+const empty = entry.data.empty;
+const { upcoming: courses, past } = splitCourses(
+  await getCollection("courses"),
+  todayInMadrid(),
+);
+---
+
+<InfoPage entry={entry} path="/cursos/">
+  <section class="courses" aria-label="Listado de cursos">
+    <div class="shell">
+      {
+        courses.length > 0 ? (
+          <ul class="courses__list" data-testid="course-list">
+            {courses.map((course) => (
+              <CourseCard course={course} mode={course.mode} />
+            ))}
+          </ul>
+        ) : (
+          empty && (
+            <div class="courses__empty" data-testid="courses-empty">
+              <span class="courses__empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <circle cx="24" cy="24" r="20" />
+                  <circle cx="24" cy="24" r="5" />
+                </svg>
+              </span>
+              <h3>{empty.title}</h3>
+              {empty.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              <a class="button button--primary" href="/contacto/">
+                Consulta las próximas fechas
+              </a>
+            </div>
+          )
+        )
+      }
+      {
+        past.length > 0 && (
+          <div class="courses__past" data-testid="past-courses">
+            <h2 class="courses__past-title">Cursos anteriores</h2>
+            <ul class="courses__list">
+              {past.map((course) => (
+                <CourseCard course={course} mode="past" />
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</InfoPage>
+
+<style>
+  .courses {
+    padding-block: 0 var(--layout-block-y);
+    background: var(--color-tint);
+  }
+
+  .courses__list {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .courses__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .courses__past {
+    display: grid;
+    gap: 1.25rem;
+    margin-block-start: var(--layout-block-y);
+  }
+
+  .courses__past-title {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .courses__empty {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
+    max-width: 40rem;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--color-tint-line);
+    background: #fff;
+    text-align: center;
+  }
+
+  .courses__empty h3 {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .courses__empty p {
+    margin: 0;
+    color: var(--color-body);
+  }
+
+  .courses__empty-icon svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    fill: none;
+    stroke: var(--color-pink-ink);
+    stroke-width: 1.25;
+  }
+
+  .courses__empty-icon circle:last-child {
+    fill: var(--color-pink);
+    stroke: none;
+  }
+</style>

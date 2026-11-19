@@ -1,0 +1,288 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import SectionTitle from "./SectionTitle.astro";
+import { directPageStatus } from "../lib/catalog";
+
+/**
+ * Shared layout for simple information pages (Exámenes RAD, Regala danza,
+ * Cursos). Content lives in src/content/info/<slug>.md. The default slot is
+ * rendered after the sections (e.g. the course list).
+ */
+type Props = { entry: CollectionEntry<"infoPages">; path: string };
+
+const { entry, path } = Astro.props;
+const page = entry.data;
+const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
+const external = (href: string) => /^https?:/.test(href);
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.description}
+  pageStatus={directPageStatus(path)}
+>
+  <section class="info-hero" aria-labelledby="info-title">
+    <div class="shell info-hero__inner">
+      <Breadcrumbs
+        items={[{ label: "Inicio", href: "/" }, { label: page.title }]}
+      />
+      <SectionTitle
+        as="h1"
+        id="info-title"
+        title={page.title}
+        eyebrow={page.subtitle}
+      />
+      {
+        page.intro.map((paragraph) => (
+          <p class="info-hero__intro">{paragraph}</p>
+        ))
+      }
+      {
+        showPreviewNotes && page.pendingFacts.length > 0 && (
+          <details class="preview-note info-note">
+            <summary>Página en revisión: datos por confirmar</summary>
+            <ul>
+              {page.pendingFacts.map((fact) => (
+                <li>{fact}</li>
+              ))}
+            </ul>
+          </details>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    page.sections.map((section, index) => (
+      <section
+        id={section.id}
+        class:list={["info-section", { "is-tinted": index % 2 === 0 }]}
+        aria-labelledby={`info-section-${index}`}
+      >
+        <div class="shell info-section__inner" data-reveal>
+          <SectionTitle id={`info-section-${index}`} title={section.title} />
+          {section.paragraphs.map((paragraph) => (
+            <p class="info-section__text">{paragraph}</p>
+          ))}
+          {section.items.length > 0 && (
+            <ul class="info-items">
+              {section.items.map((item) => (
+                <li class="info-items__item">
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          {section.steps.length > 0 && (
+            <ol class="info-steps">
+              {section.steps.map((step, number) => (
+                <li class="info-steps__item">
+                  <span class="info-steps__number" aria-hidden="true">
+                    {String(number + 1).padStart(2, "0")}
+                  </span>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+          {section.links.length > 0 && (
+            <ul class="info-links">
+              {section.links.map((link) => (
+                <li>
+                  <a class="text-link" href={link.href}>
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <slot />
+
+  <section class="info-closing" aria-labelledby="info-closing-title">
+    <div class="shell info-closing__inner" data-reveal>
+      <SectionTitle
+        id="info-closing-title"
+        title={page.closing.title}
+        align="center"
+        tone="dark"
+      />
+      {page.closing.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      <div class="info-closing__actions">
+        <a class="button button--light" href={page.closing.cta.href}>
+          {page.closing.cta.label}
+        </a>
+        {
+          page.closing.secondaryCta && (
+            <a
+              class="text-link info-closing__secondary"
+              href={page.closing.secondaryCta.href}
+              target={
+                external(page.closing.secondaryCta.href) ? "_blank" : undefined
+              }
+              rel={
+                external(page.closing.secondaryCta.href)
+                  ? "noopener noreferrer"
+                  : undefined
+              }
+            >
+              {page.closing.secondaryCta.label}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .info-hero {
+    padding-block: var(--layout-block-y);
+  }
+
+  .info-hero__inner {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  .info-hero__intro {
+    max-width: var(--layout-text-max);
+    margin: 0;
+    color: var(--color-ink);
+    font-size: var(--font-size-lead);
+    line-height: 1.7;
+  }
+
+  .info-note summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .info-note ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+  }
+
+  .info-section {
+    padding-block: var(--layout-block-y);
+    scroll-margin-top: 5rem;
+  }
+
+  .info-section.is-tinted {
+    background: var(--color-tint);
+  }
+
+  .info-section__inner {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+
+  .info-section__text {
+    max-width: var(--layout-text-max);
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+    line-height: 1.7;
+  }
+
+  .info-items,
+  .info-steps {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .info-items,
+    .info-steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  .info-items__item,
+  .info-steps__item {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-block-start: 1rem;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .info-items h3,
+  .info-steps h3 {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.35;
+  }
+
+  .info-items p,
+  .info-steps p {
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-small);
+    line-height: 1.6;
+  }
+
+  .info-steps__number {
+    color: var(--color-pink-ink);
+    font-family: var(--font-family-decorative);
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .info-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .info-closing {
+    background: var(--color-story-bg);
+    padding-block: var(--layout-block-y);
+    color: var(--color-dark-muted);
+    text-align: center;
+  }
+
+  .info-closing__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-inline-size: 48rem;
+  }
+
+  .info-closing__inner p {
+    margin: 0;
+  }
+
+  .info-closing__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .info-closing__secondary {
+    color: #fff;
+  }
+</style>

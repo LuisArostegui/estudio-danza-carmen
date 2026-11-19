@@ -1,0 +1,9 @@
+---
+import { getEntry } from "astro:content";
+import InfoPage from "../../components/InfoPage.astro";
+
+const entry = await getEntry("infoPages", "regala-danza");
+if (!entry) throw new Error("Missing src/content/info/regala-danza.md");
+---
+
+<InfoPage entry={entry} path="/regala-danza/" />

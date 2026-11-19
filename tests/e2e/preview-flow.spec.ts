@@ -70,13 +70,12 @@ test.describe("preview journey", () => {
       .getByTestId("activity-card");
     await expect(cards).toHaveCount(8);
     await expect(cards.filter({ hasText: "Ficha en preparación" })).toHaveCount(
-      7,
+      0,
     );
-    await expect(cards.locator('[data-status="pending"]')).toHaveCount(0);
     expect(
       await page
         .getByTestId("activity-cards")
-        .locator('[data-status="pending"]')
+        .locator('[data-status="review"]')
         .count(),
     ).toBe(7);
     expect(
@@ -358,11 +357,16 @@ test.describe("verified pages", () => {
 test.describe("show gallery", () => {
   test("every tile has a caption", async ({ page }) => {
     await page.goto("/");
-    const tiles = page.getByTestId("show-gallery").locator("figure");
+    const tiles = page.getByTestId("show-gallery").locator("a");
     await expect(tiles).toHaveCount(7);
     for (let index = 0; index < 7; index++) {
-      await expect(tiles.nth(index).locator("figcaption")).not.toBeEmpty();
-      await expect(tiles.nth(index)).toHaveAttribute("tabindex", "0");
+      await expect(
+        tiles.nth(index).locator(".gallery__caption"),
+      ).not.toBeEmpty();
+      await expect(tiles.nth(index)).toHaveAttribute(
+        "href",
+        /^\/espectaculos\/#/,
+      );
     }
   });
 
@@ -374,8 +378,14 @@ test.describe("show gallery", () => {
       await page.evaluate(() => matchMedia("(hover: none)").matches),
       "hover:none devices show captions permanently",
     );
-    const tiles = page.getByTestId("show-gallery").locator("figure");
-    const caption = (index: number) => tiles.nth(index).locator("figcaption");
+    // Tiles without a photo keep the name visible; only photo tiles fade it.
+    const tiles = page.getByTestId("show-gallery").locator("a:not(.is-gap)");
+    test.skip(
+      (await tiles.count()) < 2,
+      "No production has an authorised photo yet: every label stays visible",
+    );
+    const caption = (index: number) =>
+      tiles.nth(index).locator(".gallery__caption");
     const opacity = (index: number) =>
       caption(index).evaluate((el) => getComputedStyle(el).opacity);
 
@@ -400,7 +410,9 @@ test.describe("show gallery", () => {
       await page.evaluate(() => !matchMedia("(hover: none)").matches),
       "Only for hover:none (touch) devices",
     );
-    const captions = page.getByTestId("show-gallery").locator("figcaption");
+    const captions = page
+      .getByTestId("show-gallery")
+      .locator(".gallery__caption");
     await captions.first().scrollIntoViewIfNeeded();
     for (let index = 0; index < 7; index++) {
       await expect(captions.nth(index)).toHaveCSS("opacity", "1");
@@ -412,7 +424,7 @@ test.describe("show gallery", () => {
     await page.goto("/");
     const duration = await page
       .getByTestId("show-gallery")
-      .locator("figcaption")
+      .locator(".gallery__caption")
       .first()
       .evaluate((el) => getComputedStyle(el).transitionDuration);
     expect(parseFloat(duration)).toBeLessThanOrEqual(0.01);
@@ -425,7 +437,7 @@ test.describe("show gallery", () => {
     await page.goto("/");
     const duration = await page
       .getByTestId("show-gallery")
-      .locator("figcaption")
+      .locator(".gallery__caption")
       .first()
       .evaluate((el) => getComputedStyle(el).transitionDuration);
     expect(duration).toBe("0.2s");
@@ -564,18 +576,18 @@ test.describe("enquiry form", () => {
   });
 });
 
-test.describe("pending pages are never verified", () => {
-  for (const path of [
-    "/salud-corporal/",
-    "/otras-disciplinas/",
-    "/clases-de-ballet-granada/ballet-junior/",
-    "/sobre-nosotros/",
-  ]) {
-    test(`${path} is marked pending and noindex`, async ({ page }) => {
+test.describe("pending and review pages are never verified", () => {
+  for (const [path, status] of [
+    ["/salud-corporal/", "review"],
+    ["/otras-disciplinas/", "review"],
+    ["/clases-de-ballet-granada/ballet-junior/", "review"],
+    ["/sobre-nosotros/", "review"],
+  ] as const) {
+    test(`${path} is marked ${status} and noindex`, async ({ page }) => {
       await page.goto(path);
       await expect(page.locator("body")).toHaveAttribute(
         "data-page-status",
-        "pending",
+        status,
       );
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
         "content",

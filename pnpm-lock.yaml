@@ -50,6 +50,9 @@ importers:
       prettier-plugin-astro:
         specifier: ^0.14.1
         version: 0.14.1
+      yaml:
+        specifier: 2.9.0
+        version: 2.9.0
 
   studio:
     dependencies:

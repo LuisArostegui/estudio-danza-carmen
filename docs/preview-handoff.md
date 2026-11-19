@@ -1,4 +1,31 @@
-# Preview handoff: Inicio → Clases de ballet → Ballet para adultos → Consulta
+# Preview handoff
+
+## Update 2026-11-19 · branch `feat/preview-completion`
+
+Every planned screen can now be walked in the local preview. Route inventory,
+discrepancies and the owner checklist: `docs/preview-inventory.md`.
+
+- New `review` status for categories and activities (noindex, not announced
+  as «en preparación»). The 18 remaining fichas carry dossier copy; Salud
+  corporal and Otras disciplinas landings are in review.
+- New pages: `/sobre-nosotros/` (with `#profesorado` and `#instalaciones`),
+  `/examenes-rad/`, `/cursos/` (empty state + `src/content/courses/`),
+  `/regala-danza/`, `404`. Shared layout: `src/components/InfoPage.astro`,
+  copy in `src/content/info/`.
+- Inicio: the seven show tiles link to `/espectaculos/#slug` (from the
+  `performances` collection). Header Escape closes the focused and hovered
+  panels and keeps focus on the owning category.
+- Horarios shows an empty state in public builds while the data is an example.
+- Still pending: the three legal pages (approved texts) and Horarios (real
+  timetable). Blog is post-MVP backlog.
+
+Next session: start from `docs/preview-inventory.md` and the owner answers;
+replace pending facts in `src/content/**` and move pages from `review` to
+`complete` (and into `VERIFIED_ROUTES` / `VERIFIED_PAGES`) once Elena signs off.
+
+---
+
+## 2026-11-18 · Inicio → Clases de ballet → Ballet para adultos → Consulta
 
 Branch `feat/preview-ballet-adultos` (from `main` at `160586c`). Nothing published,
 merged or deployed. Session date: 2026-11-18.

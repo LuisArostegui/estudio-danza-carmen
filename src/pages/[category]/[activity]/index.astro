@@ -74,11 +74,18 @@ const pageTitle = data.seoTitle ?? `${data.title} · Estudio de Danza Carmen`;
           )
         }
         {
+          !isPending && data.audience && (
+            <p class="activity-hero__audience" data-testid="activity-audience">
+              <span class="activity-hero__audience-label">¿Para quién?</span>
+              {data.audience}
+            </p>
+          )
+        }
+        {
           isPending && (
             <p class="preview-note" data-testid="activity-pending-note">
-              Ficha en preparación: el texto completo de esta clase está en el
-              dossier de Elena y se incorporará tras aprobar la plantilla de
-              Ballet para adultos.
+              Ficha en preparación: el texto completo de esta clase se
+              incorporará cuando esté disponible.
             </p>
           )
         }
@@ -193,7 +200,9 @@ const pageTitle = data.seoTitle ?? `${data.title} · Estudio de Danza Carmen`;
     {
       !isPending && (
         <section id="consulta" class="activity-form">
-          {data.closing && <SectionTitle title={data.closing.title} />}
+          <SectionTitle
+            title={data.closing?.title ?? "¿Quieres más información?"}
+          />
           {data.closing && (
             <p class="activity-form__body">{data.closing.body}</p>
           )}
@@ -260,6 +269,25 @@ const pageTitle = data.seoTitle ?? `${data.title} · Estudio de Danza Carmen`;
     color: var(--color-body);
     font-size: var(--font-size-reading);
     line-height: 1.6;
+  }
+
+  .activity-hero__audience {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--color-pink);
+    color: var(--color-body);
+    font-size: var(--font-size-small);
+    line-height: 1.6;
+  }
+
+  .activity-hero__audience-label {
+    color: var(--color-ink);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
   }
 
   .activity-hero__actions {

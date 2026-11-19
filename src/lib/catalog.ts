@@ -106,7 +106,13 @@ export const directPages = [
  * Built pages with real content that are still waiting for owner review.
  * They stay noindex but are no longer announced as "en preparación".
  */
-export const reviewPaths: string[] = ["/espectaculos/"];
+export const reviewPaths: string[] = [
+  "/espectaculos/",
+  "/sobre-nosotros/",
+  "/examenes-rad/",
+  "/cursos/",
+  "/regala-danza/",
+];
 
 /** One status per route, shared by the header and the page itself. */
 export function directPageStatus(href: string): MenuLink["status"] {
@@ -128,34 +134,6 @@ export type PendingPage = {
  * verified-page tests.
  */
 export const pendingPages: PendingPage[] = [
-  {
-    path: "/sobre-nosotros/",
-    title: "Sobre nosotros",
-    needs: [
-      "Historia y archivo fotográfico",
-      "Nombres, funciones y fotos del equipo",
-    ],
-  },
-  {
-    path: "/examenes-rad/",
-    title: "Exámenes RAD",
-    needs: [
-      "Denominación exacta: «preparadora» o «examinador oficial»",
-      "Uso de la marca RAD",
-    ],
-  },
-  {
-    path: "/cursos/",
-    title: "Cursos",
-    needs: [
-      "Próximas convocatorias con fecha, horario, nivel, precio y plazas",
-    ],
-  },
-  {
-    path: "/regala-danza/",
-    title: "Regala danza",
-    needs: ["Modalidades de bono, validez, entrega y canje"],
-  },
   {
     path: "/legal/privacy-policy/",
     title: "Política de privacidad",

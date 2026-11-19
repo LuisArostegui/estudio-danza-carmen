@@ -33,6 +33,7 @@ type Props = { category: Category; activities: Activity[] };
 const { category, activities } = Astro.props;
 const { data } = category;
 const isPending = data.status === "pending";
+const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
 const school = await getSchool();
 const pageTitle = `${data.title} · Estudio de Danza Carmen`;
 ---
@@ -70,6 +71,18 @@ const pageTitle = `${data.title} · Estudio de Danza Carmen`;
             </p>
           ) : (
             data.intro && <p class="category-hero__intro">{data.intro}</p>
+          )
+        }
+        {
+          showPreviewNotes && data.pendingFacts.length > 0 && (
+            <details class="preview-note category-hero__note">
+              <summary>Página en revisión: datos por confirmar</summary>
+              <ul>
+                {data.pendingFacts.map((fact) => (
+                  <li>{fact}</li>
+                ))}
+              </ul>
+            </details>
           )
         }
       </div>
@@ -179,6 +192,16 @@ const pageTitle = `${data.title} · Estudio de Danza Carmen`;
     color: var(--color-ink);
     font-size: var(--font-size-lead);
     line-height: 1.5;
+  }
+
+  .category-hero__note summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .category-hero__note ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
   }
 
   .category-hero__intro {

@@ -117,22 +117,7 @@ shows:
   cta:
     label: "Descubre nuestros espectáculos"
     href: "/espectaculos/"
-  # Titles from the dossier. Each needs its own authorised photo.
-  items:
-    - name: "Mary Poppins"
-      photo: { pending: "Foto de Mary Poppins" }
-    - name: "Orquesta Clásica de Granada"
-      photo: { pending: "Foto con la Orquesta Clásica de Granada" }
-    - name: "Pulgarcita"
-      photo: { pending: "Foto de Pulgarcita" }
-    - name: "La Bella y la Bestia"
-      photo: { pending: "Foto de La Bella y la Bestia" }
-    - name: "La Bella Durmiente"
-      photo: { pending: "Foto de La Bella Durmiente" }
-    - name: "Alicia en el País de las Maravillas"
-      photo: { pending: "Foto de Alicia en el País de las Maravillas" }
-    - name: "La leyenda de las Princesas Cisne"
-      photo: { pending: "Foto de La leyenda de las Princesas Cisne" }
+  # Tiles: the seven productions in src/content/performances (photos live there).
 
 contact:
   accent: "Contacto"
@@ -162,14 +147,18 @@ testimonials:
     focusDesktop: "50% 0%"
     focusMobile: "50% 0%"
 
-# Gift: Elena's literal wording from the WordPress site.
+# Gift: Elena's eyebrow, title and subtitle (02 · Inicio). The body and the
+# button invite to ask until Elena confirms which vouchers exist. Her original
+# body: «En Estudio de Danza Carmen contamos con bonos regalo para disfrutar de
+# nuestras actividades, como los intensivos de sevillanas…» and button
+# «Descubre nuestros bonos regalo». Needs owner confirmation.
 gift:
   eyebrow: "Un regalo para disfrutar"
   title: "¿Y si este año regalas una experiencia para recordar?"
   subtitle: "Sorprende a alguien especial con un regalo diferente."
-  body: "En Estudio de Danza Carmen contamos con bonos regalo para disfrutar de nuestras actividades, como los intensivos de sevillanas, una propuesta perfecta para aprender algo nuevo, compartir buenos momentos y llegar a las ferias sabiendo bailar."
+  body: "Si quieres regalar danza, escríbenos y te contamos qué opciones tenemos para sorprender a esa persona especial."
   cta:
-    label: "Descubre nuestros bonos regalo"
+    label: "Consulta las opciones de regalo"
     href: "/regala-danza/"
 
 # Instagram strip: six decorative tiles. Two are still gaps until authorised photos exist.

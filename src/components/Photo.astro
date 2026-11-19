@@ -24,7 +24,7 @@ type Props = {
   priority?: boolean;
   /** Tone of the gap placeholder. */
   tone?: "dark" | "light";
-  /** Inside a link: hide the gap from assistive tech (link text names it). */
+  /** Inside a link: the link text names it, so the photo or gap is hidden from assistive tech. */
   decorative?: boolean;
 };
 
@@ -46,7 +46,7 @@ const gapLabel = photo.pending ?? "Foto autorizada";
   photo.src ? (
     <Picture
       src={photo.src}
-      alt={photo.alt ?? ""}
+      alt={decorative ? "" : (photo.alt ?? "")}
       widths={widths.filter((width) => width <= (photo.src?.width ?? 1920))}
       sizes={sizes}
       formats={["avif", "webp"]}

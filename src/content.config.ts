@@ -29,7 +29,11 @@ const photo = (image: SchemaContext["image"]) =>
 
 const cta = z.object({ label: z.string(), href: z.string() });
 
-const pageStatus = z.enum(["complete", "pending"]);
+/**
+ * `complete`: verified and indexable. `review`: full content awaiting owner
+ * sign-off (noindex, not announced as pending). `pending`: placeholder.
+ */
+const pageStatus = z.enum(["complete", "review", "pending"]);
 
 const home = defineCollection({
   loader: glob({ pattern: "inicio.md", base: "./src/content/home" }),
@@ -92,7 +96,6 @@ const home = defineCollection({
         lead: z.string(),
         body: z.string(),
         cta,
-        items: z.array(z.object({ name: z.string(), photo: photo(image) })),
       }),
       contact: z.object({
         accent: z.string().optional(),
@@ -149,6 +152,8 @@ const categories = defineCollection({
         })
         .optional(),
       form: z.object({ title: z.string(), body: z.string() }).optional(),
+      /** Facts Elena still has to confirm, shown only in the private preview. */
+      pendingFacts: z.array(z.string()).default([]),
     }),
 });
 
@@ -161,9 +166,11 @@ const activities = defineCollection({
       menuLabel: z.string(),
       family: z.enum(["ballet", "salud", "otras"]),
       order: z.number(),
-      /** `complete` pages are verified by tests; `pending` ones are not. */
+      /** `complete` pages are verified by tests; `review`/`pending` are not. */
       status: pageStatus,
       summary: z.string().optional(),
+      /** Who the class is for, from the dossier. Shown as a hero fact. */
+      audience: z.string().optional(),
       seoTitle: z.string().optional(),
       description: z.string().optional(),
       subtitle: z.string().optional(),
@@ -209,6 +216,11 @@ const school = defineCollection({
     pendingFacts: z.array(z.string()).default([]),
   }),
 });
+
+/** Build-time environment (the config runs in Node; no Node types here). */
+const buildEnv =
+  (globalThis as { process?: { env: Record<string, string | undefined> } })
+    .process?.env ?? {};
 
 const time = z.string().regex(/^\d{2}:\d{2}$/, "Formato HH:MM");
 
@@ -282,7 +294,141 @@ const performancesPage = defineCollection({
   }),
 });
 
+/**
+ * Page copy for /sobre-nosotros/ (dossier 00 · pp. 60–64). Each section has a
+ * stable `id` used as its anchor (e.g. #profesorado, #instalaciones).
+ */
+const aboutPage = defineCollection({
+  loader: glob({ pattern: "sobre-nosotros.md", base: "./src/content/pages" }),
+  schema: ({ image }) => {
+    const section = z.object({
+      id: z.string(),
+      /** Short label for the in-page index. */
+      navLabel: z.string(),
+      eyebrow: z.string(),
+      title: z.string(),
+      paragraphs: z.array(z.string()),
+      cta: cta.optional(),
+      photos: z.array(photo(image).unwrap()).default([]),
+    });
+    return z.object({
+      title: z.string(),
+      seoTitle: z.string(),
+      description: z.string(),
+      subtitle: z.string(),
+      intro: z.string(),
+      heroCta: cta,
+      heroPhoto: photo(image),
+      sections: z.array(section).min(1),
+      team: z.object({
+        sectionId: z.string(),
+        members: z.array(
+          z.object({
+            name: z.string().optional(),
+            role: z.string().optional(),
+            photo: photo(image),
+            /** Placeholder card: shown only in the private preview. */
+            pending: z.boolean().default(false),
+          }),
+        ),
+      }),
+      closing: z.object({
+        title: z.string(),
+        paragraphs: z.array(z.string()),
+        primaryCta: cta,
+        secondaryCta: cta,
+      }),
+      pendingFacts: z.array(z.string()).default([]),
+    });
+  },
+});
+
+/**
+ * Simple information pages (Exámenes RAD, Regala danza, Cursos copy): one
+ * file per route in src/content/info/, file name = route slug.
+ */
+const infoPages = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/info" }),
+  schema: z.object({
+    title: z.string(),
+    seoTitle: z.string(),
+    description: z.string(),
+    subtitle: z.string().optional(),
+    intro: z.array(z.string()).min(1),
+    sections: z
+      .array(
+        z.object({
+          id: z.string().optional(),
+          title: z.string(),
+          paragraphs: z.array(z.string()).default([]),
+          /** Short items with a title, e.g. benefits. */
+          items: z
+            .array(z.object({ title: z.string(), body: z.string() }))
+            .default([]),
+          /** Numbered process steps. */
+          steps: z
+            .array(z.object({ title: z.string(), body: z.string() }))
+            .default([]),
+          links: z.array(cta).default([]),
+        }),
+      )
+      .default([]),
+    /** Empty state shown when a list (e.g. courses) has no entries. */
+    empty: z
+      .object({ title: z.string(), paragraphs: z.array(z.string()) })
+      .optional(),
+    closing: z.object({
+      title: z.string(),
+      paragraphs: z.array(z.string()),
+      cta,
+      secondaryCta: cta.optional(),
+    }),
+    pendingFacts: z.array(z.string()).default([]),
+  }),
+});
+
+/**
+ * One file per course or workshop in src/content/courses/. Every field except
+ * the title and summary is optional: cards show only what is confirmed.
+ */
+const courses = defineCollection({
+  // CARMEN_COURSES_DIR lets scripts/verify-courses-page.mjs build the page
+  // with fixture courses (tests/fixtures/courses-*) instead of real ones.
+  loader: glob({
+    pattern: "*.md",
+    base: buildEnv.CARMEN_COURSES_DIR ?? "./src/content/courses",
+  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      teacher: z.string().optional(),
+      summary: z.string(),
+      dates: z.string().optional(),
+      schedule: z.string().optional(),
+      levels: z.string().optional(),
+      /** Euros, as confirmed by the school. */
+      price: z.number().optional(),
+      places: z.string().optional(),
+      poster: photo(image),
+      /** ISO date (YYYY-MM-DD) of the first session; sort key. */
+      startDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD")
+        .optional(),
+      /** ISO date of the last session; once past, the course leaves «Próximos cursos». */
+      endDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD")
+        .optional(),
+      /** Hide a course without deleting it. */
+      published: z.boolean().default(true),
+    }),
+});
+
 export const collections = {
+  infoPages,
+  courses,
+  aboutPage,
   home,
   categories,
   activities,
