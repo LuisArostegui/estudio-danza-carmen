@@ -33,7 +33,11 @@ const description = !showTimetable
   description={description}
   pageStatus={pageStatus}
 >
-  <section class="timetable-page" aria-labelledby="schedule-title">
+  <section
+    class="timetable-page"
+    aria-labelledby="schedule-title"
+    data-schedule-example={String(schedule.isExample)}
+  >
     <div class="shell">
       <Breadcrumbs
         items={[{ label: "Inicio", href: "/" }, { label: "Horarios" }]}

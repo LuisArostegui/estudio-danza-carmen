@@ -3,6 +3,7 @@ import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { parse as parseYaml } from "yaml";
 
 /**
  * Builds the site as it would be published (PUBLIC_HIDE_PREVIEW_NOTES=true)
@@ -54,12 +55,18 @@ try {
   );
   // Expected state follows the timetable data: an example timetable must be
   // replaced by the empty state; a confirmed one must be shown.
+  // Parse the frontmatter (any valid YAML layout, e.g. one-line sessions).
   const scheduleSource = await readFile(
     "src/content/schedule/horario.md",
     "utf8",
   );
-  const isExample = /^isExample:\s*true\b/m.test(scheduleSource);
-  const hasSessions = /^\s*(?:-\s+)?activity:/m.test(scheduleSource);
+  const frontmatter = scheduleSource.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1];
+  if (!frontmatter)
+    throw new Error("src/content/schedule/horario.md has no frontmatter");
+  const schedule = parseYaml(frontmatter) ?? {};
+  const isExample = schedule.isExample === true;
+  const hasSessions =
+    Array.isArray(schedule.sessions) && schedule.sessions.length > 0;
   const hasTable = horarios.includes('data-testid="timetable"');
   const hasEmpty = horarios.includes('data-testid="schedule-empty"');
   if (horarios.includes('data-testid="schedule-example-note"'))

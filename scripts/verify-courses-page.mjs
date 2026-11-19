@@ -121,6 +121,10 @@ check(
   undated.includes("Fecha por confirmar"),
   "mixed: undated course lacks «Fecha por confirmar»",
 );
+check(
+  !undated.includes("6 de enero de 2025"),
+  "mixed: undated course shows its unconfirmed free-text date",
+);
 
 check(
   [...upcoming.keys()].join("|") ===

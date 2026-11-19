@@ -21,7 +21,9 @@ const euros = new Intl.NumberFormat("es-ES", {
   maximumFractionDigits: 2,
 });
 const facts = [
-  ["Fecha", d.dates],
+  // Without a structured date the free text is not trusted: the card says
+  // «Fecha por confirmar» instead of showing it.
+  ["Fecha", mode === "ask" ? undefined : d.dates],
   ["Horario", d.schedule],
   ["Niveles", d.levels],
   ["Precio", d.price === undefined ? undefined : euros.format(d.price)],
