@@ -4,9 +4,8 @@
 
 import { TURNSTILE_FIELD, validateContact } from "../lib/contact-validation.js";
 
-// Declared Content-Length cap. Requests without Content-Length are not
-// capped here: Cloudflare's own request body limit applies (see
-// docs/contact-form-config.md). Field limits still bound the stored values.
+// Cap on the bytes actually read, checked whether or not Content-Length is
+// declared. Field limits still bound the stored values.
 const MAX_BODY_BYTES = 65536;
 // Upper bound for each upstream call so a stalled service cannot hold the
 // request open. A timeout surfaces as the existing 502 unavailable/delivery.
@@ -82,6 +81,37 @@ function plainTextBody(data) {
 }
 
 /**
+ * Reads the body while counting bytes, so the cap holds even when the
+ * Content-Length header is missing or wrong.
+ * @param {Request} request
+ * @returns {Promise<Uint8Array | "too_large">}
+ * @throws {Error} when the body is missing or cannot be read
+ */
+async function readCappedBody(request) {
+  if (request.body === null) throw new Error("no body");
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_BODY_BYTES) {
+      await reader.cancel();
+      return "too_large";
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
+/**
  * @param {Request} request
  * @param {Record<string, any>} env
  * @param {ContactDeps} deps
@@ -124,9 +154,23 @@ export async function handleContact(request, env, deps) {
     }
   }
 
+  let bytes;
+  try {
+    bytes = await readCappedBody(request);
+  } catch {
+    return json(400, { ok: false, error: "bad_request" });
+  }
+  if (bytes === "too_large") {
+    return json(413, { ok: false, error: "too_large" });
+  }
+
   let formData;
   try {
-    formData = await request.formData();
+    // Parse the bytes we actually read, so a missing or wrong Content-Length
+    // cannot bypass the cap. A failed parse is a bad request.
+    formData = await new Response(bytes, {
+      headers: { "content-type": request.headers.get("content-type") ?? "" },
+    }).formData();
   } catch {
     return json(400, { ok: false, error: "bad_request" });
   }

@@ -72,16 +72,17 @@ Field codes are `required`, `format`, `too_long` and `too_short`.
 
 Limits and timeouts:
 
-- A declared `Content-Length` above 65536 bytes (64 KB) returns 413. Requests
-  without `Content-Length` are not capped by the Worker; Cloudflare's own request
-  body limit applies. Needs owner confirmation of the limit on the owner's
-  Cloudflare plan.
+- The Worker counts the bytes it reads. A body above 65536 bytes (64 KB) returns
+  413, whether or not a `Content-Length` header is sent. A declared
+  `Content-Length` above the cap is refused before the body is read.
 - `mensaje` allows 5000 characters. A CRLF line break counts as one character
   (the Worker and the client normalise `\r\n` to `\n` before counting).
 - Siteverify and Resend calls abort after 8 seconds. An abort returns 502
   `unavailable` (Siteverify) or `delivery` (Resend).
 - If the Turnstile script fails to load, or the widget writes no token, the
-  client shows the verification-pending message and sends nothing.
+  client shows the verification-pending message and sends nothing. The next
+  submit loads the script again if it failed, so verification recovers without
+  a page reload.
 
 Logs carry only an event name and status. They never contain names, emails,
 phone numbers, messages, IP addresses or secrets.

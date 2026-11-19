@@ -350,6 +350,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
       class="button button--primary enquiry__submit"
       type="submit"
       data-enquiry-submit
+      disabled
     >
       Enviar consulta
     </button>
@@ -795,19 +796,35 @@ const id = (name: string) => `${idPrefix}-${name}`;
 
   let turnstileReady: Promise<TurnstileApi> | undefined;
 
-  /** Loads the Turnstile API once, only when a live form needs it. */
+  type LockableControl =
+    | HTMLInputElement
+    | HTMLSelectElement
+    | HTMLTextAreaElement
+    | HTMLButtonElement;
+
+  /**
+   * Loads the Turnstile API, once per successful load. A failed load removes
+   * its script and clears the cache, so a later call loads it again.
+   */
   function loadTurnstile(): Promise<TurnstileApi> {
     if (window.turnstile) return Promise.resolve(window.turnstile);
     turnstileReady ??= new Promise<TurnstileApi>((resolve, reject) => {
       const script = document.createElement("script");
       script.src = TURNSTILE_SRC;
       script.async = true;
+      const fail = (error: Error) => {
+        script.remove();
+        reject(error);
+      };
       script.onload = () =>
         window.turnstile
           ? resolve(window.turnstile)
-          : reject(new Error("turnstile unavailable"));
-      script.onerror = () => reject(new Error("turnstile failed to load"));
+          : fail(new Error("turnstile unavailable"));
+      script.onerror = () => fail(new Error("turnstile failed to load"));
       document.head.append(script);
+    }).catch((error: unknown) => {
+      turnstileReady = undefined;
+      throw error;
     });
     return turnstileReady;
   }
@@ -865,26 +882,37 @@ const id = (name: string) => `${idPrefix}-${name}`;
 
     let turnstile: TurnstileApi | undefined;
     let widgetId: string | undefined;
+    let widgetContainer: HTMLElement | undefined;
     let turnstileFailed = false;
     let sending = false;
 
-    if (live && submit) {
-      const container = document.createElement("div");
-      container.className = "enquiry__turnstile";
-      container.dataset.turnstile = "";
-      submit.before(container);
-      loadTurnstile()
-        .then((api) => {
-          turnstile = api;
-          widgetId = api.render(container, {
+    /**
+     * Loads the widget and renders it once. Safe to call again after a failed
+     * load: a failure only sets turnstileFailed, and the next call retries.
+     */
+    async function startTurnstile(): Promise<void> {
+      turnstileFailed = false;
+      try {
+        const api = await loadTurnstile();
+        turnstile = api;
+        if (widgetId === undefined && widgetContainer) {
+          widgetId = api.render(widgetContainer, {
             sitekey: siteKey,
             language: "es",
           });
-        })
-        .catch(() => {
-          // Without the widget there is no token: submit shows the same message.
-          turnstileFailed = true;
-        });
+        }
+      } catch {
+        // Without the widget there is no token: submit shows the same message.
+        turnstileFailed = true;
+      }
+    }
+
+    if (live && submit) {
+      widgetContainer = document.createElement("div");
+      widgetContainer.className = "enquiry__turnstile";
+      widgetContainer.dataset.turnstile = "";
+      submit.before(widgetContainer);
+      void startTurnstile();
     }
 
     function setFieldError(name: FieldName, message: string) {
@@ -993,6 +1021,22 @@ const id = (name: string) => `${idPrefix}-${name}`;
       submit.textContent = isSending ? "Enviando…" : submitLabel;
     }
 
+    /** Disables every enabled control and marks the form busy; returns what it disabled. */
+    function lockForm(): LockableControl[] {
+      const locked = (Array.from(form.elements) as LockableControl[]).filter(
+        (element) => !element.disabled,
+      );
+      for (const element of locked) element.disabled = true;
+      form.setAttribute("aria-busy", "true");
+      return locked;
+    }
+
+    /** Re-enables exactly the controls lockForm disabled. */
+    function unlockForm(locked: LockableControl[]) {
+      for (const element of locked) element.disabled = false;
+      form.removeAttribute("aria-busy");
+    }
+
     /** True when the widget has written a token into the form. */
     function hasTurnstileToken() {
       const token = control("cf-turnstile-response") as HTMLInputElement | null;
@@ -1014,12 +1058,15 @@ const id = (name: string) => `${idPrefix}-${name}`;
 
     async function sendLive() {
       sending = true;
+      // Capture the values before locking: the request carries exactly these.
+      const payload = new FormData(form);
+      const locked = lockForm();
       setSending(true);
       clearStatus();
       try {
         const response = await fetch(endpoint, {
           method: "POST",
-          body: new FormData(form),
+          body: payload,
           headers: { Accept: "application/json" },
         });
         const body: unknown = await response.json().catch(() => null);
@@ -1052,6 +1099,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
       } finally {
         // A Turnstile token is single use: every attempt needs a fresh one.
         turnstile?.reset(widgetId);
+        unlockForm(locked);
         setSending(false);
         sending = false;
       }
@@ -1077,8 +1125,15 @@ const id = (name: string) => `${idPrefix}-${name}`;
         return;
       }
 
-      // No token (widget blocked, unsolved or never loaded): do not send.
-      if (turnstileFailed || !hasTurnstileToken()) {
+      // The widget failed or was never rendered: retry the load now, send nothing.
+      if (turnstileFailed || widgetId === undefined) {
+        setStatus("turnstile", true);
+        void startTurnstile();
+        return;
+      }
+
+      // No token (widget blocked, unsolved): do not send.
+      if (!hasTurnstileToken()) {
         setStatus("turnstile", true);
         return;
       }
@@ -1108,6 +1163,9 @@ const id = (name: string) => `${idPrefix}-${name}`;
       const name = link.dataset.errorLink as FieldName;
       control(name)?.focus();
     });
+
+    // Handlers are in place: the submit button can now do its job.
+    if (submit) submit.disabled = false;
   }
 
   document

@@ -528,3 +528,66 @@ describe("delivery", () => {
     assert.equal("html" in payload, false);
   });
 });
+
+function streamOf(bytes, chunkSize) {
+  return new ReadableStream({
+    start(controller) {
+      for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+        controller.enqueue(bytes.slice(offset, offset + chunkSize));
+      }
+      controller.close();
+    },
+  });
+}
+
+describe("streamed body cap", () => {
+  test("rejects a streamed body over 64 KiB without Content-Length with 413 and no network calls", async () => {
+    const bytes = new TextEncoder().encode("nombre=" + "a".repeat(65536 + 10));
+    const request = new Request(URL_, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: streamOf(bytes, 8192),
+      duplex: "half",
+    });
+    assert.equal(request.headers.get("content-length"), null);
+    const { response, body, calls } = await run(request);
+    assert.equal(response.status, 413);
+    assert.deepEqual(body, { ok: false, error: "too_large" });
+    assert.equal(calls.length, 0);
+  });
+
+  test("accepts a streamed valid multipart body under the cap and reaches Siteverify", async () => {
+    const built = new Response(formOf(SUBMITTED));
+    const contentType = built.headers.get("content-type");
+    const bytes = new Uint8Array(await built.arrayBuffer());
+    assert.ok(bytes.length < 65536);
+    const request = new Request(URL_, {
+      method: "POST",
+      headers: { "content-type": contentType },
+      body: streamOf(bytes, 512),
+      duplex: "half",
+    });
+    assert.equal(request.headers.get("content-length"), null);
+    const { response, body, calls } = await run(request, {
+      responses: [
+        json(200, { success: true }),
+        json(200, { id: "email_fake_id" }),
+      ],
+    });
+    assert.equal(response.status, 200);
+    assert.deepEqual(body, { ok: true });
+    assert.equal(calls[0].url, SITEVERIFY);
+    assert.equal(calls.length, 2);
+  });
+
+  test("returns 400 bad_request for a request with no body", async () => {
+    const request = new Request(URL_, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+    });
+    const { response, body, calls } = await run(request);
+    assert.equal(response.status, 400);
+    assert.deepEqual(body, { ok: false, error: "bad_request" });
+    assert.equal(calls.length, 0);
+  });
+});

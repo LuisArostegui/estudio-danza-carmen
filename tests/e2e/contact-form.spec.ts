@@ -41,7 +41,7 @@ window.turnstile = {
 };
 `;
 
-type TurnstileMode = "widget" | "no-token" | "blocked";
+type TurnstileMode = "widget" | "no-token" | "blocked" | "flaky";
 
 const TURNSTILE_MISSING_TOKEN_MESSAGE =
   "Todavía no hemos podido verificar el envío. Espera unos segundos e inténtalo de nuevo; si usas un bloqueador de contenido, puede impedir la verificación. También puedes escribirnos por WhatsApp o llamarnos.";
@@ -69,8 +69,19 @@ async function routeLiveForm(page: Page, mode: TurnstileMode = "widget") {
       body: html,
     });
   });
+  let turnstileRequests = 0;
   await page.route(TURNSTILE_URL, (route) => {
     if (mode === "blocked") return route.abort();
+    if (mode === "flaky") {
+      // The page load and the first retry fail; later requests succeed.
+      turnstileRequests += 1;
+      if (turnstileRequests <= 2) return route.abort();
+      return route.fulfill({
+        status: 200,
+        contentType: "application/javascript",
+        body: TURNSTILE_STUB,
+      });
+    }
     return route.fulfill({
       status: 200,
       contentType: "application/javascript",
@@ -80,7 +91,7 @@ async function routeLiveForm(page: Page, mode: TurnstileMode = "widget") {
 }
 
 /** Mocks the Worker. Returns a counter and the captured request bodies. */
-async function mockApi(page: Page, reply: ApiReply) {
+async function mockApi(page: Page, reply: ApiReply, delayMs = 0) {
   const seen = { count: 0, bodies: [] as string[] };
   await page.route(API_URL, async (route: Route) => {
     seen.count += 1;
@@ -88,6 +99,9 @@ async function mockApi(page: Page, reply: ApiReply) {
     if (reply.kind === "abort") {
       await route.abort();
       return;
+    }
+    if (delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
     await route.fulfill({
       status: reply.status,
@@ -288,6 +302,78 @@ test.describe("live contact form: delivery states", () => {
   });
 });
 
+test.describe("live contact form: edits during a send", () => {
+  test("controls are locked while the send is pending and restored after success", async ({
+    page,
+  }) => {
+    await openContact(page, "?actividad=ballet-para-adultos");
+    await mockApi(
+      page,
+      { kind: "json", status: 200, body: { ok: true } },
+      1000,
+    );
+    await fillValidForm(page);
+    await submit(page);
+
+    await expect(page.getByTestId("enquiry-form")).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    await expect(page.locator('[name="mensaje"]')).toBeDisabled();
+    await expect(page.locator('[name="nombre"]')).toBeDisabled();
+    await expect(page.locator('select[name="actividad"]')).toBeDisabled();
+    await expect(page.locator('[name="privacidad"]')).toBeDisabled();
+    await expect(
+      page.locator('[name="mensaje"]').fill("texto nuevo", { timeout: 300 }),
+    ).rejects.toThrow();
+
+    const status = page.getByTestId("enquiry-status");
+    await expect(status).toContainText("Gracias, hemos recibido tu consulta");
+    await expect(page.locator('[name="nombre"]')).toHaveValue("");
+    await expect(page.getByTestId("enquiry-form")).not.toHaveAttribute(
+      "aria-busy",
+    );
+    await expect(page.locator('[name="mensaje"]')).toBeEnabled();
+    await expect(page.locator('[name="nombre"]')).toBeEnabled();
+    await expect(page.locator('select[name="actividad"]')).toBeEnabled();
+    await expect(page.locator('[name="privacidad"]')).toBeEnabled();
+    await expect(
+      page.getByRole("button", { name: "Enviar consulta" }),
+    ).toBeEnabled();
+  });
+
+  test("a delayed 502 re-enables the controls and keeps the values", async ({
+    page,
+  }) => {
+    await openContact(page);
+    await mockApi(
+      page,
+      { kind: "json", status: 502, body: { ok: false, error: "delivery" } },
+      1000,
+    );
+    await fillValidForm(page);
+    await submit(page);
+
+    await expect(page.getByTestId("enquiry-form")).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    await expect(page.getByTestId("enquiry-status")).toContainText(
+      "No hemos podido enviar la consulta",
+    );
+    await expectValuesKept(page);
+    await expect(page.getByTestId("enquiry-form")).not.toHaveAttribute(
+      "aria-busy",
+    );
+    await expect(page.locator('[name="mensaje"]')).toBeEnabled();
+    await expect(page.locator('[name="nombre"]')).toBeEnabled();
+    await expect(page.locator('[name="privacidad"]')).toBeEnabled();
+    await expect(
+      page.getByRole("button", { name: "Enviar consulta" }),
+    ).toBeEnabled();
+  });
+});
+
 test.describe("live contact form: client rules", () => {
   test("empty submit is blocked on the client and sends no request", async ({
     page,
@@ -352,6 +438,63 @@ test.describe("live contact form: Turnstile token missing", () => {
   }
 });
 
+test.describe("live contact form: Turnstile script retry", () => {
+  test("a failed script is requested again on each submit until the widget renders, then the form sends", async ({
+    page,
+  }) => {
+    let scriptRequests = 0;
+    let failedScriptRequests = 0;
+    page.on("request", (request) => {
+      if (request.url().startsWith("https://challenges.cloudflare.com/")) {
+        scriptRequests += 1;
+      }
+    });
+    page.on("requestfailed", (request) => {
+      if (request.url().startsWith("https://challenges.cloudflare.com/")) {
+        failedScriptRequests += 1;
+      }
+    });
+    await routeLiveForm(page, "flaky");
+    await page.goto("/contacto/");
+    await expect(page.locator("[data-enquiry-form]")).toHaveAttribute(
+      "data-turnstile-sitekey",
+      "test-site-key",
+    );
+    const api = await mockApi(page, {
+      kind: "json",
+      status: 200,
+      body: { ok: true },
+    });
+    const status = page.getByTestId("enquiry-status");
+    await fillValidForm(page);
+
+    // Click 1: the page-load script failed, so this submit retries the load.
+    // The retry also fails. Message only, nothing sent.
+    await submit(page);
+    await expect(status).toContainText(TURNSTILE_MISSING_TOKEN_MESSAGE);
+    await expectValuesKept(page);
+    await expect.poll(() => failedScriptRequests).toBe(2);
+    expect(api.count).toBe(0);
+
+    // Click 2: the script is requested again and this time the widget renders.
+    // Message only, nothing sent.
+    await submit(page);
+    await expect.poll(() => scriptRequests).toBe(3);
+    await expect(page.locator('[name="cf-turnstile-response"]')).toHaveCount(1);
+    await expect(status).toContainText(TURNSTILE_MISSING_TOKEN_MESSAGE);
+    await expectValuesKept(page);
+    await page.waitForTimeout(300);
+    expect(api.count).toBe(0);
+
+    // Click 3: the widget has a token, so the form sends and succeeds.
+    await submit(page);
+    await expect(status).toContainText("Gracias, hemos recibido tu consulta");
+    expect(api.count).toBe(1);
+    expect(api.bodies[0]).toContain("cf-turnstile-response");
+    expect(api.bodies[0]).toContain("tok");
+  });
+});
+
 test.describe("live contact form: phone message", () => {
   test("an invalid telefono shows the digits-and-symbols message and sends nothing", async ({
     page,
@@ -406,5 +549,47 @@ test.describe("live contact form without JavaScript", () => {
         "[data-enquiry-noscript] a[href='https://wa.me/34653424880']",
       ),
     ).toHaveCount(1);
+  });
+});
+
+test.describe("contact form submit before and without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the submit button is disabled and nothing is posted without JavaScript", async ({
+    page,
+  }) => {
+    const posts: string[] = [];
+    page.on("request", (request) => {
+      if (request.method() === "POST") posts.push(request.url());
+    });
+    await page.goto("/contacto/");
+    const submitButton = page.getByRole("button", { name: "Enviar consulta" });
+    await expect(submitButton).toBeDisabled();
+
+    await fillValidForm(page);
+    await page.locator('[name="nombre"]').press("Enter");
+    await submitButton.click({ force: true });
+    await page.waitForTimeout(500);
+
+    expect(posts).toEqual([]);
+    await expect(
+      page.locator("[data-enquiry-noscript] a[href='tel:+34958961504']"),
+    ).toBeVisible();
+    await expect(
+      page.locator(
+        "[data-enquiry-noscript] a[href='https://wa.me/34653424880']",
+      ),
+    ).toBeVisible();
+  });
+});
+
+test.describe("contact form submit with JavaScript", () => {
+  test("the submit button is enabled once the form script has run", async ({
+    page,
+  }) => {
+    await page.goto("/contacto/");
+    await expect(
+      page.getByRole("button", { name: "Enviar consulta" }),
+    ).toBeEnabled();
   });
 });
