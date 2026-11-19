@@ -65,3 +65,12 @@ export async function waitForRevealsSettled(page: Page): Promise<void> {
     return revealed && running.length === 0;
   });
 }
+
+/**
+ * WebKit follows macOS Safari's default, where Tab skips links unless the
+ * user turns on "Press Tab to highlight each item"; Option+Tab reaches them.
+ */
+export function tabKey(browserName: string, shift = false): string {
+  const key = shift ? "Shift+Tab" : "Tab";
+  return browserName === "webkit" ? `Alt+${key}` : key;
+}

@@ -24,6 +24,7 @@
     "check:tooling": "node scripts/verify-project-tooling.mjs",
     "test:site": "node scripts/verify-generated-site-links.mjs",
     "test:e2e": "pnpm build && playwright test",
+    "test:e2e:engines": "pnpm build && PLAYWRIGHT_ENGINES=firefox,webkit playwright test",
     "check:public": "node scripts/verify-public-build.mjs",
     "check:courses": "node scripts/verify-courses-page.mjs"
   },

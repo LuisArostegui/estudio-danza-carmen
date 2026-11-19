@@ -18,6 +18,81 @@ const port = env.PLAYWRIGHT_PORT ?? "4321";
  */
 const astroPort = String(Number(port) + 1);
 
+/**
+ * Extra engines (#32) are opt-in so CI keeps installing Chromium only:
+ * `PLAYWRIGHT_ENGINES=firefox,webkit pnpm test:e2e:engines`. They run the
+ * representative journeys below, not the whole suite.
+ */
+const engines = (env.PLAYWRIGHT_ENGINES ?? "")
+  .split(",")
+  .map((name) => name.trim())
+  .filter(Boolean);
+const engineJourneys = [
+  "cross-engine.spec.ts",
+  "preview-flow.spec.ts",
+  "sobre-nosotros.spec.ts",
+  "espectaculos.spec.ts",
+  "support-pages.spec.ts",
+  "horarios.spec.ts",
+];
+const engineProjects = [];
+if (engines.includes("firefox")) {
+  engineProjects.push(
+    {
+      name: "firefox-390",
+      testMatch: engineJourneys,
+      // Firefox has no isMobile emulation; touch and width still apply.
+      use: {
+        ...devices["Desktop Firefox"],
+        viewport: { width: 390, height: 844 },
+        hasTouch: true,
+      },
+    },
+    {
+      name: "firefox-1440",
+      testMatch: engineJourneys,
+      use: {
+        ...devices["Desktop Firefox"],
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+  );
+}
+if (engines.includes("webkit")) {
+  engineProjects.push(
+    {
+      name: "webkit-390",
+      testMatch: engineJourneys,
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+        deviceScaleFactor: 3,
+      },
+    },
+    {
+      name: "webkit-768",
+      testMatch: engineJourneys,
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 768, height: 1024 },
+        isMobile: true,
+        hasTouch: true,
+        deviceScaleFactor: 2,
+      },
+    },
+    {
+      name: "webkit-1440",
+      testMatch: engineJourneys,
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+  );
+}
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -66,5 +141,6 @@ export default defineConfig({
         viewport: { width: 1440, height: 900 },
       },
     },
+    ...engineProjects,
   ],
 });

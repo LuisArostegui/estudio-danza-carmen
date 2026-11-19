@@ -46,6 +46,28 @@ the cached copies of the early public captures (owner checklist item 13).
 photos can be used (with rights and guardian consent), and sign-off per screen
 from the captures (shared privately, not in the PR, because the photos' consent is still pending).
 
+## Cross-engine pass · 2026-11-19 (#32, preliminary #33)
+
+Automated with Playwright on the static build. No page status changed and
+Contacto stays in test mode.
+
+| Engine (Playwright build) | Sizes                                                            | Specs                                                                                         | Result                                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Chromium                  | 390 (touch), 1440; plus 320, 768, 1024 and emulated 200 % zoom   | whole suite                                                                                   | Pass after fixes                                                                                                               |
+| WebKit                    | 390 (touch), 768 (touch), 1440; plus 320 and emulated 200 % zoom | `cross-engine`, `preview-flow`, `sobre-nosotros`, `espectaculos`, `support-pages`, `horarios` | Pass after fixes                                                                                                               |
+| Firefox                   | 390, 1440 (configured)                                           | same as WebKit                                                                                | **Not run**: Playwright's Firefox build exits with «Could not find profile folder» on the local macOS host; to rerun elsewhere |
+
+**Fixed:** `/espectaculos/` scrolled sideways by 20 px at 320 px in every
+engine (the 2:1 last tile turned its minimum height into a minimum width); in
+WebKit, the form error summary took focus but stayed off-screen at 320 px and
+at 200 % zoom.
+
+**Accepted limitation:** WebKit, like Safari's default, skips links on Tab
+(Option+Tab reaches them). Not a site defect.
+
+**Still manual:** real Safari on macOS and iOS, a screen reader (VoiceOver or
+NVDA), the browser's own zoom control, and Firefox.
+
 ## Routes
 
 | Route                                                                                               | Status                                                                                                                                                                 | PDF · pages                | Evidence                                                               | Issue         | Needs owner confirmation                                                                                                                                                                      |
