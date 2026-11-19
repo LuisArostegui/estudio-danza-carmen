@@ -1,0 +1,15 @@
+{
+  // Cloudflare Worker config. Nothing in this file is secret.
+  // Secrets and non-secret variables (CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL,
+  // RESEND_API_KEY, TURNSTILE_SECRET_KEY) are set in Cloudflare, not here.
+  // See docs/contact-form-config.md.
+  "name": "estudio-danza-carmen",
+  "main": "src/worker/index.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"],
+  },
+}

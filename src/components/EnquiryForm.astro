@@ -1,5 +1,6 @@
 ---
 import SectionTitle from "./SectionTitle.astro";
+import { LIMITS } from "../lib/contact-validation.js";
 import {
   familyLabel,
   familyOrder,
@@ -29,7 +30,13 @@ const {
   school,
 } = Astro.props;
 
-const testMode = !school.formEndpoint.trim();
+const liveEndpoint = school.formEndpoint.trim();
+const turnstileSiteKey = (
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ""
+).trim();
+// Live only when the Worker endpoint and the Turnstile site key are both set.
+const liveMode = liveEndpoint !== "" && turnstileSiteKey !== "";
+const testMode = !liveMode;
 
 const groups = familyOrder
   .map((family) => ({
@@ -54,7 +61,8 @@ const id = (name: string) => `${idPrefix}-${name}`;
     method="post"
     novalidate
     data-enquiry-form
-    data-endpoint={school.formEndpoint}
+    data-endpoint={liveMode ? liveEndpoint : undefined}
+    data-turnstile-sitekey={liveMode ? turnstileSiteKey : undefined}
     data-testid="enquiry-form"
   >
     <div
@@ -69,12 +77,24 @@ const id = (name: string) => `${idPrefix}-${name}`;
       <ul data-enquiry-summary-list></ul>
     </div>
 
+    <div class="visually-hidden" aria-hidden="true">
+      <label for={id("sitio-web")}>Deja este campo vacío</label>
+      <input
+        id={id("sitio-web")}
+        name="sitio_web"
+        type="text"
+        tabindex="-1"
+        autocomplete="off"
+      />
+    </div>
+
     <div class="enquiry__row">
       <div class="field" data-field="nombre">
         <input
           id={id("nombre")}
           name="nombre"
           type="text"
+          maxlength={LIMITS.nombre.max}
           autocomplete="name"
           placeholder=" "
           required
@@ -114,6 +134,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
           id={id("correo")}
           name="correo"
           type="email"
+          maxlength={LIMITS.correo.max}
           autocomplete="email"
           spellcheck="false"
           placeholder=" "
@@ -156,7 +177,8 @@ const id = (name: string) => `${idPrefix}-${name}`;
         id={id("mensaje")}
         name="mensaje"
         rows="5"
-        minlength="10"
+        minlength={LIMITS.mensaje.min}
+        maxlength={LIMITS.mensaje.max}
         placeholder=" "
         required></textarea>
       <label class="field__label" for={id("mensaje")}
@@ -197,6 +219,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
           id={id("telefono")}
           name="telefono"
           type="tel"
+          maxlength={LIMITS.telefono.max}
           autocomplete="tel"
           inputmode="tel"
           placeholder=" "
@@ -331,6 +354,17 @@ const id = (name: string) => `${idPrefix}-${name}`;
       Enviar consulta
     </button>
 
+    <noscript>
+      <p class="enquiry__noscript" data-enquiry-noscript>
+        Para enviar la consulta necesitas tener JavaScript activado. Mientras
+        tanto, puedes escribirnos por <a
+          href={school.whatsappHref}
+          target="_blank"
+          rel="noopener">{school.whatsappLabel}</a
+        > o llamarnos: <a href={school.phoneHref}>{school.phoneLabel}</a>.
+      </p>
+    </noscript>
+
     {
       testMode && (
         <p class="enquiry__preview" data-testid="enquiry-preview">
@@ -344,10 +378,11 @@ const id = (name: string) => `${idPrefix}-${name}`;
       data-enquiry-status
       data-testid="enquiry-status"
       role="status"
-      hidden
+      aria-live="polite"
+      tabindex="-1"
     >
       <p data-status-text></p>
-      <p class="enquiry__status-links" data-status-links>
+      <p class="enquiry__status-links" data-status-links hidden>
         <a href={school.whatsappHref} target="_blank" rel="noopener"
           >{school.whatsappLabel}</a
         >
@@ -442,7 +477,8 @@ const id = (name: string) => `${idPrefix}-${name}`;
   .field textarea:focus-visible,
   .field input[type="checkbox"]:focus-visible,
   .enquiry__form a:focus-visible,
-  .enquiry__summary:focus-visible {
+  .enquiry__summary:focus-visible,
+  .enquiry__status:focus-visible {
     outline: 3px solid var(--color-focus);
     outline-offset: 2px;
   }
@@ -605,6 +641,30 @@ const id = (name: string) => `${idPrefix}-${name}`;
   .enquiry__status p {
     margin: 0;
   }
+  /* Empty status stays in the DOM for announcements but takes no space:
+     the visually-hidden pattern from global.css, out of grid flow. */
+  .enquiry__status:not([data-mode]) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .enquiry__turnstile {
+    display: flex;
+    justify-content: center;
+    min-block-size: 65px;
+  }
+  .enquiry__noscript {
+    margin: 0;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--color-body);
+  }
   .enquiry__status-links a {
     display: inline-block;
     min-block-size: 44px;
@@ -638,10 +698,43 @@ const id = (name: string) => `${idPrefix}-${name}`;
 </style>
 
 <script>
+  import {
+    LIMITS,
+    validateFields,
+    type FieldError,
+    type FieldErrors,
+  } from "../lib/contact-validation.js";
+
   type FieldName =
     "nombre" | "correo" | "telefono" | "actividad" | "mensaje" | "privacidad";
 
   type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+  type StatusMode =
+    | "test"
+    | "success"
+    | "verification"
+    | "turnstile"
+    | "rate_limited"
+    | "network"
+    | "error";
+
+  type TurnstileApi = {
+    render: (
+      container: HTMLElement,
+      options: { sitekey: string; language?: string },
+    ) => string;
+    reset: (widgetId?: string) => void;
+  };
+
+  declare global {
+    interface Window {
+      turnstile?: TurnstileApi;
+    }
+  }
+
+  const TURNSTILE_SRC =
+    "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
   const FIELD_ORDER: FieldName[] = [
     "nombre",
@@ -652,44 +745,96 @@ const id = (name: string) => `${idPrefix}-${name}`;
     "privacidad",
   ];
 
-  const MESSAGES = {
-    nombre: "Escribe tu nombre.",
-    correoVacio: "Escribe tu correo electrónico.",
-    correoFormato: "Revisa el correo: falta la @ o el dominio.",
-    telefono: "El teléfono debe tener al menos 9 cifras.",
-    actividad: "Elige la actividad que te interesa.",
-    mensaje: "Cuéntanos un poco más (mínimo 10 caracteres).",
-    privacidad: "Necesitamos que aceptes la política de privacidad.",
+  const GENERIC_FIELD_MESSAGE = "Revisa este campo.";
+
+  const MESSAGES: Record<FieldName, Partial<Record<FieldError, string>>> = {
+    nombre: {
+      required: "Escribe tu nombre.",
+      too_long: `El nombre es demasiado largo (máximo ${LIMITS.nombre.max} caracteres).`,
+    },
+    correo: {
+      required: "Escribe tu correo electrónico.",
+      format: "Revisa el correo: falta la @ o el dominio.",
+      too_long: `El correo es demasiado largo (máximo ${LIMITS.correo.max} caracteres).`,
+    },
+    telefono: {
+      format:
+        "Usa solo cifras, espacios y los signos + ( ) . -, con al menos 9 cifras.",
+      too_long: `El teléfono es demasiado largo (máximo ${LIMITS.telefono.max} caracteres).`,
+    },
+    actividad: {
+      required: "Elige la actividad que te interesa.",
+      format: "Elige una actividad de la lista.",
+      too_long: "Elige una actividad de la lista.",
+    },
+    mensaje: {
+      required: `Cuéntanos un poco más (mínimo ${LIMITS.mensaje.min} caracteres).`,
+      too_short: `El mensaje es demasiado corto (mínimo ${LIMITS.mensaje.min} caracteres).`,
+      too_long: `El mensaje es demasiado largo (máximo ${LIMITS.mensaje.max} caracteres).`,
+    },
+    privacidad: {
+      required: "Necesitamos que aceptes la política de privacidad.",
+    },
   };
 
-  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const STATUS_TEXT = {
+  const STATUS_TEXT: Record<StatusMode, string> = {
     test: "Modo de prueba: tu consulta es válida, pero todavía no se envía a ningún buzón. Mientras tanto, escríbenos por WhatsApp o llámanos.",
     success:
       "Gracias, hemos recibido tu consulta. Te responderemos lo antes posible.",
+    verification:
+      "No hemos podido verificar el envío. Revisa el formulario e inténtalo de nuevo.",
+    turnstile:
+      "Todavía no hemos podido verificar el envío. Espera unos segundos e inténtalo de nuevo; si usas un bloqueador de contenido, puede impedir la verificación. También puedes escribirnos por WhatsApp o llamarnos.",
+    rate_limited:
+      "Has enviado varias consultas seguidas. Espera unos minutos y vuelve a intentarlo.",
+    network:
+      "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo; tus datos siguen en el formulario.",
     error:
       "No hemos podido enviar la consulta. Inténtalo de nuevo o escríbenos por WhatsApp.",
-  } as const;
-
-  const rules: Record<FieldName, (control: Control) => string> = {
-    nombre: (control) => (control.value.trim() ? "" : MESSAGES.nombre),
-    correo: (control) => {
-      const value = control.value.trim();
-      if (!value) return MESSAGES.correoVacio;
-      return EMAIL_PATTERN.test(value) ? "" : MESSAGES.correoFormato;
-    },
-    telefono: (control) => {
-      const value = control.value.trim();
-      if (!value) return "";
-      return value.replace(/\D/g, "").length >= 9 ? "" : MESSAGES.telefono;
-    },
-    actividad: (control) => (control.value ? "" : MESSAGES.actividad),
-    mensaje: (control) =>
-      control.value.trim().length >= 10 ? "" : MESSAGES.mensaje,
-    privacidad: (control) =>
-      (control as HTMLInputElement).checked ? "" : MESSAGES.privacidad,
   };
+
+  let turnstileReady: Promise<TurnstileApi> | undefined;
+
+  /** Loads the Turnstile API once, only when a live form needs it. */
+  function loadTurnstile(): Promise<TurnstileApi> {
+    if (window.turnstile) return Promise.resolve(window.turnstile);
+    turnstileReady ??= new Promise<TurnstileApi>((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = TURNSTILE_SRC;
+      script.async = true;
+      script.onload = () =>
+        window.turnstile
+          ? resolve(window.turnstile)
+          : reject(new Error("turnstile unavailable"));
+      script.onerror = () => reject(new Error("turnstile failed to load"));
+      document.head.append(script);
+    });
+    return turnstileReady;
+  }
+
+  function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+  }
+
+  function isFieldError(value: unknown): value is FieldError {
+    return (
+      value === "required" ||
+      value === "format" ||
+      value === "too_long" ||
+      value === "too_short"
+    );
+  }
+
+  /** Keeps only the field codes the server reports for fields we render. */
+  function parseFieldErrors(value: unknown): FieldErrors {
+    const errors: FieldErrors = {};
+    if (!isRecord(value)) return errors;
+    for (const name of FIELD_ORDER) {
+      const code = value[name];
+      if (isFieldError(code)) errors[name] = code;
+    }
+    return errors;
+  }
 
   function initEnquiry(form: HTMLFormElement) {
     const summary = form.querySelector<HTMLElement>("[data-enquiry-summary]");
@@ -704,10 +849,43 @@ const id = (name: string) => `${idPrefix}-${name}`;
     );
     const submitLabel = submit?.textContent ?? "Enviar consulta";
 
-    const control = (name: FieldName) =>
+    // Live only with both attributes (rendered in live mode, see the component).
+    const endpoint = form.dataset.endpoint?.trim() ?? "";
+    const siteKey = form.dataset.turnstileSitekey?.trim() ?? "";
+    const live =
+      form.hasAttribute("data-endpoint") &&
+      form.hasAttribute("data-turnstile-sitekey") &&
+      endpoint !== "" &&
+      siteKey !== "";
+
+    const control = (name: string) =>
       form.querySelector<Control>(`[name="${name}"]`);
     const errorFor = (name: FieldName) =>
       form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+
+    let turnstile: TurnstileApi | undefined;
+    let widgetId: string | undefined;
+    let turnstileFailed = false;
+    let sending = false;
+
+    if (live && submit) {
+      const container = document.createElement("div");
+      container.className = "enquiry__turnstile";
+      container.dataset.turnstile = "";
+      submit.before(container);
+      loadTurnstile()
+        .then((api) => {
+          turnstile = api;
+          widgetId = api.render(container, {
+            sitekey: siteKey,
+            language: "es",
+          });
+        })
+        .catch(() => {
+          // Without the widget there is no token: submit shows the same message.
+          turnstileFailed = true;
+        });
+    }
 
     function setFieldError(name: FieldName, message: string) {
       const field = control(name);
@@ -732,19 +910,39 @@ const id = (name: string) => `${idPrefix}-${name}`;
       }
     }
 
-    function validateField(name: FieldName): string {
-      const field = control(name);
-      if (!field) return "";
-      const message = rules[name](field);
-      setFieldError(name, message);
-      return message;
+    function collectValues(): Record<string, string | undefined> {
+      const privacy = control("privacidad") as HTMLInputElement | null;
+      return {
+        nombre: control("nombre")?.value ?? "",
+        correo: control("correo")?.value ?? "",
+        telefono: control("telefono")?.value ?? "",
+        actividad: control("actividad")?.value ?? "",
+        mensaje: control("mensaje")?.value ?? "",
+        privacidad: privacy?.checked ? "on" : "",
+      };
     }
 
-    function invalidFields(): { name: FieldName; message: string }[] {
-      return FIELD_ORDER.map((name) => ({
-        name,
-        message: validateField(name),
-      })).filter((item) => item.message);
+    function messageFor(name: FieldName, code: FieldError | undefined): string {
+      if (!code) return "";
+      return MESSAGES[name][code] ?? GENERIC_FIELD_MESSAGE;
+    }
+
+    /** Sets every field's error state from a code map; returns the invalid items. */
+    function applyErrors(errors: FieldErrors) {
+      return FIELD_ORDER.map((name) => {
+        const code: FieldError | undefined = errors[name];
+        const message = messageFor(name, code);
+        setFieldError(name, message);
+        return { name, message };
+      }).filter((item) => item.message);
+    }
+
+    function validateField(name: FieldName) {
+      const errors = validateFields(collectValues());
+      const code: FieldError | undefined = errors[name];
+      const message = messageFor(name, code);
+      setFieldError(name, message);
+      return message;
     }
 
     function hasInvalidFields() {
@@ -774,18 +972,31 @@ const id = (name: string) => `${idPrefix}-${name}`;
       summaryList.replaceChildren();
     }
 
-    function setStatus(mode: keyof typeof STATUS_TEXT) {
+    function clearStatus() {
+      if (!status || !statusText) return;
+      delete status.dataset.mode;
+      statusText.textContent = "";
+      if (statusLinks) statusLinks.hidden = true;
+    }
+
+    function setStatus(mode: StatusMode, focus = false) {
       if (!status || !statusText) return;
       status.dataset.mode = mode;
       statusText.textContent = STATUS_TEXT[mode];
       if (statusLinks) statusLinks.hidden = mode === "success";
-      status.hidden = false;
+      if (focus) status.focus();
     }
 
-    function setSending(sending: boolean) {
+    function setSending(isSending: boolean) {
       if (!submit) return;
-      submit.disabled = sending;
-      submit.textContent = sending ? "Enviando…" : submitLabel;
+      submit.disabled = isSending;
+      submit.textContent = isSending ? "Enviando…" : submitLabel;
+    }
+
+    /** True when the widget has written a token into the form. */
+    function hasTurnstileToken() {
+      const token = control("cf-turnstile-response") as HTMLInputElement | null;
+      return (token?.value ?? "").trim() !== "";
     }
 
     // Preselect the activity from ?actividad=<id> (set by activity pages).
@@ -801,48 +1012,85 @@ const id = (name: string) => `${idPrefix}-${name}`;
       select.value = preselected;
     }
 
-    form.addEventListener("submit", async (event) => {
-      // Never let the browser navigate: a GET fallback would put personal data in the URL.
-      event.preventDefault();
-
-      const invalid = invalidFields();
-      if (invalid.length > 0) {
-        showSummary(invalid);
-        return;
-      }
-
-      hideSummary();
-      if (status) status.hidden = true;
-
-      const endpoint = form.dataset.endpoint?.trim() ?? "";
-      if (!endpoint) {
-        // Test mode: validate only, send nothing.
-        setStatus("test");
-        return;
-      }
-
+    async function sendLive() {
+      sending = true;
       setSending(true);
+      clearStatus();
       try {
         const response = await fetch(endpoint, {
           method: "POST",
           body: new FormData(form),
           headers: { Accept: "application/json" },
         });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        form.reset();
-        setStatus("success");
+        const body: unknown = await response.json().catch(() => null);
+
+        if (response.ok && isRecord(body) && body.ok === true) {
+          form.reset();
+          applyErrors({});
+          hideSummary();
+          setStatus("success", true);
+        } else if (
+          response.status === 400 &&
+          isRecord(body) &&
+          body.error === "validation"
+        ) {
+          const invalid = applyErrors(parseFieldErrors(body.fields));
+          if (invalid.length > 0) {
+            showSummary(invalid);
+          } else {
+            setStatus("error", true);
+          }
+        } else if (response.status === 403) {
+          setStatus("verification", true);
+        } else if (response.status === 429) {
+          setStatus("rate_limited", true);
+        } else {
+          setStatus("error", true);
+        }
       } catch {
-        setStatus("error");
+        setStatus("network", true);
       } finally {
+        // A Turnstile token is single use: every attempt needs a fresh one.
+        turnstile?.reset(widgetId);
         setSending(false);
+        sending = false;
       }
+    }
+
+    form.addEventListener("submit", (event) => {
+      // Never let the browser navigate: a GET fallback would put personal data in the URL.
+      event.preventDefault();
+      if (sending) return;
+
+      const invalid = applyErrors(validateFields(collectValues()));
+      if (invalid.length > 0) {
+        showSummary(invalid);
+        return;
+      }
+
+      hideSummary();
+      clearStatus();
+
+      if (!live) {
+        // Test mode: validate only, send nothing.
+        setStatus("test");
+        return;
+      }
+
+      // No token (widget blocked, unsolved or never loaded): do not send.
+      if (turnstileFailed || !hasTurnstileToken()) {
+        setStatus("turnstile", true);
+        return;
+      }
+
+      void sendLive();
     });
 
     // Re-validate a field once it has been marked invalid.
     const revalidate = (event: Event) => {
       const target = event.target as HTMLElement | null;
       const name = target?.getAttribute("name") as FieldName | null;
-      if (!name || !(name in rules)) return;
+      if (!name || !FIELD_ORDER.includes(name)) return;
       if (target?.getAttribute("aria-invalid") !== "true") return;
       validateField(name);
       if (!hasInvalidFields()) hideSummary();

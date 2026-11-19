@@ -37,6 +37,8 @@ const expectedFragments = [
   ["dependabot", "open-pull-requests-limit: 2"],
   ["dependabot", "update-types:"],
   ["packageJson", '"test:site"'],
+  ["packageJson", '"test:unit"'],
+  ["packageJson", "pnpm test:unit"],
   ["packageJson", '"test:e2e"'],
   ["packageJson", '"@axe-core/playwright"'],
   ["packageJson", '"@playwright/test"'],
@@ -60,6 +62,7 @@ const expectedFragments = [
   ["testing", "CI / quality"],
   ["testing", "Dependabot"],
   ["testing", "CD-42"],
+  ["testing", "pnpm test:unit"],
 ];
 
 const missing = expectedFragments.filter(

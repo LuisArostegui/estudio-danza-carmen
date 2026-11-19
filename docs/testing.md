@@ -61,6 +61,15 @@ Playwright runs two projects only: `mobile-390` (390x844, touch) and `desktop-14
 
 The axe result is an automated signal only; it is not a WCAG conformance claim.
 
+## Unit tests
+
+`pnpm test:unit` runs the unit tests with Node's built-in `node:test` runner. No npm test dependency is used, and the tests make no network calls.
+
+- `tests/unit/contact-validation.test.mjs` covers the pure contact field rules in `src/lib/contact-validation.js`.
+- `tests/unit/contact-handler.test.mjs` runs the `/api/contact` Worker handler in `src/worker/contact.js` with an injected fake `fetch` (Turnstile Siteverify and Resend) and a fake log.
+
+`pnpm validate` runs `pnpm test:unit` after the format check.
+
 ## Verified vs Pending Pages
 
 Only four routes are verified: `/`, `/clases-de-ballet-granada/`, `/clases-de-ballet-granada/ballet-para-adultos/` and `/contacto/` (`VERIFIED_ROUTES` in `scripts/verify-generated-site-links.mjs`, `VERIFIED_PAGES` in `tests/e2e/helpers.ts`).

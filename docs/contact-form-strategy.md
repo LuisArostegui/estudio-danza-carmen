@@ -2,6 +2,8 @@
 
 Research date: 2026-08-24.
 
+Status: implemented in CD-28; delivery inactive until owner configuration (see contact-form-config.md).
+
 This document resolves CD-8. It selects the future contact form approach without implementing the form, writing final legal text, or committing secrets.
 
 ## Required Fields
