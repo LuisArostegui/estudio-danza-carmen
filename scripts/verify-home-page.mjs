@@ -68,9 +68,14 @@ const h1Count = (html.match(/<h1[\s>]/g) ?? []).length;
 if (h1Count !== 1)
   failures.push(`html: expected exactly 1 <h1>, found ${h1Count}`);
 
-const tiles = (html.match(/<figure class="[^"]*gallery__tile/g) ?? []).length;
+// Seven production tiles, each a link to its anchor on /espectaculos/.
+const tiles = (
+  html.match(
+    /<a class="[^"]*gallery__tile[^"]*"[^>]*href="\/espectaculos\/#[a-z-]+"/g,
+  ) ?? []
+).length;
 if (tiles !== 7)
-  failures.push(`html: expected 7 gallery tiles, found ${tiles}`);
+  failures.push(`html: expected 7 linked gallery tiles, found ${tiles}`);
 
 if (!html.includes('data-page-status="complete"')) {
   failures.push("html: Home must be marked data-page-status=complete");

@@ -203,13 +203,17 @@ const isWithin = (href: string) => {
         return;
       }
       if (desktop.matches) {
-        const open = [...items].find(
-          (item) => item.matches(":focus-within") || item.matches(":hover"),
+        // Close every open panel: the one holding focus and any hovered one.
+        // Focus returns to the category that owned it; with hover only, focus
+        // stays where it was so the panel does not reopen via :focus-within.
+        const focused = [...items].find((item) =>
+          item.matches(":focus-within"),
         );
-        if (open) {
-          open.classList.add("is-dismissed");
-          open.querySelector<HTMLElement>("[data-category-link]")?.focus();
+        for (const item of items) {
+          if (item === focused || item.matches(":hover"))
+            item.classList.add("is-dismissed");
         }
+        focused?.querySelector<HTMLElement>("[data-category-link]")?.focus();
       }
     });
 

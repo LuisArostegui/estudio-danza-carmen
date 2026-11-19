@@ -11,6 +11,14 @@ const schedule = entry.data;
 
 /** Example timetables stay noindex and out of the verified-page tests. */
 const pageStatus = schedule.isExample ? "pending" : "complete";
+const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
+/**
+ * Example data is only shown in the private preview. In a public build, or
+ * when no session is confirmed, the page shows a clear "no timetable yet"
+ * state that points to Contacto instead of an invented timetable.
+ */
+const showTimetable =
+  schedule.sessions.length > 0 && (!schedule.isExample || showPreviewNotes);
 ---
 
 <BaseLayout
@@ -58,7 +66,24 @@ const pageStatus = schedule.isExample ? "pending" : "complete";
         )
       }
 
-      <Timetable schedule={schedule} />
+      {
+        showTimetable ? (
+          <Timetable schedule={schedule} />
+        ) : (
+          <div class="timetable-page__empty" data-testid="schedule-empty">
+            <p class="timetable-page__empty-title">
+              Estamos actualizando los horarios
+            </p>
+            <p>
+              Escríbenos y te informamos de los días, horas y grupos con plazas
+              disponibles.
+            </p>
+            <a class="button button--primary" href="/contacto/">
+              Haz tu consulta
+            </a>
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>
@@ -77,6 +102,27 @@ const pageStatus = schedule.isExample ? "pending" : "complete";
     max-width: var(--layout-text-max);
     margin: 0 auto;
     text-align: center;
+  }
+
+  .timetable-page__empty {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
+    max-width: 36rem;
+    margin: 2rem auto 0;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--color-tint-line);
+    background: var(--color-surface-pale);
+    text-align: center;
+  }
+
+  .timetable-page__empty p {
+    margin: 0;
+  }
+
+  .timetable-page__empty-title {
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
   }
 
   .timetable-page__updated {

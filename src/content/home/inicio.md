@@ -117,22 +117,7 @@ shows:
   cta:
     label: "Descubre nuestros espectáculos"
     href: "/espectaculos/"
-  # Titles from the dossier. Each needs its own authorised photo.
-  items:
-    - name: "Mary Poppins"
-      photo: { pending: "Foto de Mary Poppins" }
-    - name: "Orquesta Clásica de Granada"
-      photo: { pending: "Foto con la Orquesta Clásica de Granada" }
-    - name: "Pulgarcita"
-      photo: { pending: "Foto de Pulgarcita" }
-    - name: "La Bella y la Bestia"
-      photo: { pending: "Foto de La Bella y la Bestia" }
-    - name: "La Bella Durmiente"
-      photo: { pending: "Foto de La Bella Durmiente" }
-    - name: "Alicia en el País de las Maravillas"
-      photo: { pending: "Foto de Alicia en el País de las Maravillas" }
-    - name: "La leyenda de las Princesas Cisne"
-      photo: { pending: "Foto de La leyenda de las Princesas Cisne" }
+  # Tiles: the seven productions in src/content/performances (photos live there).
 
 contact:
   accent: "Contacto"

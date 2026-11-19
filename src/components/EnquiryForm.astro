@@ -465,9 +465,11 @@ const id = (name: string) => `${idPrefix}-${name}`;
       transform 150ms ease,
       color 150ms ease;
   }
-  .field input:focus ~ .field__label,
-  .field input:not(:placeholder-shown) ~ .field__label,
-  .field input:-webkit-autofill ~ .field__label,
+  /* Floating label: text inputs only (a checkbox has no placeholder, so
+     :not(:placeholder-shown) would otherwise shrink the privacy label). */
+  .field input:not([type="checkbox"]):focus ~ .field__label,
+  .field input:not([type="checkbox"]):not(:placeholder-shown) ~ .field__label,
+  .field input:not([type="checkbox"]):-webkit-autofill ~ .field__label,
   .field textarea:focus ~ .field__label,
   .field textarea:not(:placeholder-shown) ~ .field__label,
   .field select:focus ~ .field__label,
@@ -547,6 +549,11 @@ const id = (name: string) => `${idPrefix}-${name}`;
     margin-block-start: 0.1em;
   }
 
+  .enquiry__required-note,
+  .enquiry__preview {
+    /* Full form width so the centred text lines up with the button. */
+    max-width: none;
+  }
   .enquiry__required-note {
     margin: 0;
     text-align: center;

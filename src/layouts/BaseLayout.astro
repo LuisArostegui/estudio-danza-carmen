@@ -17,10 +17,17 @@ type Props = {
    * Both are noindex and excluded from verified-page tests.
    */
   pageStatus?: "complete" | "pending" | "review";
+  /** Force noindex on a complete page (e.g. the 404 view). */
+  noindex?: boolean;
 };
 
 const siteSettings = await getSiteSettings();
-const { title, description, pageStatus = "complete" } = Astro.props;
+const {
+  title,
+  description,
+  pageStatus = "complete",
+  noindex = false,
+} = Astro.props;
 const currentPath = Astro.url.pathname;
 const pageTitle = title ?? siteSettings.siteName;
 ---
@@ -31,7 +38,11 @@ const pageTitle = title ?? siteSettings.siteName;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
-    {pageStatus !== "complete" && <meta name="robots" content="noindex" />}
+    {
+      (pageStatus !== "complete" || noindex) && (
+        <meta name="robots" content="noindex" />
+      )
+    }
     <script is:inline>
       /* Review variants: ?titulo=serif switches H1 / section titles to Cormorant;
          ?paleta=escenario swaps the colour tokens only. A URL value wins and is

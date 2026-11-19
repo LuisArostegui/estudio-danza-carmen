@@ -1,0 +1,212 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import InfoPage from "../../components/InfoPage.astro";
+import Photo from "../../components/Photo.astro";
+
+/**
+ * Cursos: dossier copy plus one card per published course in
+ * src/content/courses/. With no course, Elena's empty state is shown.
+ */
+const entry = await getEntry("infoPages", "cursos");
+if (!entry) throw new Error("Missing src/content/info/cursos.md");
+const empty = entry.data.empty;
+const courses = (await getCollection("courses"))
+  .filter((course) => course.data.published)
+  .sort((a, b) =>
+    (a.data.startDate ?? "9999").localeCompare(b.data.startDate ?? "9999"),
+  );
+const euros = new Intl.NumberFormat("es-ES", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 2,
+});
+---
+
+<InfoPage entry={entry} path="/cursos/">
+  <section class="courses" aria-label="Listado de cursos">
+    <div class="shell">
+      {
+        courses.length > 0 ? (
+          <ul class="courses__list" data-testid="course-list">
+            {courses.map((course) => {
+              const d = course.data;
+              const facts = [
+                ["Fecha", d.dates],
+                ["Horario", d.schedule],
+                ["Niveles", d.levels],
+                [
+                  "Precio",
+                  d.price === undefined ? undefined : euros.format(d.price),
+                ],
+                ["Plazas", d.places],
+              ].filter(([, value]) => Boolean(value));
+              return (
+                <li class="course" data-testid="course-card">
+                  {d.poster?.src && (
+                    <div class="course__poster photo-frame">
+                      <Photo
+                        photo={d.poster}
+                        sizes="(min-width: 48rem) 30vw, 100vw"
+                      />
+                    </div>
+                  )}
+                  <div class="course__body">
+                    <h3 class="course__title">{d.title}</h3>
+                    {d.teacher && (
+                      <p class="course__teacher">Impartido por: {d.teacher}</p>
+                    )}
+                    <p class="course__summary">{d.summary}</p>
+                    {facts.length > 0 && (
+                      <dl class="course__facts">
+                        {facts.map(([label, value]) => (
+                          <div>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    )}
+                    <a class="button button--primary" href="/contacto/">
+                      Más información y reservas
+                    </a>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          empty && (
+            <div class="courses__empty" data-testid="courses-empty">
+              <span class="courses__empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" focusable="false">
+                  <circle cx="24" cy="24" r="20" />
+                  <circle cx="24" cy="24" r="5" />
+                </svg>
+              </span>
+              <h3>{empty.title}</h3>
+              {empty.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              <a class="button button--primary" href="/contacto/">
+                Consulta las próximas fechas
+              </a>
+            </div>
+          )
+        )
+      }
+    </div>
+  </section>
+</InfoPage>
+
+<style>
+  .courses {
+    padding-block: 0 var(--layout-block-y);
+    background: var(--color-tint);
+  }
+
+  .courses__list {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .courses__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .course {
+    display: grid;
+    background: #fff;
+  }
+
+  .course__poster {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .course__body {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    padding: 1.5rem;
+  }
+
+  .course__title {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .course__teacher,
+  .course__summary {
+    margin: 0;
+    color: var(--color-body);
+    line-height: 1.6;
+  }
+
+  .course__facts {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: var(--font-size-small);
+  }
+
+  .course__facts div {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .course__facts dt {
+    min-inline-size: 5rem;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .course__facts dd {
+    margin: 0;
+  }
+
+  .courses__empty {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
+    max-width: 40rem;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--color-tint-line);
+    background: #fff;
+    text-align: center;
+  }
+
+  .courses__empty h3 {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .courses__empty p {
+    margin: 0;
+    color: var(--color-body);
+  }
+
+  .courses__empty-icon svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    fill: none;
+    stroke: var(--color-pink-ink);
+    stroke-width: 1.25;
+  }
+
+  .courses__empty-icon circle:last-child {
+    fill: var(--color-pink);
+    stroke: none;
+  }
+</style>

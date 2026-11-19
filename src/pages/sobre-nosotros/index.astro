@@ -1,0 +1,476 @@
+---
+import { getEntry } from "astro:content";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Photo from "../../components/Photo.astro";
+import SectionTitle from "../../components/SectionTitle.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { directPageStatus, getSchool } from "../../lib/catalog";
+
+/**
+ * Sobre nosotros: Elena's dossier copy (00 · pp. 60–64). Profesorado and
+ * Instalaciones are linkable sections (#profesorado, #instalaciones) instead
+ * of separate pages, following Elena's structure. In review: noindex.
+ */
+const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
+const entry = await getEntry("aboutPage", "sobre-nosotros");
+if (!entry) throw new Error("Missing src/content/pages/sobre-nosotros.md");
+const page = entry.data;
+const school = await getSchool();
+
+const members = page.team.members.filter(
+  (member) => !member.pending || showPreviewNotes,
+);
+/** Photo gaps are shown only in the private preview. */
+const visiblePhotos = (photos: (typeof page.sections)[number]["photos"]) =>
+  photos.filter((item) => item.src || showPreviewNotes);
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.description}
+  pageStatus={directPageStatus("/sobre-nosotros/")}
+>
+  <section class="about-hero" aria-labelledby="about-title">
+    <div class="shell about-hero__grid">
+      <div class="about-hero__text">
+        <Breadcrumbs
+          items={[{ label: "Inicio", href: "/" }, { label: page.title }]}
+        />
+        <SectionTitle
+          as="h1"
+          id="about-title"
+          title={page.title}
+          eyebrow={page.subtitle}
+        />
+        <p class="about-hero__intro">{page.intro}</p>
+        <a class="button button--primary" href={page.heroCta.href}>
+          {page.heroCta.label}
+        </a>
+      </div>
+      <div class="about-hero__media photo-frame">
+        <Photo
+          photo={page.heroPhoto}
+          priority
+          tone="dark"
+          sizes="(min-width: 48rem) 45vw, 100vw"
+        />
+      </div>
+    </div>
+
+    <nav class="shell about-toc" aria-label="En esta página">
+      <ul>
+        {
+          page.sections.map((section) => (
+            <li>
+              <a href={`#${section.id}`}>{section.navLabel}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      showPreviewNotes && page.pendingFacts.length > 0 && (
+        <div class="shell">
+          <details class="preview-note about-note">
+            <summary>Página en revisión: datos por confirmar con Elena</summary>
+            <ul>
+              {page.pendingFacts.map((fact) => (
+                <li>{fact}</li>
+              ))}
+            </ul>
+          </details>
+        </div>
+      )
+    }
+  </section>
+
+  {
+    page.sections.map((section, index) => {
+      const photos = visiblePhotos(section.photos);
+      const isTeam = section.id === page.team.sectionId;
+      return (
+        <section
+          id={section.id}
+          class:list={["about-section", { "is-tinted": index % 2 === 1 }]}
+          aria-labelledby={`${section.id}-title`}
+        >
+          <div
+            class:list={[
+              "shell about-section__grid",
+              { "has-photos": photos.length > 0 && !isTeam },
+            ]}
+          >
+            <div class="about-section__text" data-reveal>
+              <SectionTitle
+                id={`${section.id}-title`}
+                title={section.title}
+                eyebrow={section.eyebrow}
+              />
+              {section.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              {section.cta && (
+                <a class="text-link" href={section.cta.href}>
+                  {section.cta.label}
+                </a>
+              )}
+            </div>
+
+            {photos.length > 0 && !isTeam && (
+              <div
+                class:list={[
+                  "about-photos",
+                  { "about-photos--single": photos.length === 1 },
+                ]}
+              >
+                {photos.map((item) => (
+                  <div class="about-photos__item photo-frame">
+                    <Photo photo={item} sizes="(min-width: 48rem) 25vw, 50vw" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isTeam && (
+              <ul class="team" data-testid="team">
+                {members.map((member) => (
+                  <li
+                    class:list={[
+                      "team__member",
+                      { "is-pending": member.pending },
+                    ]}
+                  >
+                    {(member.photo?.src || showPreviewNotes) && (
+                      <div class="team__photo photo-frame">
+                        <Photo
+                          photo={member.photo}
+                          sizes="(min-width: 48rem) 20vw, 45vw"
+                        />
+                      </div>
+                    )}
+                    {member.pending ? (
+                      <p class="team__pending">
+                        Profesora: nombre y función por confirmar
+                      </p>
+                    ) : (
+                      <>
+                        <p class="team__name">{member.name}</p>
+                        {member.role && <p class="team__role">{member.role}</p>}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section
+    id="contacto-sobre-nosotros"
+    class="about-closing"
+    aria-labelledby="about-closing-title"
+  >
+    <div class="shell about-closing__inner" data-reveal>
+      <SectionTitle
+        id="about-closing-title"
+        title={page.closing.title}
+        align="center"
+        tone="dark"
+      />
+      {page.closing.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      <address class="about-closing__school">
+        <span>{school.name}</span>
+        <span>{school.addressLine}</span>
+        <a href={school.whatsappHref} target="_blank" rel="noopener noreferrer"
+          >{school.whatsappLabel}</a
+        >
+        <a href={school.phoneHref}>{school.phoneLabel}</a>
+      </address>
+      <div class="about-closing__actions">
+        <a class="button button--light" href={page.closing.primaryCta.href}>
+          {page.closing.primaryCta.label}
+        </a>
+        <a
+          class="button button--outline-light"
+          href={page.closing.secondaryCta.href}
+        >
+          {page.closing.secondaryCta.label}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-hero {
+    padding-block: var(--layout-block-y) 0;
+  }
+
+  .about-hero__grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .about-hero__text {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    max-width: var(--layout-text-max);
+  }
+
+  .about-hero__intro {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: var(--font-size-lead);
+    line-height: 1.7;
+  }
+
+  .about-hero__media {
+    aspect-ratio: 4 / 3;
+    max-block-size: 300px;
+    overflow: hidden;
+  }
+
+  .about-hero__media :global(.photo) {
+    block-size: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .about-hero__grid {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: clamp(2rem, 5vw, 4.5rem);
+    }
+
+    .about-hero__media {
+      max-block-size: 440px;
+    }
+  }
+
+  .about-toc {
+    margin-block: 2rem 0;
+  }
+
+  .about-toc ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 1rem 0;
+    border-block: 1px solid var(--color-border-subtle);
+    list-style: none;
+  }
+
+  .about-toc a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-navigation);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .about-toc a:hover {
+    color: var(--color-pink-ink);
+  }
+
+  .about-toc a:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .about-note {
+    margin-block-start: 1.5rem;
+  }
+
+  .about-note summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .about-note ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+  }
+
+  .about-section {
+    padding-block: var(--layout-block-y);
+    scroll-margin-top: 5rem;
+  }
+
+  .about-section.is-tinted {
+    background: var(--color-tint);
+  }
+
+  .about-section__grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .about-section__text {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    max-width: var(--layout-text-max);
+  }
+
+  .about-section__text p {
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-reading);
+    line-height: 1.7;
+  }
+
+  @media (min-width: 64rem) {
+    .about-section__grid.has-photos {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4.5rem);
+    }
+
+    .about-section.is-tinted .about-section__grid.has-photos .about-photos {
+      order: -1;
+    }
+  }
+
+  .about-photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .about-photos__item {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .about-photos__item:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 9;
+  }
+
+  .about-photos--single .about-photos__item {
+    aspect-ratio: 4 / 3;
+  }
+
+  .about-photos__item :global(.photo) {
+    block-size: 100%;
+  }
+
+  .team {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .team {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+      max-width: 52rem;
+    }
+  }
+
+  .team__member {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+
+  .team__member:first-child:last-child {
+    max-width: 16rem;
+  }
+
+  .team__photo {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .team__photo :global(.photo) {
+    block-size: 100%;
+  }
+
+  .team__name {
+    margin: 0.4rem 0 0;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .team__role,
+  .team__pending {
+    margin: 0;
+    color: var(--color-body);
+    font-size: var(--font-size-small);
+    line-height: 1.5;
+  }
+
+  .team__pending {
+    color: var(--color-pink-ink);
+    font-style: italic;
+  }
+
+  .about-closing {
+    background: var(--color-story-bg);
+    padding-block: var(--layout-block-y);
+    color: var(--color-dark-muted);
+    text-align: center;
+  }
+
+  .about-closing__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-inline-size: 48rem;
+  }
+
+  .about-closing__inner p {
+    margin: 0;
+    font-size: var(--font-size-reading);
+  }
+
+  .about-closing__school {
+    display: grid;
+    gap: 0.25rem;
+    font-style: normal;
+  }
+
+  .about-closing__school span:first-child {
+    color: #fff;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .about-closing__school a {
+    color: #fff;
+  }
+
+  .about-closing__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    margin-block-start: 0.5rem;
+  }
+
+  .button--outline-light {
+    border: 1px solid rgb(255 255 255 / 70%);
+    background: transparent;
+    color: #fff;
+  }
+
+  .button--outline-light:hover {
+    background: rgb(255 255 255 / 12%);
+  }
+</style>

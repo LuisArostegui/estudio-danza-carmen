@@ -1,0 +1,106 @@
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import SectionTitle from "../components/SectionTitle.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { familyLabel, familyOrder, categoryHref } from "../lib/catalog";
+
+/** Error view for unknown routes. Proposed copy: Needs owner confirmation. */
+---
+
+<BaseLayout
+  title="Página no encontrada · Estudio de Danza Carmen"
+  description="La página que buscas no existe o ha cambiado de dirección."
+  noindex
+>
+  <section
+    class="not-found"
+    aria-labelledby="not-found-title"
+    data-testid="not-found"
+  >
+    <div class="shell not-found__inner">
+      <Breadcrumbs
+        items={[
+          { label: "Inicio", href: "/" },
+          { label: "Página no encontrada" },
+        ]}
+      />
+      <p class="not-found__code" aria-hidden="true">404</p>
+      <SectionTitle
+        as="h1"
+        id="not-found-title"
+        title="Página no encontrada"
+        align="center"
+      />
+      <p class="not-found__text">
+        La página que buscas no existe o ha cambiado de dirección. Te dejamos
+        algunos caminos para seguir.
+      </p>
+      <ul class="not-found__links">
+        {
+          familyOrder.map((family) => (
+            <li>
+              <a class="text-link" href={categoryHref(family)}>
+                {familyLabel[family]}
+              </a>
+            </li>
+          ))
+        }
+        <li><a class="text-link" href="/espectaculos/">Espectáculos</a></li>
+        <li><a class="text-link" href="/horarios/">Horarios</a></li>
+      </ul>
+      <div class="not-found__actions">
+        <a class="button button--primary" href="/">Volver al inicio</a>
+        <a class="button button--dark" href="/contacto/">Haz tu consulta</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: var(--layout-block-y);
+  }
+
+  .not-found__inner {
+    display: grid;
+    gap: 1rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .not-found__inner :global(.breadcrumbs) {
+    justify-self: start;
+  }
+
+  .not-found__code {
+    margin: 1rem 0 0;
+    color: var(--color-pink-ink);
+    font-family: var(--font-family-decorative);
+    font-size: clamp(3.5rem, 2.5rem + 5vw, 6rem);
+    line-height: 1;
+  }
+
+  .not-found__text {
+    max-width: 34rem;
+    margin: 0;
+    color: var(--color-body);
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    margin-block-start: 0.5rem;
+  }
+</style>

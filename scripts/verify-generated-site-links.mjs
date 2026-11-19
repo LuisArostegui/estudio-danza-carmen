@@ -28,6 +28,37 @@ const VERIFIED_ROUTES = [
   "/contacto/",
 ];
 
+/** Activity slugs per family, read from the content files. */
+const familySlug = {
+  ballet: "clases-de-ballet-granada",
+  salud: "salud-corporal",
+  otras: "otras-disciplinas",
+};
+const activityRoutes = [];
+for (const file of await readdir("src/content/activities")) {
+  if (!file.endsWith(".md")) continue;
+  const source = await readFile(`src/content/activities/${file}`, "utf8");
+  const family = source.match(/^family:\s*(\w+)/m)?.[1];
+  const status = source.match(/^status:\s*(\w+)/m)?.[1];
+  if (status === "review")
+    activityRoutes.push(`/${familySlug[family]}/${file.replace(/\.md$/, "")}/`);
+}
+
+/**
+ * Built pages with full content awaiting owner review. Each must exist, be
+ * `review` and noindex: a missing page or a fallback placeholder fails.
+ */
+const REVIEW_ROUTES = [
+  "/salud-corporal/",
+  "/otras-disciplinas/",
+  "/sobre-nosotros/",
+  "/espectaculos/",
+  "/examenes-rad/",
+  "/cursos/",
+  "/regala-danza/",
+  ...activityRoutes,
+];
+
 function waitForServer(url, timeoutMs = 10_000) {
   const startedAt = Date.now();
 
@@ -160,6 +191,16 @@ for (const route of VERIFIED_ROUTES) {
     problems.push(`verified route is ${page.status}, not complete: ${route}`);
   else if (page.noindex) problems.push(`verified route is noindex: ${route}`);
 }
+for (const route of REVIEW_ROUTES) {
+  const page = pages.get(route);
+  if (!page) problems.push(`review route is missing from dist: ${route}`);
+  else if (page.status !== "review")
+    problems.push(`review route is ${page.status}, not review: ${route}`);
+}
+if (activityRoutes.length < 18)
+  problems.push(
+    `expected 18 activity pages in review, found ${activityRoutes.length}`,
+  );
 for (const [route, page] of pending) {
   if (!page.noindex) problems.push(`pending page lacks noindex: ${route}`);
 }
@@ -177,5 +218,5 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `\nVerification status OK: ${VERIFIED_ROUTES.length} verified routes complete; ${pending.length} pending and ${review.length} in-review pages excluded and noindex.`,
+  `\nVerification status OK: ${VERIFIED_ROUTES.length} verified routes complete; ${REVIEW_ROUTES.length} required review routes present; ${pending.length} pending and ${review.length} in-review pages excluded and noindex.`,
 );
