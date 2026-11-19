@@ -991,7 +991,10 @@ const id = (name: string) => `${idPrefix}-${name}`;
         }),
       );
       summary.hidden = false;
-      summary.focus();
+      // WebKit focuses the just-unhidden summary without scrolling to it,
+      // leaving the errors off-screen on small or zoomed viewports (#32).
+      summary.focus({ preventScroll: true });
+      summary.scrollIntoView({ block: "start" });
     }
 
     function hideSummary() {

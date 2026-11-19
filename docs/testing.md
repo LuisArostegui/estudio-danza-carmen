@@ -50,7 +50,18 @@ pnpm test:e2e
 
 `pnpm test:e2e` builds the Astro site and runs Playwright against Vite preview of `dist`, following the same static-output pattern used by the portfolio project.
 
-Playwright runs two projects only: `mobile-390` (390x844, touch) and `desktop-1440` (1440x900). The suite lives in `tests/e2e/`:
+Playwright runs two projects by default: `mobile-390` (390x844, touch) and `desktop-1440` (1440x900). The suite lives in `tests/e2e/`:
+
+- `cross-engine.spec.ts` (#32, preliminary #33 reflow checks): no horizontal scroll on eight representative routes at 320x640 and 720x450 (a reflow check at the CSS width of a 1440 px window at 200 %; only the viewport changes and each project keeps its device scale, so real 200 % zoom stays manual), mobile menu and chevron usable at both sizes, the error summary focused and on screen after an empty submit, Inicio → menu → landing → ficha → Contacto with touch or hover, direct ficha URLs, every Inicio show tile resolving to an id on `/espectaculos/`, `/sobre-nosotros/#profesorado` and `#instalaciones` landing below the sticky header, and the Cursos and Horarios empty or example states.
+
+### Extra engines (opt-in)
+
+```bash
+pnpm exec playwright install firefox webkit
+pnpm test:e2e:engines
+```
+
+`PLAYWRIGHT_ENGINES=firefox,webkit` adds `firefox-390`, `firefox-1440`, `webkit-390` (touch, mobile), `webkit-768` (touch, tablet) and `webkit-1440`. They run the representative journeys only (`cross-engine`, `preview-flow`, `sobre-nosotros`, `espectaculos`, `support-pages`, `horarios`), not the whole suite. CI stays on Chromium. The Firefox projects get temporary `MOZ_APP_DATA` and `MOZ_LOCAL_APP_DATA` folders (unless already set) so Playwright's Firefox can create its profile on macOS. WebKit is Playwright's WebKit build, not Safari; like Safari's default, it skips links on Tab, so keyboard tests press Option+Tab there (`tabKey` in `helpers.ts`). Set `PLAYWRIGHT_PORT` when port 4321 is taken by the dev server.
 
 - `home.spec.ts`: landmarks, Elena's literal hero copy (read from `src/content/home/inicio.md`), the six header entries, footer contact links, mobile menu, `?cms=keys` flag, axe.
 - `preview-flow.spec.ts`: the Inicio -> Clases de ballet -> Ballet para adultos -> contacto journey, header dropdown (desktop hover/focus/Escape, mobile chevron and 44px targets), focus outlines, internal links returning 200, no horizontal overflow, image rendering, show gallery hover/focus/touch/reduced motion, carousel, enquiry form validation and test mode (no network POST), axe on each verified page, and the pending-page guard.

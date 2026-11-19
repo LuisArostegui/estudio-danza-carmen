@@ -261,6 +261,9 @@ const pendingFacts = [
   .show-tile {
     position: relative;
     display: block;
+    /* A definite width stops aspect-ratio from turning min-block-size into a
+       minimum width (the 2:1 last tile overflowed 320 px screens, #32). */
+    inline-size: 100%;
     block-size: 100%;
     min-block-size: 10rem;
     aspect-ratio: 1 / 1;

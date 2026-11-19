@@ -4,6 +4,7 @@ import {
   ADULTOS_PATH,
   VERIFIED_PAGES,
   isMobileMenu,
+  tabKey,
   waitForRevealsSettled,
 } from "./helpers";
 
@@ -127,6 +128,7 @@ test.describe("header dropdown", () => {
 
   test("desktop: keyboard Tab reaches dropdown items and Escape closes it returning focus", async ({
     page,
+    browserName,
   }) => {
     await page.goto("/");
     test.skip(await isMobileMenu(page), "Desktop dropdown");
@@ -137,11 +139,11 @@ test.describe("header dropdown", () => {
 
     await category.focus();
     await expect(panel).toBeVisible();
-    await page.keyboard.press("Tab");
+    await page.keyboard.press(tabKey(browserName));
     await expect(firstChild).toBeFocused();
     await expect(firstChild).toBeVisible();
 
-    await page.keyboard.press("Tab");
+    await page.keyboard.press(tabKey(browserName));
     await expect(
       balletItem(page).locator(".site-nav__child").nth(1),
     ).toBeFocused();
@@ -206,12 +208,13 @@ test.describe("header dropdown", () => {
 test.describe("focus visibility", () => {
   test("tabbing shows a visible outline on links and buttons", async ({
     page,
+    browserName,
   }) => {
     await page.goto("/");
     const seen: { tag: string; outline: string; width: string }[] = [];
 
     for (let i = 0; i < 12; i++) {
-      await page.keyboard.press("Tab");
+      await page.keyboard.press(tabKey(browserName));
       const info = await page.evaluate(() => {
         const el = document.activeElement as HTMLElement | null;
         if (!el || el === document.body) return null;
@@ -237,15 +240,18 @@ test.describe("focus visibility", () => {
     }
   });
 
-  test("the primary buttons keep a focus outline", async ({ page }) => {
+  test("the primary buttons keep a focus outline", async ({
+    page,
+    browserName,
+  }) => {
     await page.goto(ADULTOS_PATH);
     for (const locator of [
       page.getByTestId("activity-cta").first(),
       page.getByTestId("carousel-next"),
     ]) {
       await locator.focus();
-      await page.keyboard.press("Shift+Tab");
-      await page.keyboard.press("Tab");
+      await page.keyboard.press(tabKey(browserName, true));
+      await page.keyboard.press(tabKey(browserName));
       const outline = await locator.evaluate(
         (element) => getComputedStyle(element).outlineStyle,
       );
