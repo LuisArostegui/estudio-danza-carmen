@@ -30,6 +30,7 @@ closing:
   title: "¿Quieres apuntarte?"
   body: "Si estás pensando en aprender sevillanas, este es tu momento. Rellena el formulario y te avisamos del próximo curso intensivo o de cómo montar tu propio grupo."
 # Needs owner confirmation (shown only in the private preview):
+# «Regala Sevillanas» section removed until Elena confirms the gift vouchers.
 pendingFacts:
   - "Needs owner confirmation: fotos autorizadas de esta clase (derechos y consentimiento)"
   - "Needs owner confirmation: días, horarios y grupos abiertos ahora mismo"
@@ -54,6 +55,3 @@ Lo mejor es que en muy pocas sesiones estarás bailando de verdad, con soltura y
 
 También ofrecemos clases especiales para que madres e hijas (o padres y niños, claro) aprendan juntas. Son sesiones adaptadas, con mucho cariño y juego, pensadas para compartir tiempo de calidad mientras aprendéis algo nuevo. Bailar sevillanas juntas es una forma de disfrutar, de reír y de llevaros un recuerdo que queda para siempre.
 
-## Regala Sevillanas
-
-¿Buscas un regalo especial y diferente? Puedes regalar una plaza en uno de nuestros intensivos de sevillanas. Es un detalle original, divertido y con mucho arte, ideal para sorprender a alguien que siempre ha querido aprender a bailar o que ama las ferias y las tradiciones. Regalas una experiencia, una vivencia compartida y un momento para recordar.

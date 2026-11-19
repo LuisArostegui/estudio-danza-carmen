@@ -1,0 +1,138 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Photo from "./Photo.astro";
+
+/**
+ * One course card. Every fact is optional and shown only when confirmed.
+ * A past course keeps its information but has no booking link.
+ */
+type Props = { course: CollectionEntry<"courses">; past?: boolean };
+
+const { course, past = false } = Astro.props;
+const d = course.data;
+const euros = new Intl.NumberFormat("es-ES", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 2,
+});
+const facts = [
+  ["Fecha", d.dates],
+  ["Horario", d.schedule],
+  ["Niveles", d.levels],
+  ["Precio", d.price === undefined ? undefined : euros.format(d.price)],
+  ["Plazas", past ? undefined : d.places],
+].filter(([, value]) => Boolean(value));
+---
+
+<li
+  class:list={["course", { "course--past": past }]}
+  data-testid={past ? "past-course-card" : "course-card"}
+>
+  {
+    d.poster?.src && (
+      <div class="course__poster photo-frame">
+        <Photo photo={d.poster} sizes="(min-width: 48rem) 30vw, 100vw" />
+      </div>
+    )
+  }
+  <div class="course__body">
+    {past && <p class="course__badge">Curso finalizado</p>}
+    <h3 class="course__title">{d.title}</h3>
+    {d.teacher && <p class="course__teacher">Impartido por: {d.teacher}</p>}
+    <p class="course__summary">{d.summary}</p>
+    {
+      facts.length > 0 && (
+        <dl class="course__facts">
+          {facts.map(([label, value]) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+    {
+      !past && (
+        <a class="button button--primary" href="/contacto/">
+          Más información y reservas
+        </a>
+      )
+    }
+  </div>
+</li>
+
+<style>
+  .course {
+    display: grid;
+    background: #fff;
+  }
+
+  .course--past {
+    background: transparent;
+    border: 1px solid var(--color-tint-line);
+  }
+
+  .course__poster {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .course--past .course__poster {
+    filter: grayscale(0.6);
+  }
+
+  .course__body {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    padding: 1.5rem;
+  }
+
+  .course__badge {
+    margin: 0;
+    color: var(--color-pink-ink);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  .course__title {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .course__teacher,
+  .course__summary {
+    margin: 0;
+    color: var(--color-body);
+    line-height: 1.6;
+  }
+
+  .course__facts {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: var(--font-size-small);
+  }
+
+  .course__facts div {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .course__facts dt {
+    min-inline-size: 5rem;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .course__facts dd {
+    margin: 0;
+  }
+</style>

@@ -140,6 +140,11 @@ test.describe("home gift and Instagram", () => {
     const cta = page.getByTestId("home-gift").getByRole("link");
     await expect(cta).toHaveCount(1);
     await expect(cta).toHaveAttribute("href", "/regala-danza/");
+    // Until Elena confirms the vouchers, Inicio invites to ask instead of
+    // announcing them.
+    const gift = page.getByTestId("home-gift");
+    await expect(cta).toHaveText(/Consulta las opciones de regalo/i);
+    await expect(gift).not.toContainText("contamos con bonos regalo");
     // The target page now exists (in review), so no «Próximamente» label.
     await expect(page.getByTestId("home-gift")).not.toContainText(
       "Próximamente",

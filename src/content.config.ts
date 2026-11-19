@@ -400,8 +400,16 @@ const courses = defineCollection({
       price: z.number().optional(),
       places: z.string().optional(),
       poster: photo(image),
-      /** Sort key, ISO date of the first session. */
-      startDate: z.string().optional(),
+      /** ISO date (YYYY-MM-DD) of the first session; sort key. */
+      startDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD")
+        .optional(),
+      /** ISO date of the last session; once past, the course leaves «Próximos cursos». */
+      endDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato AAAA-MM-DD")
+        .optional(),
       /** Hide a course without deleting it. */
       published: z.boolean().default(true),
     }),

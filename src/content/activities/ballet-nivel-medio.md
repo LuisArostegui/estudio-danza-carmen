@@ -1,17 +1,19 @@
 ---
-# Copy: dossier 00 · PAGE 26–27. Literal text; status review (noindex) until Elena signs it off.
+# Copy: dossier 00 · PAGE 26–27. Literal text except the age range (15–18
+# años), removed until Elena confirms the groups (the 01 keywords say «9+»).
+# Status review (noindex).
 title: "Ballet nivel medio"
 menuLabel: "Ballet nivel medio"
 family: ballet
 order: 4
 status: review
 summary: "Un espacio para consolidar lo aprendido, perfeccionar tu estilo y mantener viva tu pasión por el ballet."
-seoTitle: "Ballet Nivel Medio (15 a 18 años) – Sigue bailando con técnica, confianza y libertad"
+seoTitle: "Ballet nivel medio – Sigue bailando con técnica, confianza y libertad"
 # description condensed from the dossier intro: Needs owner confirmation
 description: "Clases de ballet nivel medio en Granada para seguir creciendo, mejorando tu técnica y disfrutando de bailar en un entorno cuidado y exigente."
 subtitle: "Un espacio para consolidar lo aprendido, perfeccionar tu estilo y mantener viva tu pasión por el ballet."
 intro: "Si llevas años formándote en danza clásica y no quieres parar, este es tu sitio. En nuestras clases de ballet nivel medio en Granada podrás seguir creciendo, mejorando tu técnica y disfrutando de bailar en un entorno cuidado, exigente y sin presiones innecesarias."
-audience: "El nivel medio está pensado para jóvenes de entre 15 y 18 años que ya tienen un nivel técnico consolidado en ballet clásico."
+audience: "Jóvenes que ya tienen un nivel técnico consolidado en ballet clásico. Escríbenos y te orientamos sobre el grupo que encaja con tu edad y experiencia."
 ctaLabel: "Consulta sin compromiso"
 photo:
   pending: "Foto autorizada de la clase de Ballet nivel medio"
@@ -39,6 +41,6 @@ pendingFacts:
 
 ## ¿Qué se trabaja en el nivel medio y a quién va dirigida esta clase?
 
-El nivel medio está pensado para jóvenes de entre 15 y 18 años que ya tienen un nivel técnico consolidado en ballet clásico. Puede que hayas crecido con nosotras o que vengas de otra escuela: aquí encontrarás un grupo donde integrarte rápido, recuperar nivel si lo necesitas y seguir avanzando con seguridad.
+El nivel medio está pensado para jóvenes que ya tienen un nivel técnico consolidado en ballet clásico. Puede que hayas crecido con nosotras o que vengas de otra escuela: aquí encontrarás un grupo donde integrarte rápido, recuperar nivel si lo necesitas y seguir avanzando con seguridad.
 
 En esta etapa trabajamos sobre una base clara y madura. Se perfeccionan posiciones, giros, combinaciones y repertorio con más profundidad, siempre cuidando el cuerpo, la alineación y la prevención de lesiones. No es una clase de iniciación, ni una vía profesional estricta: es un punto de equilibrio perfecto para quienes quieren mantener su danza activa, pulir su técnica y seguir sintiendo que cada clase les aporta algo nuevo.

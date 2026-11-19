@@ -11,6 +11,12 @@ const vitePackagePath = require.resolve("vite/package.json", {
 const viteCliPath = path.join(path.dirname(vitePackagePath), "bin", "vite.js");
 
 const port = env.PLAYWRIGHT_PORT ?? "4321";
+/**
+ * `astro preview` serves the custom 404 page with HTTP 404 for unknown
+ * routes (the Vite preview server falls back to Inicio with HTTP 200).
+ * Tests reach it on the Vite preview port + 1.
+ */
+const astroPort = String(Number(port) + 1);
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -21,15 +27,27 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${port}`,
     trace: "on-first-retry",
   },
-  webServer: {
-    command: `node "${viteCliPath}" preview --outDir dist --host 127.0.0.1 --port ${port} --strictPort`,
-    gracefulShutdown: {
-      signal: "SIGTERM",
-      timeout: 500,
+  webServer: [
+    {
+      command: `node "${viteCliPath}" preview --outDir dist --host 127.0.0.1 --port ${port} --strictPort`,
+      gracefulShutdown: {
+        signal: "SIGTERM",
+        timeout: 500,
+      },
+      url: `http://127.0.0.1:${port}`,
+      reuseExistingServer: false,
     },
-    url: `http://127.0.0.1:${port}`,
-    reuseExistingServer: false,
-  },
+    {
+      // Foreground wrapper around Astro's preview API (see the script).
+      command: `node scripts/astro-preview.mjs ${astroPort}`,
+      gracefulShutdown: {
+        signal: "SIGTERM",
+        timeout: 500,
+      },
+      url: `http://127.0.0.1:${astroPort}`,
+      reuseExistingServer: false,
+    },
+  ],
   projects: [
     {
       name: "mobile-390",

@@ -1,17 +1,19 @@
 ---
-# Copy: dossier 00 · PAGE 24–25. Literal text; status review (noindex) until Elena signs it off.
+# Copy: dossier 00 · PAGE 24–25 («Ballet por niveles»). Literal text except the
+# age ranges (8–15 años), removed until Elena confirms the groups: the menu
+# says «según edad» and the 01 keywords say 6–8. Status review (noindex).
 title: "Ballet junior"
 menuLabel: "Ballet junior (según edad)"
 family: ballet
 order: 3
 status: review
 summary: "Clases para seguir descubriendo la técnica clásica y avanzando en el aprendizaje de la danza."
-seoTitle: "Ballet por niveles (8 a 15 años) – Formación estructurada en danza clásica en Granada"
+seoTitle: "Ballet junior por niveles – Formación estructurada en danza clásica en Granada"
 # description condensed from the dossier intro: Needs owner confirmation
-description: "Ballet por niveles a partir de los 8 años: una formación progresiva de técnica clásica, con posibilidad de presentarse a exámenes RAD."
+description: "Ballet por niveles para niñas y niños: una formación progresiva de técnica clásica, con posibilidad de presentarse a exámenes RAD."
 subtitle: "Un camino sólido, paso a paso, hacia la técnica, la expresión y la excelencia."
-intro: "A partir de los 8 años, nuestro alumnado entra en el programa de ballet por niveles, una formación progresiva donde se trabaja la técnica clásica con más profundidad, con la posibilidad de presentarse a los exámenes oficiales de la Royal Academy of Dance (RAD) y avanzar hacia una preparación de nivel conservatorio. Cada nivel —de Ballet 1 a Ballet 5— está cuidadosamente adaptado a la edad, madurez corporal y experiencia del alumno o alumna, respetando sus ritmos individuales y fomentando la confianza, el compromiso y el amor por la danza."
-audience: "Nuestro programa está dividido en cinco niveles (Ballet 1 a Ballet 5), que abarcan desde los 8 hasta los 15 años aproximadamente."
+intro: "Tras los primeros pasos en la danza, nuestro alumnado entra en el programa de ballet por niveles, una formación progresiva donde se trabaja la técnica clásica con más profundidad, con la posibilidad de presentarse a los exámenes oficiales de la Royal Academy of Dance (RAD) y avanzar hacia una preparación de nivel conservatorio. Cada nivel —de Ballet 1 a Ballet 5— está cuidadosamente adaptado a la edad, madurez corporal y experiencia del alumno o alumna, respetando sus ritmos individuales y fomentando la confianza, el compromiso y el amor por la danza."
+audience: "Alumnas y alumnos que ya han dado sus primeros pasos en el ballet y quieren seguir avanzando en la técnica clásica. Escríbenos y te orientamos sobre el grupo que encaja con su edad y experiencia."
 ctaLabel: "Consulta sin compromiso"
 photo:
   pending: "Foto autorizada de la clase de Ballet junior"
@@ -41,7 +43,7 @@ pendingFacts:
 
 ## ¿Qué significa “ballet por niveles”?
 
-Nuestro programa está dividido en cinco niveles (Ballet 1 a Ballet 5), que abarcan desde los 8 hasta los 15 años aproximadamente. Esta etapa marca el paso del ballet infantil a una formación más técnica y estructurada, pero siempre desde un enfoque amable, respetuoso e inclusivo.
+Nuestro programa está dividido en cinco niveles (Ballet 1 a Ballet 5). Esta etapa marca el paso del ballet infantil a una formación más técnica y estructurada, pero siempre desde un enfoque amable, respetuoso e inclusivo.
 
 En cada curso se trabajan contenidos acordes al nivel esperado según el sistema RAD y el conservatorio, incluyendo:
 

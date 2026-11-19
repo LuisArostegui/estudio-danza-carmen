@@ -1,25 +1,23 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import InfoPage from "../../components/InfoPage.astro";
-import Photo from "../../components/Photo.astro";
+import CourseCard from "../../components/CourseCard.astro";
+import { splitCourses, todayInMadrid } from "../../lib/courses";
 
 /**
  * Cursos: dossier copy plus one card per published course in
- * src/content/courses/. With no course, Elena's empty state is shown.
+ * src/content/courses/. Only courses that have not ended appear under
+ * «Próximos cursos» with a booking link; past ones move to «Cursos anteriores»
+ * without it. With no upcoming course, Elena's empty state is shown. «Today» is
+ * the build date in Granada, so the site must be rebuilt to refresh it.
  */
 const entry = await getEntry("infoPages", "cursos");
 if (!entry) throw new Error("Missing src/content/info/cursos.md");
 const empty = entry.data.empty;
-const courses = (await getCollection("courses"))
-  .filter((course) => course.data.published)
-  .sort((a, b) =>
-    (a.data.startDate ?? "9999").localeCompare(b.data.startDate ?? "9999"),
-  );
-const euros = new Intl.NumberFormat("es-ES", {
-  style: "currency",
-  currency: "EUR",
-  maximumFractionDigits: 2,
-});
+const { upcoming: courses, past } = splitCourses(
+  await getCollection("courses"),
+  todayInMadrid(),
+);
 ---
 
 <InfoPage entry={entry} path="/cursos/">
@@ -28,51 +26,9 @@ const euros = new Intl.NumberFormat("es-ES", {
       {
         courses.length > 0 ? (
           <ul class="courses__list" data-testid="course-list">
-            {courses.map((course) => {
-              const d = course.data;
-              const facts = [
-                ["Fecha", d.dates],
-                ["Horario", d.schedule],
-                ["Niveles", d.levels],
-                [
-                  "Precio",
-                  d.price === undefined ? undefined : euros.format(d.price),
-                ],
-                ["Plazas", d.places],
-              ].filter(([, value]) => Boolean(value));
-              return (
-                <li class="course" data-testid="course-card">
-                  {d.poster?.src && (
-                    <div class="course__poster photo-frame">
-                      <Photo
-                        photo={d.poster}
-                        sizes="(min-width: 48rem) 30vw, 100vw"
-                      />
-                    </div>
-                  )}
-                  <div class="course__body">
-                    <h3 class="course__title">{d.title}</h3>
-                    {d.teacher && (
-                      <p class="course__teacher">Impartido por: {d.teacher}</p>
-                    )}
-                    <p class="course__summary">{d.summary}</p>
-                    {facts.length > 0 && (
-                      <dl class="course__facts">
-                        {facts.map(([label, value]) => (
-                          <div>
-                            <dt>{label}</dt>
-                            <dd>{value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    )}
-                    <a class="button button--primary" href="/contacto/">
-                      Más información y reservas
-                    </a>
-                  </div>
-                </li>
-              );
-            })}
+            {courses.map((course) => (
+              <CourseCard course={course} />
+            ))}
           </ul>
         ) : (
           empty && (
@@ -92,6 +48,18 @@ const euros = new Intl.NumberFormat("es-ES", {
               </a>
             </div>
           )
+        )
+      }
+      {
+        past.length > 0 && (
+          <div class="courses__past" data-testid="past-courses">
+            <h2 class="courses__past-title">Cursos anteriores</h2>
+            <ul class="courses__list">
+              {past.map((course) => (
+                <CourseCard course={course} past />
+              ))}
+            </ul>
+          </div>
         )
       }
     </div>
@@ -118,59 +86,19 @@ const euros = new Intl.NumberFormat("es-ES", {
     }
   }
 
-  .course {
+  .courses__past {
     display: grid;
-    background: #fff;
+    gap: 1.25rem;
+    margin-block-start: var(--layout-block-y);
   }
 
-  .course__poster {
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-  }
-
-  .course__body {
-    display: grid;
-    gap: 0.75rem;
-    justify-items: start;
-    padding: 1.5rem;
-  }
-
-  .course__title {
+  .courses__past-title {
     margin: 0;
     color: var(--color-ink);
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: var(--font-weight-medium);
-    letter-spacing: 0.04em;
+    letter-spacing: var(--letter-spacing-label);
     text-transform: uppercase;
-  }
-
-  .course__teacher,
-  .course__summary {
-    margin: 0;
-    color: var(--color-body);
-    line-height: 1.6;
-  }
-
-  .course__facts {
-    display: grid;
-    gap: 0.35rem;
-    margin: 0;
-    font-size: var(--font-size-small);
-  }
-
-  .course__facts div {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .course__facts dt {
-    min-inline-size: 5rem;
-    color: var(--color-ink);
-    font-weight: var(--font-weight-medium);
-  }
-
-  .course__facts dd {
-    margin: 0;
   }
 
   .courses__empty {

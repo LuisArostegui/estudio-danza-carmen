@@ -158,6 +158,29 @@ test.describe("catalogue", () => {
     );
   });
 
+  for (const path of [
+    "/clases-de-ballet-granada/ballet-junior/",
+    "/clases-de-ballet-granada/ballet-nivel-medio/",
+  ]) {
+    test(`${path} describes the group by level, not by unconfirmed ages`, async ({
+      page,
+    }) => {
+      await page.goto(path);
+      const visible = (
+        await page
+          .locator(
+            ".activity-hero, .activity-body, .activity-why, .activity-form",
+          )
+          .allTextContents()
+      ).join(" ");
+      expect(visible).not.toMatch(/\b\d{1,2}\s*(?:a|y|–|-)\s*\d{1,2} años/);
+      expect(await page.title()).not.toMatch(/\d+ (?:a|–) \d+ años/);
+      await expect(page.getByTestId("activity-audience")).toContainText(
+        "Escríbenos",
+      );
+    });
+  }
+
   test("Viernes is an informative ficha with no past calendar claim", async ({
     page,
   }) => {

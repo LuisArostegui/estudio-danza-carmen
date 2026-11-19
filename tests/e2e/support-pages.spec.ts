@@ -83,6 +83,11 @@ test.describe("/regala-danza/ (review)", () => {
     ).toBeVisible();
     const copy = await publicCopy(page);
     expect(copy).not.toMatch(/€|validez de|caduca/i);
+    // No voucher is confirmed yet: the page invites to ask, it offers nothing.
+    expect(copy).not.toMatch(
+      /contamos con bonos|bonos regalo|regalar una plaza/i,
+    );
+    expect(copy).toContain("Escríbenos");
   });
 });
 
@@ -98,8 +103,18 @@ test.describe("/horarios/", () => {
 });
 
 test.describe("404", () => {
-  test("error view offers a way back and is noindex", async ({ page }) => {
-    await page.goto("/404.html");
+  test("an unknown route returns HTTP 404 with the custom error view", async ({
+    page,
+  }) => {
+    // Served by `astro preview` (see playwright.config.mjs): the Vite preview
+    // server would answer an unknown route with Inicio and HTTP 200.
+    // Its port is the Vite preview port + 1.
+    const base = new URL(test.info().project.use.baseURL!);
+    base.port = String(Number(base.port) + 1);
+    const response = await page.goto(
+      new URL("/esta-pagina-no-existe/", base).href,
+    );
+    expect(response?.status()).toBe(404);
     await expect(page.getByTestId("not-found")).toBeVisible();
     await expect(page.locator("h1")).toHaveText("Página no encontrada");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(

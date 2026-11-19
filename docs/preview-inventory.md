@@ -27,20 +27,24 @@ menú», `02` = «Menú». Page numbers are counted from each PDF's cover.
 | `/otras-disciplinas/planes-en-granada-los-viernes/` | review (informative) | 00 · 49–51 | `catalog.spec.ts` (no past-calendar claim) | #25 | Current Friday calendar (the dossier announced September 2026), per-class booking, price |
 | `/espectaculos/` (7 anchors) | review | 00 · 55–57; 02 · 16 | `espectaculos.spec.ts`, `support-pages.spec.ts` | #27 | Photos per production with rights and consent, dates, venues |
 | `/examenes-rad/` | review | 00 · 52–54 | `support-pages.spec.ts` | #27 | «Preparadora» vs «examinador oficial», exam venue, RAD figures, levels prepared now, RAD logo use |
-| `/cursos/` | review (empty state) | 00 · 58–59 | `support-pages.spec.ts` | #27 | Upcoming courses (poster, teacher, dates, schedule, levels, price, places), booking channel |
-| `/horarios/` | pending (example data) | 01 · 3 | `horarios.spec.ts`, `support-pages.spec.ts` | #28 | Real weekly timetable; public builds show an empty state instead of the example |
+| `/cursos/` | review (empty state; past courses move to «Cursos anteriores» without booking) | 00 · 58–59 | `support-pages.spec.ts`, `courses.spec.ts` | #27 | Upcoming courses (poster, teacher, dates, schedule, levels, price, places), booking channel |
+| `/horarios/` | pending (example data) | 01 · 3 | `horarios.spec.ts`, `support-pages.spec.ts`, `check:public` | #28 | Real weekly timetable; public builds show an empty state, without the example notice or description |
 | `/contacto/` | complete (form in test mode) | 02 · 17–18 | `preview-flow.spec.ts`, `support-pages.spec.ts` | #29, #43 | Mailbox and provider, privacy text, map pin, WhatsApp and phone |
-| `/regala-danza/` | review | 02 · 16–17; 00 · 44 | `support-pages.spec.ts` | #44 | Voucher types, price, validity, delivery, redemption |
+| `/regala-danza/` | review (invites to ask; announces no voucher) | 02 · 16–17; 00 · 44 | `support-pages.spec.ts`, `home-sections.spec.ts` | #44 | Which vouchers exist, price, validity, delivery, redemption; Elena's original gift copy returns once confirmed |
 | `/legal/privacy-policy/`, `/legal/legal-notice/`, `/legal/cookie-policy/` | pending | — | `support-pages.spec.ts` | #29 | Approved legal texts, data controller, owner details |
-| `/404.html` | complete + noindex | — | `support-pages.spec.ts` | — | Proposed error copy |
+| unknown routes → 404 view | complete + noindex, HTTP 404 under `astro preview` | — | `support-pages.spec.ts` | — | Proposed error copy; the host must serve `404.html` with status 404 |
 | Blog | not built (post-MVP backlog) | 01 · 3, 14 | — | — | Listed in 01 under «Otras páginas»; deferred with its articles |
 
 ## Discrepancies kept open
 
 - **Pre Ballet age:** 4–6 in the 01 keywords, 5–7 in the menu and in 00.
 - **Ballet junior:** the menu says «según edad», the 01 keywords say 6–8, and 00
-  describes «Ballet por niveles (8 a 15 años)». The ficha uses the 00 text.
-- **Nivel medio:** 15–18 in 00, «9+» in the 01 keywords.
+  describes «Ballet por niveles (8 a 15 años)». The ficha describes the group by
+  level and invites to ask; no age range is shown.
+- **Nivel medio:** 15–18 in 00, «9+» in the 01 keywords. The ficha describes the
+  group by level; no age range is shown.
+- **Pre Ballet and Diverballet** still show Elena's menu ages (5–7, 3–4) in the
+  menu, title and copy.
 - **Diverballet:** 3–4 in the menu and in 00, «3 años» in the 01 keywords.
 - **RAD designation:** «escuela preparadora oficial» (00 · Sobre nosotros, 02 ·
   Inicio, 01 · p. 3) vs «centro preparador y examinador oficial» (00 · RAD).

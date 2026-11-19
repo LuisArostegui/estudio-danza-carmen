@@ -19,13 +19,18 @@ const showPreviewNotes = import.meta.env.PUBLIC_HIDE_PREVIEW_NOTES !== "true";
  */
 const showTimetable =
   schedule.sessions.length > 0 && (!schedule.isExample || showPreviewNotes);
+/** The example notice belongs to the example timetable: same condition. */
+const showExample = showTimetable && schedule.isExample;
+const description = !showTimetable
+  ? "Estamos actualizando los horarios de las clases. Escríbenos y te informamos de los días, horas y grupos con plazas disponibles."
+  : showExample
+    ? "Ejemplo de horario semanal para revisar el diseño; los horarios reales están pendientes de confirmar."
+    : "Días, franjas horarias y grupos de las clases de la escuela.";
 ---
 
 <BaseLayout
   title="Horarios · Estudio de Danza Carmen"
-  description={schedule.isExample
-    ? "Ejemplo de horario semanal para revisar el diseño; los horarios reales están pendientes de confirmar."
-    : "Días, franjas horarias y grupos de las clases de la escuela."}
+  description={description}
   pageStatus={pageStatus}
 >
   <section class="timetable-page" aria-labelledby="schedule-title">
@@ -45,7 +50,7 @@ const showTimetable =
       </header>
 
       {
-        schedule.isExample && (
+        showExample && (
           <p
             class="preview-note timetable-page__note"
             data-testid="schedule-example-note"
@@ -56,12 +61,12 @@ const showTimetable =
         )
       }
       {
-        schedule.note && !schedule.isExample && (
+        showTimetable && schedule.note && !schedule.isExample && (
           <p class="timetable-page__note">{schedule.note}</p>
         )
       }
       {
-        schedule.updated && (
+        showTimetable && schedule.updated && (
           <p class="timetable-page__updated">Actualizado: {schedule.updated}</p>
         )
       }
