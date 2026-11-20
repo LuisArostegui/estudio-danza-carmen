@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "build:review": "PUBLIC_HIDE_PREVIEW_NOTES=true PUBLIC_REVIEW_NOINDEX=true astro build --outDir dist-review && node scripts/write-review-headers.mjs dist-review && node scripts/verify-review-build.mjs dist-review",
+    "build:review": "PUBLIC_HIDE_PREVIEW_NOTES=true PUBLIC_REVIEW_NOINDEX=true PUBLIC_REVIEW_HIDE_PHOTOS=true astro build --outDir dist-review && node scripts/prune-review-photos.mjs dist-review && node scripts/write-review-headers.mjs dist-review && node scripts/verify-review-build.mjs dist-review",
     "deploy:review": "node scripts/verify-review-build.mjs dist-review && pnpm dlx wrangler@4.164.0 deploy --env review",
     "preview": "astro preview",
     "check": "astro check",

@@ -10,6 +10,13 @@ Keep high-resolution originals in Synology (`Web carmen danza/`), not here.
 | `aula-barra.jpg`               | Synology `imagenes/P1010014-scaled.jpg`                           | Same as above                                                                              | `home/inicio.md` · hero slide 3, card «Ballet para adultos», RAD block, Instagram tile 3; `activities/ballet-para-adultos.md` · hero; `pages/sobre-nosotros.md` · #instalaciones photo 1 |
 | `zapatillas-barra.jpg`         | Synology `imagenes/P1010236-scaled.jpg`                           | Same as above (no faces)                                                                   | `home/inicio.md` · hero slide 4, Instagram tile 4; `pages/sobre-nosotros.md` · #instalaciones photo 2                                                                                    |
 
+Private review for Elena: permission is set per photo in
+`review-approved.json` (file names). It is empty because no permission is
+confirmed yet, so `pnpm build:review` replaces every photo with a «Foto
+pendiente» gap and ships no photo file (see `docs/private-review-preview.md`
+→ Photos). When Luis approves a photo, record it in the Rights column and add
+its file name to that list.
+
 All four are reused across several slots until more authorised photos arrive.
 Crops (`focusDesktop` / `focusMobile`) were reviewed at 390, 768 and 1440 px on
 2026-11-19: faces and main subjects stay in frame in every slot, so the values
