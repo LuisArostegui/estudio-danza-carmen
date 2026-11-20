@@ -12,6 +12,8 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { isApprovedForReview, photoStem } from "../src/lib/review-photos.js";
+
 /** Kept apart from dist/ so a normal build can never be deployed as review. */
 export const REVIEW_OUT_DIR = "dist-review";
 
@@ -25,19 +27,24 @@ export const REQUIRED_PAGES = [
 ];
 
 /**
- * Whether Luis has confirmed that the photos in src/assets/fotos/ may be shown
- * to Elena behind Access. While false, the artifact must contain no optimised
- * photo. Set it to true together with removing PUBLIC_REVIEW_HIDE_PHOTOS from
- * the build:review script, and record the confirmation in
- * src/assets/fotos/README.md.
+ * Photos Luis has approved for the private review, by file name
+ * (src/assets/fotos/review-approved.json). Every other photo must be absent
+ * from the artifact. Record each approval in src/assets/fotos/README.md.
  */
-export const REVIEW_PHOTOS_APPROVED = false;
+export const REVIEW_APPROVED_PHOTOS_FILE = fileURLToPath(
+  new URL("../src/assets/fotos/review-approved.json", import.meta.url),
+);
+
+/** @returns {Promise<string[]>} */
+export async function readApprovedPhotos() {
+  return JSON.parse(await readFile(REVIEW_APPROVED_PHOTOS_FILE, "utf8"));
+}
 
 // Raster files Astro emits for content photos. SVG illustrations are allowed,
 // and public/ assets (outside _astro/) are covered by docs/asset-inventory.md.
 const PHOTO_FILE = /^_astro\/[^/]+\.(?:avif|webp|jpe?g|png|gif)$/i;
-const PHOTO_TAG =
-  /<(?:img|source)\b[^>]*\/_astro\/[^"'\s>]+\.(?:avif|webp|jpe?g|png|gif)/i;
+const PHOTO_URL = /\/_astro\/[^"'\s>,]+\.(?:avif|webp|jpe?g|png|gif)/gi;
+const MEDIA_TAG = /<(?:img|source)\b[^>]*>/gi;
 
 // Review notes gated by PUBLIC_HIDE_PREVIEW_NOTES: the collapsible «datos por
 // confirmar» blocks and the Horarios example banner. The «Página en
@@ -73,8 +80,13 @@ function rootRuleHasNoindex(headers) {
   return false;
 }
 
-/** @param {string} outDir @returns {Promise<string[]>} problems found */
-export async function checkReviewBuild(outDir) {
+/**
+ * @param {string} outDir
+ * @param {{ approvedPhotos?: readonly string[] }} [options] defaults to
+ *   src/assets/fotos/review-approved.json
+ * @returns {Promise<string[]>} problems found
+ */
+export async function checkReviewBuild(outDir, options = {}) {
   const isDir = await stat(outDir).then(
     (s) => s.isDirectory(),
     () => false,
@@ -92,21 +104,23 @@ export async function checkReviewBuild(outDir) {
     problems.push("_headers: no X-Robots-Tag noindex rule for /*");
   }
 
-  if (!REVIEW_PHOTOS_APPROVED) {
-    const all = await readdir(outDir, { withFileTypes: true, recursive: true });
-    const photos = all
-      .filter((entry) => entry.isFile())
-      .map((entry) =>
-        relative(outDir, join(entry.parentPath, entry.name)).replaceAll(
-          "\\",
-          "/",
-        ),
-      )
-      .filter((name) => PHOTO_FILE.test(name))
-      .sort();
-    for (const name of photos) {
-      problems.push(`${name}: photo shipped without review permission`);
-    }
+  const approved = options.approvedPhotos ?? (await readApprovedPhotos());
+  const all = await readdir(outDir, { withFileTypes: true, recursive: true });
+  const photos = all
+    .filter((entry) => entry.isFile())
+    .map((entry) =>
+      relative(outDir, join(entry.parentPath, entry.name)).replaceAll(
+        "\\",
+        "/",
+      ),
+    )
+    .filter((name) => PHOTO_FILE.test(name))
+    .filter((name) => !isApprovedForReview(name, approved))
+    .sort();
+  for (const name of photos) {
+    problems.push(
+      `${name}: photo ${photoStem(name)} shipped without review permission`,
+    );
   }
 
   const files = await htmlFiles(outDir);
@@ -133,8 +147,14 @@ export async function checkReviewBuild(outDir) {
     if (PREVIEW_NOTE_MARKERS.some((marker) => html.includes(marker))) {
       problems.push(`${name}: preview notes are visible`);
     }
-    if (!REVIEW_PHOTOS_APPROVED && PHOTO_TAG.test(html)) {
-      problems.push(`${name}: shows a photo without review permission`);
+    const shown = new Set(
+      [...html.matchAll(MEDIA_TAG)]
+        .flatMap((tag) => tag[0].match(PHOTO_URL) ?? [])
+        .filter((url) => !isApprovedForReview(url, approved))
+        .map(photoStem),
+    );
+    for (const stem of shown) {
+      problems.push(`${name}: shows photo ${stem} without review permission`);
     }
   }
   return problems;
@@ -148,6 +168,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   }
   console.log(
-    `Review build check passed for ${relative(process.cwd(), outDir)}: complete, noindex everywhere, form in test mode, preview notes hidden${REVIEW_PHOTOS_APPROVED ? "" : ", no unapproved photos"}.`,
+    `Review build check passed for ${relative(process.cwd(), outDir)}: complete, noindex everywhere, form in test mode, preview notes hidden, only approved photos.`,
   );
 }

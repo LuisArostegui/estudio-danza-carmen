@@ -77,14 +77,14 @@ The axe result is an automated signal only; it is not a WCAG conformance claim.
 `pnpm test:unit` runs the unit tests with Node's built-in `node:test` runner. No npm test dependency is used, and the tests make no network calls.
 
 - `tests/unit/contact-validation.test.mjs` covers the pure contact field rules in `src/lib/contact-validation.js`.
-- `tests/unit/review-build.test.mjs` covers the private review build helpers: the separate `dist-review` output used by `env.review`, the `_headers` noindex file, and the photo pruning step and the artifact check (missing directory or required pages, noindex rule outside `/*`, indexable pages, missing or live form, visible review notes, photos without review permission).
+- `tests/unit/review-build.test.mjs` covers the private review build helpers: the separate `dist-review` output used by `env.review`, the `_headers` noindex file, and the photo pruning step and the artifact check (missing directory or required pages, noindex rule outside `/*`, indexable pages, missing or live form, visible review notes, photos without review permission, including partial approval) and the per-photo approval helpers in `src/lib/review-photos.js`.
 - `tests/unit/contact-handler.test.mjs` runs the `/api/contact` Worker handler in `src/worker/contact.js` with an injected fake `fetch` (Turnstile Siteverify and Resend) and a fake log.
 
 `pnpm validate` runs `pnpm test:unit` after the format check.
 
 ## Private Review Build
 
-`pnpm build:review` builds the site for the private review Worker into `dist-review/` (never `dist/`): preview notes hidden, photos replaced by «Foto pendiente» gaps and their unreferenced originals removed (`scripts/prune-review-photos.mjs`) until their review permission is confirmed, `noindex` on every page, `dist-review/_headers` with `X-Robots-Tag: noindex, nofollow`, and an artifact check. `pnpm deploy:review` repeats the check on `dist-review/` before `wrangler deploy --env review`. Serve it locally with `pnpm dlx wrangler@4.164.0 dev --env review`. See [private-review-preview.md](private-review-preview.md). The latest manual and laboratory QA evidence is in [preview-qa-2026-11-19.md](preview-qa-2026-11-19.md).
+`pnpm build:review` builds the site for the private review Worker into `dist-review/` (never `dist/`): preview notes hidden, photos not listed in `src/assets/fotos/review-approved.json` replaced by «Foto pendiente» gaps and their unreferenced originals removed (`scripts/prune-review-photos.mjs`), `noindex` on every page, `dist-review/_headers` with `X-Robots-Tag: noindex, nofollow`, and an artifact check. `pnpm deploy:review` repeats the check on `dist-review/` before `wrangler deploy --env review`. Serve it locally with `pnpm dlx wrangler@4.164.0 dev --env review`. See [private-review-preview.md](private-review-preview.md). The latest manual and laboratory QA evidence is in [preview-qa-2026-11-19.md](preview-qa-2026-11-19.md).
 
 ## Verified vs Pending Pages
 

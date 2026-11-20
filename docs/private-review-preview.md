@@ -44,8 +44,9 @@ production configuration and secrets.
   1. builds into `dist-review/` with `PUBLIC_HIDE_PREVIEW_NOTES=true`,
      `PUBLIC_REVIEW_NOINDEX=true` (`BaseLayout` then adds
      `<meta name="robots" content="noindex">` to every page) and
-     `PUBLIC_REVIEW_HIDE_PHOTOS=true` (`Photo.astro` renders every photo slot
-     as a «Foto pendiente · Permiso de uso por confirmar» gap);
+     `PUBLIC_REVIEW_HIDE_PHOTOS=true` (`Photo.astro` renders every photo not
+     listed in `src/assets/fotos/review-approved.json` as a «Foto pendiente ·
+     Permiso de uso por confirmar» gap);
   2. removes the photo originals Astro still emits for content images but no
      page references (`scripts/prune-review-photos.mjs`), so they cannot be
      reached by URL;
@@ -56,8 +57,8 @@ production configuration and secrets.
      index, Ballet para adultos, Horarios, Contacto), `_headers` has no
      `X-Robots-Tag: noindex` under the `/*` rule, any page lacks `noindex`,
      the contact form is missing or live, review notes are still visible, or
-     (while `REVIEW_PHOTOS_APPROVED` is `false`) any photo file is under
-     `_astro/` or any page shows one.
+     any photo not in `review-approved.json` is under `_astro/` or shown by a
+     page.
 - `pnpm deploy:review`: runs the same check on `dist-review/` and only then
   `wrangler deploy --env review`. It does not build, so what is checked is
   exactly what is uploaded.
@@ -80,19 +81,28 @@ from `dist-review/`; fails when the folder is missing): `/`,
 The four photos in `src/assets/fotos/` were provided for web use, but the
 consent records for the students on stage are still to be confirmed
 (`src/assets/fotos/README.md`), and Luis has not confirmed that they may be
-shown to Elena. So the review build ships **no photos**: every slot shows a
-«Foto pendiente» gap, and the artifact check fails if a photo file or tag
-appears. Verified on 2026-11-20: `dist-review/` holds 91 files, the only raster
+shown to Elena. Permission is recorded per photo in
+`src/assets/fotos/review-approved.json` (file names). The list is empty, so
+the review build ships **no photos**: every slot shows a «Foto pendiente» gap,
+and the artifact check fails if an unlisted photo file or tag appears. Verified on 2026-11-20: `dist-review/` holds 91 files, the only raster
 file is the approved AI-generated `assets/hero-carmen.png`
 (`docs/asset-inventory.md`), and the old photo URLs return 404.
 
-To show the photos once Luis confirms permission for private review:
+To show a photo once Luis confirms its permission for private review (one
+photo or several; the others stay gaps):
 
-1. Record the confirmation (date, who, which files) in
+1. Record the confirmation (date, who, which file) in the Rights column of
    `src/assets/fotos/README.md`.
-2. Remove `PUBLIC_REVIEW_HIDE_PHOTOS=true` from the `build:review` script and
-   set `REVIEW_PHOTOS_APPROVED = true` in `scripts/verify-review-build.mjs`.
-3. Run `pnpm build:review` and redeploy.
+2. Add its file name to `src/assets/fotos/review-approved.json`, for example
+   `["aula-barra.jpg"]`. A unit test fails if a name does not match a file in
+   `src/assets/fotos/`.
+3. Run `pnpm build:review` (it lists only approved photos in the artifact) and
+   redeploy.
+
+Nothing else changes: keep `PUBLIC_REVIEW_HIDE_PHOTOS=true` in the script.
+Partial approval was checked on 2026-11-20 by temporarily listing
+`aula-barra.jpg`: only its variants reached `dist-review/_astro/`, the other
+three photos stayed gaps, and the check passed.
 
 Horarios also shows its empty state («Estamos actualizando los horarios») in
 the review build, because the example timetable belongs with the preview

@@ -53,11 +53,17 @@ Worker).
   imports), reachable by URL although no page used them, so
   `scripts/prune-review-photos.mjs` removes unreferenced raster files from
   `_astro/`. `verify-review-build.mjs` now fails on any photo file or tag
-  while `REVIEW_PHOTOS_APPROVED` is `false`.
-- **Tests:** `tests/unit/review-build.test.mjs` → «reports photos while their
-  review permission is unconfirmed», «allows illustrations and approved public
-  assets», «removes unreferenced raster files and keeps referenced ones». They
-  failed before the change (missing export and module) and pass after.
+  not listed in `src/assets/fotos/review-approved.json` (per-photo approval,
+  empty for now; added after PR review so a partial approval cannot let
+  pending photos through).
+- **Tests:** `tests/unit/review-build.test.mjs` → «reports every photo when
+  none is approved», «with partial approval, reports only the photos still
+  pending», «passes when every shipped photo is approved», «the approved list
+  names only existing photos», «allows illustrations and approved public
+  assets», «removes unreferenced raster files and keeps referenced ones», and
+  the `review-photos.js` stem and approval cases. They failed before each
+  change (missing module) and pass after. A temporary build with
+  `["aula-barra.jpg"]` shipped only that photo's variants.
 - **After:** 91 files, only raster file `assets/hero-carmen.png` (approved
   AI-generated fallback, `docs/asset-inventory.md`); the former
   `/_astro/aula-barra.*.jpg` URL returns 404. The normal `pnpm build` is
@@ -134,6 +140,6 @@ must be refused, Luis must get in, and the authenticated response must carry
 
 ## Validation
 
-`pnpm validate` on this branch, 2026-11-20: exit 0. Unit tests 73/73; Playwright
+`pnpm validate` on this branch, 2026-11-20: exit 0. Unit tests 78/78 (after the per-photo approval change); Playwright
 420 passed, 36 skipped (Chromium, 390 and 1440); Sanity content validation
 skipped (no `PUBLIC_SANITY_PROJECT_ID` locally).

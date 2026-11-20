@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { pruneUnreferencedPhotos } from "../../scripts/prune-review-photos.mjs";
+import { isApprovedForReview, photoStem } from "../../src/lib/review-photos.js";
 import {
   REVIEW_HEADERS,
   writeReviewHeaders,
@@ -12,7 +13,8 @@ import {
 import {
   REQUIRED_PAGES,
   REVIEW_OUT_DIR,
-  REVIEW_PHOTOS_APPROVED,
+  REVIEW_APPROVED_PHOTOS_FILE,
+  readApprovedPhotos,
   checkReviewBuild,
 } from "../../scripts/verify-review-build.mjs";
 
@@ -157,18 +159,55 @@ describe("review build check", () => {
     ]);
   });
 
-  test("reports photos while their review permission is unconfirmed", async () => {
-    assert.equal(REVIEW_PHOTOS_APPROVED, false);
+  test("reports every photo when none is approved", async () => {
     const dir = await completeDist({
       "_astro/aula-barra.Ab12Cd34_Z1abcd.avif": "x",
       "_astro/escenario-tutus-rosas.Ef56Gh78.jpg": "x",
       "index.html": `<html>${NOINDEX_HEAD}<body><picture><img src="/_astro/aula-barra.Ab12Cd34_Z1abcd.avif" alt=""></picture></body></html>`,
     });
-    assert.deepEqual(await checkReviewBuild(dir), [
-      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif: photo shipped without review permission",
-      "_astro/escenario-tutus-rosas.Ef56Gh78.jpg: photo shipped without review permission",
-      "index.html: shows a photo without review permission",
+    assert.deepEqual(await checkReviewBuild(dir, { approvedPhotos: [] }), [
+      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif: photo aula-barra shipped without review permission",
+      "_astro/escenario-tutus-rosas.Ef56Gh78.jpg: photo escenario-tutus-rosas shipped without review permission",
+      "index.html: shows photo aula-barra without review permission",
     ]);
+  });
+
+  test("with partial approval, reports only the photos still pending", async () => {
+    const dir = await completeDist({
+      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif": "x",
+      "_astro/zapatillas-barra.Qr90St12_Z2efgh.webp": "x",
+      "index.html": `<html>${NOINDEX_HEAD}<body><picture><source srcset="/_astro/aula-barra.Ab12Cd34_Z1abcd.avif 480w"><img src="/_astro/zapatillas-barra.Qr90St12_Z2efgh.webp" alt=""></picture></body></html>`,
+    });
+    assert.deepEqual(
+      await checkReviewBuild(dir, { approvedPhotos: ["aula-barra.jpg"] }),
+      [
+        "_astro/zapatillas-barra.Qr90St12_Z2efgh.webp: photo zapatillas-barra shipped without review permission",
+        "index.html: shows photo zapatillas-barra without review permission",
+      ],
+    );
+  });
+
+  test("passes when every shipped photo is approved", async () => {
+    const dir = await completeDist({
+      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif": "x",
+      "index.html": `<html>${NOINDEX_HEAD}<body><img src="/_astro/aula-barra.Ab12Cd34_Z1abcd.avif" alt=""></body></html>`,
+    });
+    assert.deepEqual(
+      await checkReviewBuild(dir, { approvedPhotos: ["aula-barra.jpg"] }),
+      [],
+    );
+  });
+
+  test("the approved list names only existing photos", async () => {
+    const approved = await readApprovedPhotos();
+    assert.ok(Array.isArray(approved));
+    const fotos = await readdir(
+      new URL("../../src/assets/fotos/", import.meta.url),
+    );
+    for (const name of approved) {
+      assert.ok(fotos.includes(name), `${name} is not in src/assets/fotos/`);
+    }
+    assert.match(REVIEW_APPROVED_PHOTOS_FILE, /review-approved\.json$/);
   });
 
   test("allows illustrations and approved public assets", async () => {
@@ -199,5 +238,34 @@ describe("review photo pruning", () => {
       "site.css",
       "used.Ab12.avif",
     ]);
+  });
+});
+
+describe("review photo approval", () => {
+  test("reduces build, dev and source paths to the photo stem", () => {
+    assert.equal(photoStem("aula-barra.jpg"), "aula-barra");
+    assert.equal(photoStem("/_astro/aula-barra.BE6TVaKY.jpg"), "aula-barra");
+    assert.equal(
+      photoStem("/_astro/aula-barra.BE6TVaKY_Z1abcd.avif"),
+      "aula-barra",
+    );
+    assert.equal(
+      photoStem("/@fs/Users/x/src/assets/fotos/aula-barra.jpg?origWidth=2560"),
+      "aula-barra",
+    );
+  });
+
+  test("approves only the listed photos", () => {
+    const approved = ["aula-barra.jpg"];
+    assert.equal(
+      isApprovedForReview("/_astro/aula-barra.BE.jpg", approved),
+      true,
+    );
+    assert.equal(
+      isApprovedForReview("/_astro/zapatillas-barra.B3.jpg", approved),
+      false,
+    );
+    assert.equal(isApprovedForReview("/_astro/aula.X1.jpg", approved), false);
+    assert.equal(isApprovedForReview("/_astro/aula-barra.BE.jpg", []), false);
   });
 });
