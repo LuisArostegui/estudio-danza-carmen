@@ -4,7 +4,9 @@
 // - _headers sends X-Robots-Tag noindex under the /* rule;
 // - every HTML page carries a robots noindex meta;
 // - the contact form is present and in test mode (no data-endpoint);
-// - preview notes are hidden (PUBLIC_HIDE_PREVIEW_NOTES=true was applied).
+// - preview notes are hidden (PUBLIC_HIDE_PREVIEW_NOTES=true was applied);
+// - no photo ships while its review permission is unconfirmed
+//   (PUBLIC_REVIEW_HIDE_PHOTOS=true renders the «Foto pendiente» gaps).
 
 import { readFile, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
@@ -21,6 +23,21 @@ export const REQUIRED_PAGES = [
   "horarios/index.html",
   "contacto/index.html",
 ];
+
+/**
+ * Whether Luis has confirmed that the photos in src/assets/fotos/ may be shown
+ * to Elena behind Access. While false, the artifact must contain no optimised
+ * photo. Set it to true together with removing PUBLIC_REVIEW_HIDE_PHOTOS from
+ * the build:review script, and record the confirmation in
+ * src/assets/fotos/README.md.
+ */
+export const REVIEW_PHOTOS_APPROVED = false;
+
+// Raster files Astro emits for content photos. SVG illustrations are allowed,
+// and public/ assets (outside _astro/) are covered by docs/asset-inventory.md.
+const PHOTO_FILE = /^_astro\/[^/]+\.(?:avif|webp|jpe?g|png|gif)$/i;
+const PHOTO_TAG =
+  /<(?:img|source)\b[^>]*\/_astro\/[^"'\s>]+\.(?:avif|webp|jpe?g|png|gif)/i;
 
 // Review notes gated by PUBLIC_HIDE_PREVIEW_NOTES: the collapsible «datos por
 // confirmar» blocks and the Horarios example banner. The «Página en
@@ -75,6 +92,23 @@ export async function checkReviewBuild(outDir) {
     problems.push("_headers: no X-Robots-Tag noindex rule for /*");
   }
 
+  if (!REVIEW_PHOTOS_APPROVED) {
+    const all = await readdir(outDir, { withFileTypes: true, recursive: true });
+    const photos = all
+      .filter((entry) => entry.isFile())
+      .map((entry) =>
+        relative(outDir, join(entry.parentPath, entry.name)).replaceAll(
+          "\\",
+          "/",
+        ),
+      )
+      .filter((name) => PHOTO_FILE.test(name))
+      .sort();
+    for (const name of photos) {
+      problems.push(`${name}: photo shipped without review permission`);
+    }
+  }
+
   const files = await htmlFiles(outDir);
   const names = new Set(files.map((file) => relative(outDir, file)));
   for (const page of REQUIRED_PAGES) {
@@ -99,6 +133,9 @@ export async function checkReviewBuild(outDir) {
     if (PREVIEW_NOTE_MARKERS.some((marker) => html.includes(marker))) {
       problems.push(`${name}: preview notes are visible`);
     }
+    if (!REVIEW_PHOTOS_APPROVED && PHOTO_TAG.test(html)) {
+      problems.push(`${name}: shows a photo without review permission`);
+    }
   }
   return problems;
 }
@@ -111,6 +148,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   }
   console.log(
-    `Review build check passed for ${relative(process.cwd(), outDir)}: complete, noindex everywhere, form in test mode, preview notes hidden.`,
+    `Review build check passed for ${relative(process.cwd(), outDir)}: complete, noindex everywhere, form in test mode, preview notes hidden${REVIEW_PHOTOS_APPROVED ? "" : ", no unapproved photos"}.`,
   );
 }

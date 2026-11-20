@@ -1,9 +1,10 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { pruneUnreferencedPhotos } from "../../scripts/prune-review-photos.mjs";
 import {
   REVIEW_HEADERS,
   writeReviewHeaders,
@@ -11,6 +12,7 @@ import {
 import {
   REQUIRED_PAGES,
   REVIEW_OUT_DIR,
+  REVIEW_PHOTOS_APPROVED,
   checkReviewBuild,
 } from "../../scripts/verify-review-build.mjs";
 
@@ -152,6 +154,50 @@ describe("review build check", () => {
     assert.deepEqual(await checkReviewBuild(dir), [
       "horarios/index.html: preview notes are visible",
       "sobre-nosotros/index.html: preview notes are visible",
+    ]);
+  });
+
+  test("reports photos while their review permission is unconfirmed", async () => {
+    assert.equal(REVIEW_PHOTOS_APPROVED, false);
+    const dir = await completeDist({
+      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif": "x",
+      "_astro/escenario-tutus-rosas.Ef56Gh78.jpg": "x",
+      "index.html": `<html>${NOINDEX_HEAD}<body><picture><img src="/_astro/aula-barra.Ab12Cd34_Z1abcd.avif" alt=""></picture></body></html>`,
+    });
+    assert.deepEqual(await checkReviewBuild(dir), [
+      "_astro/aula-barra.Ab12Cd34_Z1abcd.avif: photo shipped without review permission",
+      "_astro/escenario-tutus-rosas.Ef56Gh78.jpg: photo shipped without review permission",
+      "index.html: shows a photo without review permission",
+    ]);
+  });
+
+  test("allows illustrations and approved public assets", async () => {
+    const dir = await completeDist({
+      "_astro/ballet-penche.CNOge64C.svg": "<svg></svg>",
+      "assets/hero-carmen.png": "x",
+    });
+    assert.deepEqual(await checkReviewBuild(dir), []);
+  });
+});
+
+describe("review photo pruning", () => {
+  test("removes unreferenced raster files and keeps referenced ones", async () => {
+    const dir = await fakeDist({
+      "_astro/aula-barra.BE6TVaKY.jpg": "orphan original",
+      "_astro/used.Ab12.avif": "referenced",
+      "_astro/ballet-penche.CN.svg": "<svg></svg>",
+      "_astro/site.css": "a{background:url(/_astro/bg.X1.webp)}",
+      "_astro/bg.X1.webp": "referenced from css",
+      "assets/hero-carmen.png": "public asset",
+      "index.html": '<img src="/_astro/used.Ab12.avif" alt="">',
+    });
+    const removed = await pruneUnreferencedPhotos(dir);
+    assert.deepEqual(removed, ["_astro/aula-barra.BE6TVaKY.jpg"]);
+    assert.deepEqual((await readdir(join(dir, "_astro"))).sort(), [
+      "ballet-penche.CN.svg",
+      "bg.X1.webp",
+      "site.css",
+      "used.Ab12.avif",
     ]);
   });
 });

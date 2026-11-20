@@ -33,8 +33,12 @@ Cloudflare dashboard. The repository only holds the non-secret names.
 ## How to go live
 
 1. Confirm every item in the owner list below.
-2. Create the Turnstile widget for the production hostnames and copy its site key
-   and secret key.
+2. Create the Turnstile widget (Managed mode) for the production hostnames only
+   (`carmendanza.es` and `www.carmendanza.es`, once confirmed) and copy its
+   site key and secret key. Siteverify returns the `hostname` where the
+   challenge was served; the Worker does not check it yet. Cloudflare
+   recommends validating it, so decide before go-live whether to add that
+   check (test keys always return `example.com`, so it needs real keys).
 3. Create the Resend API key and verify the sending subdomain `send.carmendanza.es`
    in Resend. Add the Resend SPF, DKIM and return-path records **only** to that
    subdomain. Do not change the root `dsmail.es` MX records or the root SPF record.
@@ -51,37 +55,77 @@ Until steps 6 and 7 are done the public form stays in test mode.
 ## Preview test environment
 
 The private review Worker (`env.review`, see
-[private-review-preview.md](private-review-preview.md)) stays in **test mode**:
-it has no vars or secrets and the review build keeps `formEndpoint` empty
-(`pnpm build:review` and `pnpm deploy:review` fail otherwise). Only switch it to live after the
-environment's configuration and data handling are approved.
+[private-review-preview.md](private-review-preview.md)) stays in **test mode**
+and is never used for a delivery test: it has no vars or secrets, the review
+build keeps `formEndpoint` empty, and `pnpm build:review` and
+`pnpm deploy:review` fail if the form is live. Do not run
+`wrangler secret put … --env review`. Switching the review Worker to live would
+need its own approved configuration and data handling, plus a change to
+`scripts/verify-review-build.mjs`.
 
-When a real end-to-end test is authorised, use a separate set of values:
+## Real delivery test (local, isolated)
 
-| Item                   | Preview value                                                                            |
-| ---------------------- | ---------------------------------------------------------------------------------------- |
-| Turnstile widget       | A widget for the review hostname only, separate from production.                         |
-| `TURNSTILE_SECRET_KEY` | That widget's secret, set with `wrangler secret put TURNSTILE_SECRET_KEY --env review`.  |
-| `RESEND_API_KEY`       | A Resend key limited to sending, used only by the review Worker.                         |
-| `CONTACT_TO_EMAIL`     | One authorised test mailbox. Needs owner confirmation.                                   |
-| `CONTACT_FROM_EMAIL`   | `onboarding@resend.dev` until `send.carmendanza.es` is verified (see below).             |
-| Test data              | Fictitious name and message; the reply-to address must be a mailbox the tester controls. |
+The first real send runs on the developer's machine with `wrangler dev` on the
+top-level Worker config. Nothing is deployed and `env.review` is not involved.
+It proves the Worker → Resend → mailbox → reply path. Turnstile uses
+Cloudflare's always-pass test keys, so the production widget and its
+hostnames are checked separately at go-live (step 7 above).
 
-Evidence to record: date, commit, status 200 from `/api/contact`, the message
-arriving in the test mailbox, and a reply from that mailbox reaching the
-reply-to address. No names, addresses or screenshots with personal data.
+Prerequisites (Luis):
 
-Local checks that need no account: `wrangler dev --env-file <file>` with
-Cloudflare's public Turnstile test keys (site key `1x00000000000000000000AA`,
-always-fail secret `2x0000000000000000000000000000000AA`) exercises the 403
-path through the real Siteverify without calling Resend. Results are in
-[preview-qa-2026-11-19.md](preview-qa-2026-11-19.md).
+| Item                   | Value                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| Authorisation          | Luis authorises one real send and names the test mailbox.                                                |
+| Resend account         | An account whose login address is the test mailbox (see «Resend test sender»).                           |
+| `RESEND_API_KEY`       | A key with sending access only, created for this test and revoked afterwards.                            |
+| `CONTACT_FROM_EMAIL`   | `onboarding@resend.dev` (until `send.carmendanza.es` is verified).                                       |
+| `CONTACT_TO_EMAIL`     | The Resend account owner's address: `onboarding@resend.dev` delivers only there.                         |
+| `TURNSTILE_SECRET_KEY` | `1x0000000000000000000000000000000AA` (always passes; only accepts the dummy token).                     |
+| Site key at build time | `PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA` (always passes, visible).                           |
+| Reply-to mailbox       | A second mailbox the tester controls, typed as «Correo electrónico» in the form. Never a real visitor's. |
+
+Procedure:
+
+1. Write the four Worker values to `.env.delivery-test` in the repository root
+   (ignored by Git through `.env.*`). Never paste them into chat, issues or logs.
+2. Temporarily set `formEndpoint: "/api/contact"` in
+   `src/content/school/escuela.md` and build to a separate folder:
+   `PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA pnpm exec astro build --outDir dist-delivery-test`.
+   Then restore the content file at once:
+   `git restore src/content/school/escuela.md`.
+3. Serve it: `pnpm dlx wrangler@4.164.0 dev --assets dist-delivery-test --env-file .env.delivery-test --port 8798`.
+4. Open `http://localhost:8798/clases-de-ballet-granada/ballet-para-adultos/`,
+   follow «Consulta sin compromiso», check that «Ballet para adultos» is
+   preselected, and send fictitious data with the reply-to mailbox.
+5. Pass criteria, all required (an HTTP 200 alone is not proof):
+   - the page shows the success message and clears the fields;
+   - the email arrives in the test mailbox (check spam too) with subject
+     «Nueva consulta web: …» and `Actividad: ballet-para-adultos` in the body;
+   - replying from the test mailbox addresses the reply-to mailbox, and the
+     reply arrives there.
+6. Clean up: stop Wrangler, delete `dist-delivery-test/` and
+   `.env.delivery-test`, revoke the Resend key, delete the test messages.
+7. Record date, commit, environment («local wrangler dev, Turnstile test
+   keys»), and pass or fail per criterion. No names, addresses, message text or
+   screenshots with personal data.
+
+Checks that need no account: the same setup with the always-fail secret
+`2x0000000000000000000000000000000AA` exercises the 403 verification path, and
+a placeholder Resend key exercises the 502 delivery path. Test keys only accept
+the dummy token `XXXX.DUMMY.TOKEN.XXXX`, and production secrets reject it.
+
+The simulated version of this run (always-pass Turnstile, an invalid Resend
+key, no email sent) is recorded in
+[contact-review-qa-2026-11-20.md](contact-review-qa-2026-11-20.md).
 
 ### Resend test sender
 
-Resend's `onboarding@resend.dev` sender only delivers to the email address of
-the Resend account owner; other recipients get a 403. So the test mailbox must
-be the account owner's address. Resend also offers `delivered@resend.dev`,
+Resend's `onboarding@resend.dev` sender is for testing only and delivers only
+to the email address associated with the Resend account; other recipients get a
+403 («You can only send testing emails to your own email address»). So the
+test mailbox must be the account owner's address. The `reply_to` header is set
+by the Worker, so the reply goes from that mailbox to the visitor address
+through the mailbox's own provider, not through Resend. Resend also offers `delivered@resend.dev`,
 `bounced@resend.dev` and `complained@resend.dev` to simulate outcomes; they
 count against the sending quota and do not test the reply-to.
 

@@ -38,16 +38,23 @@ const {
   decorative = false,
 } = Astro.props;
 
+// Private review build: photos whose review permission is unconfirmed are
+// replaced by gaps (see scripts/verify-review-build.mjs).
+const hidePhotos = import.meta.env.PUBLIC_REVIEW_HIDE_PHOTOS === "true";
+const src = hidePhotos ? undefined : photo.src;
 const style = `--focus-desktop: ${photo.focusDesktop ?? "50% 50%"}; --focus-mobile: ${photo.focusMobile ?? "50% 50%"};`;
-const gapLabel = photo.pending ?? "Foto autorizada";
+const gapLabel =
+  hidePhotos && photo.src
+    ? "Permiso de uso por confirmar"
+    : (photo.pending ?? "Foto autorizada");
 ---
 
 {
-  photo.src ? (
+  src ? (
     <Picture
-      src={photo.src}
+      src={src}
       alt={decorative ? "" : (photo.alt ?? "")}
-      widths={widths.filter((width) => width <= (photo.src?.width ?? 1920))}
+      widths={widths.filter((width) => width <= (src.width ?? 1920))}
       sizes={sizes}
       formats={["avif", "webp"]}
       loading={priority ? "eager" : "lazy"}

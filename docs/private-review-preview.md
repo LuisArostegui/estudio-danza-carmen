@@ -41,22 +41,32 @@ production configuration and secrets.
   as the review site: with no `dist-review/`, Wrangler refuses to deploy. No
   vars or secrets.
 - `pnpm build:review`:
-  1. builds into `dist-review/` with `PUBLIC_HIDE_PREVIEW_NOTES=true` and `PUBLIC_REVIEW_NOINDEX=true`
-     (`BaseLayout` then adds `<meta name="robots" content="noindex">` to every
-     page);
-  2. writes `dist-review/_headers` with `X-Robots-Tag: noindex, nofollow` for `/*`
+  1. builds into `dist-review/` with `PUBLIC_HIDE_PREVIEW_NOTES=true`,
+     `PUBLIC_REVIEW_NOINDEX=true` (`BaseLayout` then adds
+     `<meta name="robots" content="noindex">` to every page) and
+     `PUBLIC_REVIEW_HIDE_PHOTOS=true` (`Photo.astro` renders every photo slot
+     as a «Foto pendiente · Permiso de uso por confirmar» gap);
+  2. removes the photo originals Astro still emits for content images but no
+     page references (`scripts/prune-review-photos.mjs`), so they cannot be
+     reached by URL;
+  3. writes `dist-review/_headers` with `X-Robots-Tag: noindex, nofollow` for `/*`
      (`scripts/write-review-headers.mjs`);
-  3. checks the artifact (`scripts/verify-review-build.mjs`) and fails if the
+  4. checks the artifact (`scripts/verify-review-build.mjs`) and fails if the
      directory is missing, any required page is missing (Inicio, 404, ballet
      index, Ballet para adultos, Horarios, Contacto), `_headers` has no
      `X-Robots-Tag: noindex` under the `/*` rule, any page lacks `noindex`,
-     the contact form is missing or live, or review notes are still visible.
+     the contact form is missing or live, review notes are still visible, or
+     (while `REVIEW_PHOTOS_APPROVED` is `false`) any photo file is under
+     `_astro/` or any page shows one.
 - `pnpm deploy:review`: runs the same check on `dist-review/` and only then
   `wrangler deploy --env review`. It does not build, so what is checked is
   exactly what is uploaded.
 
 `noindex` and a hard-to-guess hostname do not replace Access. They only keep
 the review build out of search engines if Access is ever misconfigured.
+
+Verified locally again on 2026-11-20 (photo-free artifact): see
+[contact-review-qa-2026-11-20.md](contact-review-qa-2026-11-20.md).
 
 Verified locally on 2026-11-19 with `wrangler dev --env review` (serving
 `dist-review/`) and `wrangler deploy --env review --dry-run` (reads 190 files
@@ -69,10 +79,25 @@ from `dist-review/`; fails when the folder is missing): `/`,
 
 The four photos in `src/assets/fotos/` were provided for web use, but the
 consent records for the students on stage are still to be confirmed
-(`src/assets/fotos/README.md`). Before the first deploy, Luis must confirm that
-showing them to Elena behind Access is allowed. If not, the review build needs
-those slots switched to the «Foto pendiente» gaps first. Do not publish review
-screenshots that include these photos.
+(`src/assets/fotos/README.md`), and Luis has not confirmed that they may be
+shown to Elena. So the review build ships **no photos**: every slot shows a
+«Foto pendiente» gap, and the artifact check fails if a photo file or tag
+appears. Verified on 2026-11-20: `dist-review/` holds 91 files, the only raster
+file is the approved AI-generated `assets/hero-carmen.png`
+(`docs/asset-inventory.md`), and the old photo URLs return 404.
+
+To show the photos once Luis confirms permission for private review:
+
+1. Record the confirmation (date, who, which files) in
+   `src/assets/fotos/README.md`.
+2. Remove `PUBLIC_REVIEW_HIDE_PHOTOS=true` from the `build:review` script and
+   set `REVIEW_PHOTOS_APPROVED = true` in `scripts/verify-review-build.mjs`.
+3. Run `pnpm build:review` and redeploy.
+
+Horarios also shows its empty state («Estamos actualizando los horarios») in
+the review build, because the example timetable belongs with the preview
+notes, so Elena sees no invented schedule. Once photos are enabled, do not
+publish review screenshots that include them.
 
 ## Access Policy
 
@@ -153,9 +178,13 @@ Out of scope here and blocked on DNS access ([hosting-and-deployment.md](hosting
 ## Needs Owner Confirmation
 
 - Cloudflare account owner, the `workers.dev` subdomain, and a user with
-  Workers Scripts edit and Zero Trust (Access) edit permissions.
+  Workers Scripts edit and Zero Trust (Access) edit permissions. On
+  2026-11-20 Wrangler's OAuth login on Luis's machine had Workers Scripts
+  write but no Access or Zero Trust scope, so the Access application is
+  created in the dashboard (step 2 of the safe order), not from Wrangler.
 - Elena's and Luis's authorised email addresses for the Access policy.
-- Permission to show the four current photos privately to Elena.
+- Permission to show the four current photos privately to Elena (until then
+  the review build ships gaps).
 - Authorisation to deploy, and separately to send Elena the link.
 
 ## Sources
